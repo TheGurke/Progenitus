@@ -1,0 +1,51 @@
+# Written by TheGurke 2011
+"""Global program constants"""
+
+# Program name
+APP_NAME = "Progenitus"
+APP_NAME_EDITOR = APP_NAME + " Editor"
+APP_NAME_CLIENT = APP_NAME + " Client"
+
+# Program version
+VERSION = "0.28"
+
+# Program website
+APP_WEBSITE = "http://progenitus.org/"
+
+# Path to the settings file
+SETTINGS_FILE = "$HOME/.magic-settings.cfg"
+
+# Path to the translation directory
+TRANSLATIONS_PATH = "po"
+
+# Gettext domain
+GETTEXT_DOMAIN = APP_NAME
+
+# Path to the GTKBuilder files
+GTKBUILDER_CLIENT = "client.glade"
+GTKBUILDER_DECKEDITOR = "deckeditor.glade"
+GTKBUILDER_UPDATER = "updater.glade"
+
+# Path structure in the picture directory
+PICS_PATH = lambda idstr: "%sXXX/%s.jpg" % (idstr[:-3], idstr)
+DECKMASTER_PATH = "media/deckmaster.png"
+EMPTY_CARD_PATH = "media/empty.png"
+
+# Network options
+JOIN_DELAY = 1000 # time to wait for tray creation
+MAX_ITEMID = 2**16 - 1
+
+# Default card dimensions
+CARD_WIDTH = 312
+CARD_HEIGHT = 445
+
+# Default prefix for network games
+DEFAULT_GAME_PREFIX = "progenitus-"
+
+# Game specific constants
+DEFAULT_LIFE = 20
+DEFAULT_HANDCARDS = 7
+MIN_LIBRARY = 60
+
+
+

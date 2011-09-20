@@ -1,0 +1,122 @@
+
+# sets in octgn that are not in this list:
+# Chronicles, Portal, Portal Second Age, Portal Three Kingdoms,
+# Magic Oversize Cards, Starter 1999, Magic Miscellaneous, Vanguard
+
+# FIXME: alara reborn has <i> in the flavor texts
+
+# set code \t number of cards \t id prefix \t commented: name of the expansion
+al	295	930805	# Alpha Edition
+be	302	931001	# Beta Edition
+un	302	931201	# Unlimited Edition
+rv	306	940401	# Revised Edition
+
+an	92	931202	# Arabian Nights
+aq	100	940301	# Antiquities
+lg	310	940601	# Legends
+dk	119	940801	# The Dark
+fe	187	941101	# Fallen Empires
+hl	140	951001	# Homelands
+
+4e	378	950401	# Forth Edition
+
+ia	383	950601	# Ice Age
+ai	199	960610	# Alliances
+
+mr	350	961008	# Mirage
+vi	167	970203	# Visions
+wl	167	970609	# Weatherlight
+
+5e	449	970324	# Fifth Edition
+
+tp	350	971014	# Tempest
+sh	143	980302	# Stronghold
+ex	143	980615	# Exodus
+
+us	350	981012	# Urza's Saga
+ul	143	990215	# Urza's Legacy
+ud	143	990607	# Urza's Destiny
+
+6e	350	990428	# Sixth Edition
+
+mm	350	991004	# Mercadian Masques
+ne	143	000214	# Nemesis
+pr	143	000605	# Prophecy
+
+in	355	001002	# Invasion
+ps	143	010205	# Planeshift
+ap	148	010604	# Apocalyspe
+
+7e	350	010411	# 7th Edition
+
+od	350	011001	# Odyssey
+tr	143	020204	# Torment
+ju	143	020527	# Judgment
+
+on	350	021007	# Onslaught
+le	145	030203	# Legions
+sc	143	030526	# Scourge
+
+8e	350	030728	# Eighth Edition
+
+mi	306	031002	# Mirrodin
+ds	165	040206	# Darksteel
+5dn	165	040604	# Fifth Dawn
+
+chk	317	040918	# Champions of Kamigawa
+bok	170	050204	# Betrayers of Kamigawa
+sok	170	050603	# Saviours of Kamigawa
+
+9e	350	050729	# Ninth Edition
+
+rav	306	051007	# Ravnica: City of Guilds
+gp	165	060203	# Guildpact
+di	190	060505	# Dissension
+
+cs	155	060721	# Coldsnap
+
+ts	301	061006	# Time Spiral
+tsts	122	061007	# Time Spiral "Time Shifted"
+pc	168	070202	# Planar Chaos
+fut	180	070504	# Future Sight
+
+10e	383	070714	# Tenth Edition
+
+lw	301	071012	# Lorwyn
+mt	150	080201	# Morningtide
+
+shm	301	080502	# Shadowmoor
+eve	180	080725	# Eventide
+
+ala	249	081003	# Shards of Alara
+cfx	145	090206	# Conflux
+arb	145	090430	# Alara Reborn
+
+m10	249	090717	# Magic 2010
+
+zen	249	091002	# Zendikar
+wwk	145	100205	# Worldwake
+roe	248	100423	# Rise of the Eldrazi
+
+m11	249	100716	# Magic 2011
+
+som	249	101001	# Scars of Mirrodin
+mbs	155	110204	# Mirrodin Besieged
+nph	175	110513	# New Phyrexia
+
+m12	249	110715	# Magic 2011
+
+#isd	264	110930	# Innistrad
+#dka	158	120203	# Dark Ascension
+
+# Fun sets
+ug	88	980817	# Unglued
+uh	145	041119	# Unhinged
+
+# Reprint sets
+pch	171	090904	# Planechase
+dpa	113	100604	# Duels of the Planeswalkers
+arc	151	100618	# Archenemy
+cmd	318	110617	# Commander
+
+

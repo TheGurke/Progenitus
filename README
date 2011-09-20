@@ -1,0 +1,157 @@
+Copyright (C) 2011 by TheGurke
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+Disclaimer:
+
+Using copyrighted material with this program might be illegal in your country of
+residence. Please note that I, the author of this program, cannot be held
+responsible for anything that you choose to do with it.
+
+
+
+Requirements:
+- Python 2.6 or 2.7
+- GTK 2.18 or higher
+- pygtk
+- pyxmpp
+
+There is a settings.cfg file where the user's settings are stored.
+
+
+------------
+[Downloader]
+------------
+
+This is a small program for downloading and updating the magic set data and
+card pictures. Please read the disclaimer carefully before using it.
+
+Known issues:
+- For every card the connection is reestablished.
+- Crashes on download completion
+
+Planned features:
+- Generate downloadlist automatically
+- Download tokens
+
+
+
+------------
+[Deckeditor]
+------------
+
+The deck editor is used to construct your own magic decks.
+
+Press 'insert' to insert a card to the deck, 'shift + insert' inserts into the
+sideboard.
+'space' toggles between deck and sideboard
+'delete' removes a card from the deck
+'ctrl + f' focuses the quicksearch entry
+'ctrl + q' shows the extended search
+'ctrl + shift + c' clears the extended search
+'ctrl + n' creates a new deck
+'ctrl + s' exports the current deck
+'ctrl + e' edits the current deck's description and author
+'f11' toggles fullscreen
+
+Known issues:
+- No possibility to create, rename or remove folders
+- No possibility to move deck within folders
+- Cannot click on the sideboard checkbuttons
+- Cannot use power/thoughness based search since they are text fields in the db
+- Searching for colors and lands at the same time is broken
+- "No results" in the extended search is not visible enough
+- Show expansion breaks when window is closed once
+
+Planned features:
+- List deck price
+- force only one instance
+- export as pdf (proxies)
+- export as html (pretty decklist)
+- card legality
+- Deck statistics overview: mana curve, color/land distribution, example hand
+- Auto-completion for types and card sets, maybe titles and artists
+- Drag 'n' drop for decks into folders
+- Deck list import/export for Magic Online, OCTGN2, OCTGN1, Apprentice formats
+- Deck cache
+- Mana cost as symbols
+- Card sets as symbols
+- Search icon for find lands: a mountain in the magnification glass
+
+Bugs:
+- can rename to an already used name
+- renaming fails sometimes
+- Sorting by mana cost does not cluster colors where converted costs are the
+	same
+- New deck doesn't remove the color symbols
+- moving the center bar to the right while in extended search causes graphic
+  bugs
+
+
+
+--------
+[Client]
+--------
+
+The client program is used to connect with other player over the internet and
+play magic games together.
+The underlying protocol used is Jabber/XMPP. This is the reason why you need a
+jabber account in order to play. There are many free jabber servers on the net,
+for example http://www.jabber.org/.
+Unlike most other programs of this kind there is no limit how many player can
+join in one game.
+
+The client has 3 hidden commands:
+/life set the life points
+/nick changes the user's nick
+/draw draws a number of cards
+
+'f11' toggles fullscreen
+
+Known bugs:
+- sometimes cards glitch into play while still being in the hand. this is not
+  seen across the network (has no itemid). Appearantly this is caused by fast
+  double clicking and then dragging (removed -> card is still changed)
+- mouse is not exactly on the card when dragging a card to play
+- tray layout is kinda broken
+- when just missing a card that is meant to be tapped, everything gets untapped.
+  This should be prevented by checking if there is an owned card around.
+- Enlarged card flicker when the mouse is near the center of the screen
+- If a card is flipped, the enlarged picture is not
+- can alter other player's cards on the battlefield
+- cannot roll dice of flip coins
+- the second card searched from the library is wrong
+- fetch card from removed produces error messages
+- user list is not updated
+- log does not always scroll down
+- moving the tray while the deck loads causes the tray to vanish
+
+Desired features:
+- save login details
+- move cards from/to the graveyard by drag and drop
+- play cards face down
+- set nick
+- search for cards automatically (basic lands...)
+- tokens
+- counters
+- pretty card browser
+- comprehensive match logger with colored output
+- console commands
+- undo untap all
+- optimize ram usage (+ ram saving mode)
+- Save games
+- Replay games
+
+

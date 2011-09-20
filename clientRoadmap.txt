@@ -1,0 +1,14 @@
+
+Features:
+- List of participating players
+- Chat
+- Activity log
+- Switch board sides
+- Untap all
+- Search library
+- Search removed
+- sideboard
+
+Card options:
+- TODO
+
