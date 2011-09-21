@@ -51,6 +51,10 @@ class Interface(uiloader.Interface):
 				self.warn_about_empty_db()
 			else:
 				self.label_results.set_text("%d cards available" % num)
+		
+		# Create deck directory if it doesn't exist
+		if not os.path.exists(settings.deck_dir):
+			os.mkdir(settings.deck_dir)
 	
 	
 	#

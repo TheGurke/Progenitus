@@ -13,7 +13,7 @@ VERSION = "0.28"
 APP_WEBSITE = "http://progenitus.org/"
 
 # Path to the settings file
-SETTINGS_FILE = "$HOME/.magic-settings.cfg"
+SETTINGS_FILE = "$HOME/.progenitus.cfg"
 
 # Path to the translation directory
 TRANSLATIONS_PATH = "po"
@@ -29,7 +29,6 @@ GTKBUILDER_UPDATER = "updater.glade"
 # Path structure in the picture directory
 PICS_PATH = lambda idstr: "%sXXX/%s.jpg" % (idstr[:-3], idstr)
 DECKMASTER_PATH = "media/deckmaster.png"
-EMPTY_CARD_PATH = "media/empty.png"
 
 # Network options
 JOIN_DELAY = 1000 # time to wait for tray creation

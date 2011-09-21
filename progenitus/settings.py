@@ -58,11 +58,9 @@ def load():
 		if t == "file":
 			if not os.path.exists(value) or not os.path.isfile(value):
 				print("File not found: %s" % value)
-				value = default
 		if t == "dir":
 			if not os.path.exists(value) or not os.path.isdir(value):
 				print("Directory not found: %s" % value)
-				value = default
 		setattr(sys.modules[__name__], var, value)
 
 

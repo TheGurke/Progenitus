@@ -69,7 +69,7 @@ class Interface(uiloader.Interface):
 		
 		# Create directories
 		if not os.path.exists(settings.pics_path):
-			os.path.mkdir(settings.pics_path)
+			os.mkdir(settings.pics_path)
 		
 		self.log("Starting download.")
 		

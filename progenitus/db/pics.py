@@ -12,8 +12,7 @@ from progenitus import settings
 #
 # Handles card picture access. Given a card id it returns the corresponding
 # picture as a gdk.Pixbuf.
-# 0  = deckmaster
-# -1 = empty card
+# 0 = deckmaster
 #
 
 _map = dict() # data structure to hold the pics
@@ -24,8 +23,6 @@ def _get_path(cardid):
 	assert(isinstance(cardid, int))
 	if cardid == 0: # Deckmaster has id 0
 		return config.DECKMASTER_PATH
-	if cardid == -1: # Empty card has id -1
-		return config.EMPTY_CARD_PATH
 	idstr = str(cardid).rjust(9, "0")
 	return os.path.join(settings.pics_path, config.PICS_PATH(idstr))
 
