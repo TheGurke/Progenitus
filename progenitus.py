@@ -35,10 +35,6 @@ if len(sys.argv) > 1 and sys.argv[1] == "--client":
 		iface.network_manager.disconnect()
 elif len(sys.argv) > 1 and sys.argv[1] == "--updater":
 	iface = updatergui.Interface()
-	if not settings.disclaimer_agreed:
-		iface.disclaimer_win.show()
-	else:
-		iface.start_download(None)
 	iface.main()
 else:
 	iface = editorgui.Interface()

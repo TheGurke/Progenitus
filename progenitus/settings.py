@@ -19,8 +19,9 @@ import config
 _settings = [
 	# section, variable name, type, default value, description
 	("DEFAULT", "cards_db", "file", "mtg.sqlite", "Path to card database"),
-	("DEFAULT", "pics_path", "dir", "pics/", "Path to card picture folders"),
-	("DEFAULT", "deck_dir", "dir", "$HOME/.magic-decks", "Path to deck folder"),
+	("DEFAULT", "pics_path", "dir", "cache/", "Path to card picture folders"),
+	("DEFAULT", "deck_dir", "dir", "$HOME/.progenitus-decks",
+		"Path to deck folder"),
 	("Downloader", "disclaimer_agreed", "bool", False,
 		"The user has agreed to the disclaimer"),
 	("Editor", "results_limit", "int", 500, "Maximum number of search results"),

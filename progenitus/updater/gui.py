@@ -23,6 +23,10 @@ class Interface(uiloader.Interface):
 	def __init__(self):
 		super(self.__class__, self).__init__()
 		self.load(config.GTKBUILDER_UPDATER)
+		if not settings.disclaimer_agreed:
+			self.disclaimer_win.show()
+		else:
+			self.start_download()
 	
 	def toggle_confirm(self, widget):
 		"""The user toggles the 'I confirm' checkbutton"""
@@ -41,7 +45,7 @@ class Interface(uiloader.Interface):
 		text = "Exception %s:\n%s" % (type(exc), str(exc))
 		self.show_dialog(self.download_win, text, dialog_type="error")
 	
-	def start_download(self, widget):
+	def start_download(self, widget=None):
 		"""Interface callback to start the download"""
 		self.disclaimer_win.hide()
 		self.download_win.show()
@@ -50,10 +54,11 @@ class Interface(uiloader.Interface):
 	def _run_download(self):
 		"""Run the download"""
 		
-		# Initialize
+		# Get download list
 		self.log("Getting downloadlist...")
 		yield load_downloadlist()
 		
+		# Establish database access
 		if not os.path.isfile(settings.cards_db):
 			self.log("Creating a new database file...")
 			cards.create_db(settings.cards_db)
@@ -61,6 +66,10 @@ class Interface(uiloader.Interface):
 		cards.connect()
 		self.sqlconn = sqlite3.connect(settings.cards_db)
 		self.cursor = self.sqlconn.cursor()
+		
+		# Create directories
+		if not os.path.exists(settings.pics_path):
+			os.path.mkdir(settings.pics_path)
 		
 		self.log("Starting download.")
 		

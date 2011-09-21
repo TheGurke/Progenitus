@@ -3,3 +3,5 @@
 mtg.sqlite
 build
 dist
+package*
+releases
