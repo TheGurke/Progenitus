@@ -29,7 +29,7 @@ class Interface(uiloader.Interface):
 		self.network_manager = network.NetworkManager()
 		self.load(config.GTKBUILDER_CLIENT)
 		self.main_win.set_title(config.APP_NAME_CLIENT)
-#		self.main_win.maximize()
+		self.main_win.maximize()
 		glib.idle_add(cards.connect)
 		
 		# Insert a CairoDesktop

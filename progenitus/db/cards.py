@@ -20,7 +20,6 @@ def connect():
 	sqlconn = sqlite3.connect(settings.cards_db)
 	_cursor = sqlconn.cursor()
 
-connect()
 
 class Card(object):
 	"""Magic card instance"""
@@ -148,6 +147,13 @@ def search(query, args=(), limit=settings.results_limit):
 		if i >= _limit:
 			break
 	return l
+
+
+def count():
+	"""Count the number of available cards"""
+	_cursor.execute('SELECT COUNT(*) FROM "cards"')
+	for row in _cursor:
+		return row[0]
 
 
 def more_results(limit=None):

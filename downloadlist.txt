@@ -1,5 +1,5 @@
 
-# sets in octgn that are not in this list:
+# Sets that are not in this list:
 # Chronicles, Portal, Portal Second Age, Portal Three Kingdoms,
 # Magic Oversize Cards, Starter 1999, Magic Miscellaneous, Vanguard
 

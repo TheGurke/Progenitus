@@ -18,9 +18,6 @@ DOWNLOAD_PICS = True
 
 downloadlist = []
 
-gtk.gdk.threads_init()
-async.method_queuer = glib.idle_add
-
 
 class Interface(uiloader.Interface):
 	def __init__(self):
@@ -56,11 +53,11 @@ class Interface(uiloader.Interface):
 		# Initialize
 		self.log("Getting downloadlist...")
 		yield load_downloadlist()
-	
+		
 		if not os.path.isfile(settings.cards_db):
 			self.log("Creating a new database file...")
 			cards.create_db(settings.cards_db)
-	
+		
 		cards.connect()
 		self.sqlconn = sqlite3.connect(settings.cards_db)
 		self.cursor = self.sqlconn.cursor()

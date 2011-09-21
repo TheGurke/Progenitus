@@ -24,7 +24,6 @@ class Interface(uiloader.Interface):
 		self.load(config.GTKBUILDER_DECKEDITOR)
 		self.main_win.set_title(config.APP_NAME_EDITOR)
 		self.main_win.maximize()
-		cards.connect()
 		self.textview_deckdesc.get_buffer().connect("changed",
 			self.deckdesc_changed)
 		self.quicksearch_entry.grab_focus()
@@ -41,10 +40,28 @@ class Interface(uiloader.Interface):
 		glib.idle_add(refresh_once) # delayed decklist refresh
 		glib.timeout_add(settings.decklist_refreshtime, self.refresh_decklist)
 			# check periodically if the deck files on the disk have changed
+		
+		# Check if the database is accessable
+		if not os.path.exists(settings.cards_db):
+			self.warn_about_empty_db()
+		else:
+			cards.connect()
+			num = cards.count()
+			if num == 0:
+				self.warn_about_empty_db()
+			else:
+				self.label_results.set_text("%d cards available" % num)
+	
 	
 	#
 	# Interface callbacks
 	#
+	
+	def warn_about_empty_db(self):
+		"""Display a warning that there are no cards in the database"""
+		dialog = self.show_dialog(self.main_win,
+			_("The card database is empty. Please run the updater."), "warning")
+		dialog.connect("destroy", self.quit)
 	
 	def about_click(self, widget):
 		"""Display information about this program"""
