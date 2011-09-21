@@ -1,5 +1,12 @@
 # Written by TheGurke 2011
-"""Virtual card management"""
+"""
+This module handles virtual 'player' instances consisting of the information
+about all the cards and tokens one player controls in the game.
+
+The client will create a Player instance for every player on the network.
+The local client will have the send_network_cmds callback set while remote
+clients just recieve network commands.
+"""
 
 import random
 from gettext import gettext as _

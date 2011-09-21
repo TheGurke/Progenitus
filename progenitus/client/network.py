@@ -1,5 +1,10 @@
 # Written by TheGurke 2011
-"""The Progenitus network protocol"""
+"""
+Implementation of the Progenitus network protocol
+
+This module recieves network instructions and packages them into xmpp messages.
+Incoming messages are unpackaged and returned as instruction tuples.
+"""
 
 import re
 import glib
@@ -114,7 +119,7 @@ class NetworkManager(object):
 	client = None # MUCClient
 	logger = None # Logger
 	
-	# Callback methods
+	# Callback methods (please attach!)
 	incoming_commands = None
 	incoming_chat = None
 	user_left = None

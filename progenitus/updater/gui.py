@@ -1,5 +1,5 @@
 # Written by TheGurke 2011
-"""GUI for the database/image downloader"""
+"""GUI for the database/image updater"""
 
 import os
 import datetime

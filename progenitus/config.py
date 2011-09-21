@@ -1,5 +1,5 @@
 # Written by TheGurke 2011
-"""Global program constants"""
+"""Contains various program parameters that will not be changed by the user"""
 
 # Program name
 APP_NAME = "Progenitus"
@@ -7,7 +7,7 @@ APP_NAME_EDITOR = APP_NAME + " Editor"
 APP_NAME_CLIENT = APP_NAME + " Client"
 
 # Program version
-VERSION = "0.28"
+VERSION = "0.29"
 
 # Program website
 APP_WEBSITE = "http://progenitus.org/"

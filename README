@@ -28,23 +28,27 @@ Requirements:
 - pygtk
 - pyxmpp
 
-There is a settings.cfg file where the user's settings are stored.
+There is a file where the user's settings are stored:
+$HOME/.progenitus.cfg
 
 
-------------
-[Downloader]
-------------
+---------
+[Updater]
+---------
 
 This is a small program for downloading and updating the magic set data and
 card pictures. Please read the disclaimer carefully before using it.
 
 Known issues:
 - For every card the connection is reestablished.
-- Crashes on download completion
+- Crashes on update completion
 
 Planned features:
+- More backends: e.g. gatherer.wizards.com
+- Option to download pictures/pricing information later
 - Generate downloadlist automatically
-- Download tokens
+- Fetch tokens
+- Fetch items on the fly
 
 
 
@@ -91,6 +95,7 @@ Planned features:
 - Search icon for find lands: a mountain in the magnification glass
 
 Bugs:
+- settings are not saved automatically
 - can rename to an already used name
 - renaming fails sometimes
 - Sorting by mana cost does not cluster colors where converted costs are the
@@ -153,5 +158,6 @@ Desired features:
 - optimize ram usage (+ ram saving mode)
 - Save games
 - Replay games
+- Handle cards with mixed card sizes
 
 

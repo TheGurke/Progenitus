@@ -1,5 +1,5 @@
 # Written by TheGurke 2011
-"""Manage access to the picture files"""
+"""Manage access to the cached card pictures"""
 
 import math
 import os.path
@@ -10,8 +10,7 @@ from progenitus import config
 from progenitus import settings
 
 #
-# Handles card picture access. Given a card id it returns the corresponding
-# picture as a gdk.Pixbuf.
+# Given a card id it returns the corresponding picture as a gdk.Pixbuf.
 # 0 = deckmaster
 #
 
@@ -49,7 +48,7 @@ def get(cardid):
 
 
 class PicFactory(object):
-	"""A data structure managing the image data"""
+	"""Data structure managing scaled images"""
 	
 	_map = dict()
 	_zoom = 0
@@ -80,7 +79,8 @@ def surface_from_pixbuf(pixbuf, zoom=1., antialiasing=True):
 	cr = gtk.gdk.CairoContext(cairo.Context(surface))
 	if antialiasing:
 		cr.set_antialias(cairo.ANTIALIAS_SUBPIXEL)
-	cr.scale(1. / zoom, 1. / zoom)
+	if zoom != 1:
+		cr.scale(1. / zoom, 1. / zoom)
 	cr.set_source_pixbuf(pixbuf, 0, 0)
 	cr.paint()
 	return surface, w_, h_

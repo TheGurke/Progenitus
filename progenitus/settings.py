@@ -1,5 +1,5 @@
 # Written by TheGurke 2011
-"""Access to the settings file"""
+"""Provides access to the user changed program parameters"""
 
 import ConfigParser
 import sys
@@ -11,6 +11,7 @@ import config
 # The _settings list defines all settings. These are loaded from/saved to a file
 # by the module and are accessible as a global variable (in the module
 # settings).
+# The settings file is stored at config.SETTINGS_FILE.
 #
 # Note: variable names must be unique.
 #
@@ -57,10 +58,12 @@ def load():
 			value = int(value)
 		elif t == "file" or t == "dir":
 			value = os.path.expandvars(value)
+		
+		# Check for path existance
 		if t == "file":
 			if not os.path.exists(value) or not os.path.isfile(value):
 				print("File not found: %s" % value)
-		if t == "dir":
+		elif t == "dir":
 			if not os.path.exists(value) or not os.path.isdir(value):
 				print("Directory not found: %s" % value)
 		setattr(sys.modules[__name__], var, value)

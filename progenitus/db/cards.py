@@ -1,5 +1,5 @@
 # Written by TheGurke 2011
-"""Card class and database access"""
+"""Manage card instances and access to the card database"""
 
 import os
 import glib

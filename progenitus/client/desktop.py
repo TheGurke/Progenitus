@@ -1,5 +1,5 @@
 # Written by TheGurke 2011
-"""Vector graphics engine for the card table"""
+"""Vector graphics engine for the card table as a gtk.Widget"""
 
 import math
 import random

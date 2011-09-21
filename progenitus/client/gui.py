@@ -212,12 +212,6 @@ class Interface(uiloader.Interface):
 		"""Show a menu to create a token"""
 		pass
 	
-	def start_deckeditor(self, widget):
-		if os.name == "posix":
-			os.system("./deckeditor.py")
-		if os.name == "nt":
-			os.system("deckeditor.exe")
-	
 	def load_deck(self, widget):
 		"""Let the user pick a deck to load"""
 		dialog = gtk.FileChooserDialog(_("Load a deck..."),

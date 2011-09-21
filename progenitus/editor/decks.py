@@ -1,5 +1,5 @@
 # Written by TheGurke 2011
-"""Deck class and methods"""
+"""Load and save decks"""
 
 import random
 import copy

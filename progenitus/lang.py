@@ -1,5 +1,5 @@
 # Written by TheGurke 2011
-"""Initialize gettext"""
+"""Internationalization module; initializes gettext"""
 
 
 import config
