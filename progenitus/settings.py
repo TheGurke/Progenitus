@@ -51,9 +51,11 @@ def load():
 			cparser.add_section(section)
 		value = cparser.get(section, var)
 		# type casting
-		if t == "int":
+		if t == "bool":
+			value = value.lower() == "true"
+		elif t == "int":
 			value = int(value)
-		if t == "file" or t == "dir":
+		elif t == "file" or t == "dir":
 			value = os.path.expandvars(value)
 		if t == "file":
 			if not os.path.exists(value) or not os.path.isfile(value):
