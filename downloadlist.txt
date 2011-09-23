@@ -106,7 +106,7 @@ nph	175	110513	# New Phyrexia
 
 m12	249	110715	# Magic 2011
 
-isd	264	110930	# Innistrad
+#isd	264	110930	# Innistrad
 #dka	158	120203	# Dark Ascension
 
 # Fun sets
@@ -118,5 +118,17 @@ pch	171	090904	# Planechase
 dpa	113	100604	# Duels of the Planeswalkers
 arc	151	100618	# Archenemy
 cmd	318	110617	# Commander
+
+# Duel decks
+evg 62	071116	# Elves vs. Goblins
+jvc 62	081107	# Jace vs. Chandra
+dvd	62	090410	# Divine vs. Demonic
+gvl	63	091030	# Garruk vs. Liliana
+pvc	71	100319	# Phyrexia vs. The Coalition
+ddf	79	100903	# Elspeth vs. Tezzeret
+ddg	81	110401	# Knights vs. Dragons
+ddh	80	110902	# Ajani vs. Nicol Bolas
+#ddi	?	120330	# Venser vs. Koth
+
 
 
