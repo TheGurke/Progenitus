@@ -106,7 +106,7 @@ nph	175	110513	# New Phyrexia
 
 m12	249	110715	# Magic 2011
 
-#isd	264	110930	# Innistrad
+isd	264	110930	# Innistrad
 #dka	158	120203	# Dark Ascension
 
 # Fun sets
