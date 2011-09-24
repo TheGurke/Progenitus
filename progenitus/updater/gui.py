@@ -173,9 +173,8 @@ class Interface(uiloader.Interface):
 		md = gtk.MessageDialog(self.download_win,
 			gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_INFO,
 			gtk.BUTTONS_CLOSE, "Download complete.")
-		md.run()
-		md.destroy()
-		glib.idle_add(self.quit)
+		md.connect("response", self.quit)
+		md.show()
 
 
 

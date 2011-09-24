@@ -40,13 +40,11 @@ This is a small program for downloading and updating the magic set data and
 card pictures. Please read the disclaimer carefully before using it.
 
 Known issues:
-- For every card the connection is reestablished.
 - Crashes on update completion
 
 Planned features:
 - More backends: e.g. gatherer.wizards.com
 - Option to download pictures/pricing information later
-- Generate downloadlist automatically
 - Fetch tokens
 - Fetch items on the fly
 
