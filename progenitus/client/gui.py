@@ -64,6 +64,7 @@ class Interface(uiloader.Interface):
 		cmd1, args1 = cmdlist[0]
 		if cmd1 == "hello":
 			player = self.create_player(user)
+			player.version = args1[0]
 			player.has_been_welcomed = True
 			self.my_player.handle_network_cmds(user, cmdlist)
 		if cmd1 == "welcome":
@@ -72,7 +73,8 @@ class Interface(uiloader.Interface):
 				if player.user.same_as(user):
 					user_known = True
 			if not user_known:
-				self.create_player(user)
+				player = self.create_player(user)
+				player.version = args1[0]
 		
 		# Pass on the commands
 		for player in self.players:

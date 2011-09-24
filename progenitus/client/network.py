@@ -21,13 +21,14 @@ zones = ["L", "G", "H", "B", "R", "V"]
 
 # All network commands
 commands = {
-	"hello":    "[Hello]", # Handshake initialization
-	"welcome":  "[Welcome]", # Handshake response
-	"reset":    "[Reset]", # Reset deck
-	"tray":     "[CreateTray] as %x (%d, %d)", # Tray item
+	"hello":    "[Hello] %s", # handshake initialization
+	"welcome":  "[Welcome] %s", # handshake response
+	"reset":    "[Reset]", # reset deck
+	"tray":     "[CreateTray] as %x at (%d, %d)", # Tray item
 	"update":   "[Update] %d %d", # update tray: library count, hand card count
 	"setlife":  "[Setlife] %d", # set life points
-	"enter":    "[Enter] %d as %x (%d,%d)", # enter the battlefield
+	"enter":    "[Enter] %d as %x at (%d,%d)", # enter the battlefield
+	"token":	"[Token] %d as %x at (%d,%d)", # create a new token
 	"exit":     "[Exit] %x", # exit the battlefield
 	"bury":     "[Bury] %d", # add a card to the graveyard
 	"unbury":   "[Unbury] %d", # remove a card from the graveyard by index
