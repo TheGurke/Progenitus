@@ -7,7 +7,7 @@ APP_NAME_EDITOR = APP_NAME + " Editor"
 APP_NAME_CLIENT = APP_NAME + " Client"
 
 # Program version
-VERSION = "0.29"
+VERSION = "0.30-beta"
 
 # Program website
 APP_WEBSITE = "http://progenitus.org/"
@@ -27,7 +27,8 @@ GTKBUILDER_DECKEDITOR = "deckeditor.glade"
 GTKBUILDER_UPDATER = "updater.glade"
 
 # Path structure in the picture directory
-PICS_PATH = lambda idstr: "cards/%sXXX/%s.jpg" % (idstr[:6], idstr)
+CARD_PICS_PATH = lambda idstr: "cards/%sXXX/%s.jpg" % (idstr[:6], idstr)
+TOKEN_PICS_PATH = lambda idstr: "tokens/%sXXX/%s.jpg" % (idstr[:6], idstr)
 DECKMASTER_PATH = "media/deckmaster.png"
 
 # Network options

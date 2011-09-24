@@ -23,7 +23,7 @@ def _get_path(cardid):
 	if cardid == 0: # Deckmaster has id 0
 		return config.DECKMASTER_PATH
 	idstr = str(cardid).rjust(9, "0")
-	return os.path.join(settings.pics_path, config.PICS_PATH(idstr))
+	return os.path.join(settings.pics_path, config.CARD_PICS_PATH(idstr))
 
 
 def _load(cardid):
