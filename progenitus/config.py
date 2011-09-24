@@ -27,7 +27,7 @@ GTKBUILDER_DECKEDITOR = "deckeditor.glade"
 GTKBUILDER_UPDATER = "updater.glade"
 
 # Path structure in the picture directory
-PICS_PATH = lambda idstr: "%sXXX/%s.jpg" % (idstr[:-3], idstr)
+PICS_PATH = lambda idstr: "cards/%sXXX/%s.jpg" % (idstr[:6], idstr)
 DECKMASTER_PATH = "media/deckmaster.png"
 
 # Network options

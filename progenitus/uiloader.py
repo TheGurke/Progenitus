@@ -1,6 +1,7 @@
 # Written TheGurke 2010
 """Python interface loader using GTKBuilder"""
 
+
 import os.path
 import warnings
 
@@ -17,6 +18,8 @@ except:
 		"Check your python installation.\"")
 	print("Fatal error: GTK not availible.")
 	sys.exit(1)
+
+
 
 #
 # This is the Interface which takes care of the GTKBuilder. A program using this

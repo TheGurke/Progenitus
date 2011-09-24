@@ -75,6 +75,7 @@ Known issues:
 - No possibility to move deck within folders
 - Cannot click on the sideboard checkbuttons
 - Cannot use power/thoughness based search since they are text fields in the db
+  FIX: CAST("power" AS INTEGER)
 - Searching for colors and lands at the same time is broken
 - "No results" in the extended search is not visible enough
 - Show expansion breaks when window is closed once

@@ -1,2 +1,2 @@
 
-__all__ = ["cards", "miner", "pics"]
+__all__ = ["cards", "pics"]

@@ -14,24 +14,6 @@ from progenitus.db import *
 from progenitus.miner import *
 
 
-def fetch_downloadlist(url):
-	"""Fetch the download list from an url"""
-	f = urllib.urlopen(url)
-	data = f.read()
-	f.close()
-	return data
-
-
-def parse_downloadlist(data):
-	"""Fetch the download list from a file"""
-	downloadlist = []
-	for line in data.split('\n'):
-		if line != "" and line[0] not in ("#", "%"):
-			code, num, idprefix = line.strip().split()[0:3]
-			downloadlist.append((code, int(num), idprefix))
-	return downloadlist
-
-
 
 class Interface(uiloader.Interface):
 	
@@ -42,14 +24,19 @@ class Interface(uiloader.Interface):
 		self.load(config.GTKBUILDER_UPDATER)
 		
 		# Insert download servers
-		self.liststore_servers.append(("magiccards.info",))
-		self.combobox_servers.set_active(0)
+		self.liststore_data_servers.append(("magiccards.info",))
+		self.combobox_data_servers.set_active(0)
+		self.liststore_pic_servers.append(("magiccards.info",))
+		self.combobox_pic_servers.set_active(0)
+		self.liststore_price_servers.append(("tcgplayer.com",))
+		self.combobox_price_servers.set_active(0)
 		
 		if not settings.disclaimer_agreed:
 			self.disclaimer_win.show()
 			self.checkbutton_confirm.grab_focus()
 		else:
 			self.download_win.show()
+			self.button_start.grab_focus()
 	
 	def toggle_confirm(self, widget):
 		"""The user toggles the 'I confirm' checkbutton"""
@@ -63,6 +50,14 @@ class Interface(uiloader.Interface):
 		# Save to settings
 		settings.disclaimer_agreed = True
 		glib.idle_add(settings.save)
+	
+	def toggle_download_pics(self, widget):
+		self.combobox_pic_servers.set_sensitive(
+			self.checkbutton_download_pics.get_active())
+	
+	def toggle_download_prices(self, widget):
+		self.combobox_price_servers.set_sensitive(
+			self.checkbutton_download_prices.get_active())
 	
 	def log(self, message):
 		"""Print a status log message"""
@@ -88,8 +83,8 @@ class Interface(uiloader.Interface):
 		# Get download list
 		if self.downloadlist is None:
 			self.log("Getting downloadlist...")
-			data = yield fetch_downloadlist(settings.list_url)
-			self.downloadlist = parse_downloadlist(data)
+			data = yield miner.fetch_downloadlist(settings.list_url)
+			self.downloadlist = miner.parse_downloadlist(data)
 		
 		# Establish database access
 		if not os.path.isfile(settings.cards_db):
@@ -106,65 +101,71 @@ class Interface(uiloader.Interface):
 		
 		self.log("Starting download.")
 		
-		# Download every expansion
-		for expansion_num in range(len(self.downloadlist)):
-			code, num, idprefix = self.downloadlist[expansion_num]
+		# Establish connections
+		magiccardsinfo.connect()
+		tcgplayercom.connect()
+		
+		# Download every card set
+		for set_num in range(len(self.downloadlist)):
+			setcode, releasedate = self.downloadlist[set_num]
+			
+			# Get set information
+			setname, cardlist = yield magiccardsinfo.mine_set(setcode)
 			
 			# Update gui
-			self.progressbar_expansion.set_fraction(float(expansion_num) \
+			self.progressbar_expansion.set_fraction(float(set_num)
 				/ len(self.downloadlist))
+			self.progressbar_expansion.set_text(setname)
 			self.progressbar_cards.set_fraction(0)
-			self.progressbar_cards.set_text("0 / %d" % num)
-			
-			# Download first card to get further expansion information
-			card = yield miner.mine(code, 1)
-			self.progressbar_expansion.set_text(card.cardset)
+			self.progressbar_cards.set_text("0 / %d" % len(cardlist))
 			
 			# Check if expansion has already been downloaded
-			l = yield cards.search('"set" == ?', (card.cardset,))
-			if len(l) == num:
-				self.log(card.cardset + " was found in the database.")
+			l = yield cards.search('"set" == ?', (setname,), 1)
+			if len(l) > 0:
+				self.log("'%s' was found in the database." % setname)
 				continue
-			self.log("Downloading %s..." % card.cardset)
+			self.log("Downloading '%s'..." % setname)
 			
-			# Calculate release date
-			year = int(idprefix[:2])
-			year += 1900 if year > 80 else 2000
-			month = int(idprefix[2:4])
-			day = int(idprefix[4:6])
-			date = datetime.date(year, month, day)
+			# Insert set information
+			self.cursor.execute(u'INSERT INTO "sets" VALUES (?,?,?,?,?)',
+				(set_num, setname, setcode, len(cardlist),
+				releasedate.toordinal()))
 			
 			# Create picture directory
-			pic_dir = os.path.dirname(pics._get_path(int(idprefix + "000")))
+			pic_dir = os.path.dirname(pics._get_path(int(
+				releasedate.strftime("%y%m%d") + "000")))
 			if not os.path.exists(pic_dir):
 				os.mkdir(pic_dir)
 			
 			# Download individual cards
-			for card_num in range(1, num + 1):
-				# Download data
-				if card_num > 1: # first card has already been downloaded
-					card = yield miner.mine(code, card_num)
+			for i in range(len(cardlist)):
+				collectorsid = cardlist[i]
+				card = yield magiccardsinfo.mine_card(setcode, collectorsid)
 				
 				# Set id and release date
-				card.cardid = idprefix + str(card_num).rjust(3, "0")
-				card.releasedate = date.toordinal()
+				card.releasedate = releasedate.toordinal()
+				card.cardid = card.derive_id()
 				
 				# Download pricing information
 				if self.checkbutton_download_prices.get_active():
-					card.price = yield miner.mine_price(code, card_num)
+					card.price = yield tcgplayercom.mine_price(setcode,
+						collectorsid)
 				
 				# Download picture
-				if self.checkbutton_download_pics.get_active():
-					pic_filename = pics._get_path(int(card.cardid))
-					yield miner.getpic(code, card_num, pic_filename)
+				pic_filename = pics._get_path(int(card.cardid))
+				if (not os.path.exists(pic_filename) and
+						self.checkbutton_download_pics.get_active()):
+					yield magiccardsinfo.mine_pic(setcode, collectorsid,
+						pic_filename)
 				
 				# Insert into the database
 				self.cursor.execute(u'INSERT INTO "cards" VALUES (' +
-					20 * '?,' + '?)', card.as_tuple())
-				self.progressbar_cards.set_fraction(float(card_num) / num)
-				self.progressbar_cards.set_text("%d / %d" % (card_num, num))
+					22 * '?,' + '?)', card.as_tuple())
+				self.progressbar_cards.set_fraction(float(i) / len(cardlist))
+				self.progressbar_cards.set_text("%d / %d" % (i, len(cardlist)))
 			
-			self.sqlconn.commit() # Save db to disk
+			# Save db to disk
+			self.sqlconn.commit()
 		glib.idle_add(self.download_complete)
 	
 	def download_complete(self):

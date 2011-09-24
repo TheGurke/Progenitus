@@ -1,6 +1,7 @@
 # Written by TheGurke 2011
 """Manage card instances and access to the card database"""
 
+import datetime
 import os
 import glib
 import sqlite3
@@ -13,6 +14,8 @@ import pics
 _cursor = None # The database cursor
 _last_search = None # The last query executed
 
+
+
 def connect():
 	"""Establish database connection"""
 	assert(os.path.isfile(settings.cards_db))
@@ -21,26 +24,49 @@ def connect():
 	_cursor = sqlconn.cursor()
 
 
+def convert_mana(manacost):
+	if manacost is None:
+		return 0
+	cc = manacost
+	for z in "WUBRGXYZP{/}":
+		cc = cc.replace(z, "")
+	cc = "0" if cc == "" else cc
+	return sum(map(lambda s: manacost.count(s), "WUBRGP")) + int(cc) - \
+		manacost.count("}")
+			# alternative colors e.g. {W/G} have 1 less than counted
+
+
 class Card(object):
 	"""Magic card instance"""
 	
 	def __init__(self, *args):
-		if args == ():
-			args = (0, "", "", "", "", "", "", "", "", "", "", "", "", "", "",
-				"", "", "", "", 0, 0)
+		if len(args) == 0:
+			args = (0, "", "", "", 0, 0, 0, 0, 0, 0, 0, "", "", "", "", "", "",
+				"", "", 0, 0, "", 0)
 		assert(isinstance(args[0], int))
 		(self.cardid, self.name, self.cardset, self.manacost,
 			self.converted_cost, self.iswhite, self.isblue, self.isblack,
 			self.isred, self.isgreen, self.iscolorless, self.cardtype,
 			self.subtype, self.text, self.flavor, self.artist,
 			self.rarity, self.power, self.toughness, self.price,
-			self.releasedate) = args
+			self.releasedate, self.collectorsid, self.linkedto) = args
 	
 	def __eq__(self, other):
 		return self.cardid == other.cardid
 	
 	def __str__(self):
 		return "%s (%s)" % (self.name, self.cardset)
+	
+	def derive_id(self):
+		"""Derive the card id based on collectors id and release date"""
+		date = datetime.date.fromordinal(self.releasedate)
+		cid = self.collectorsid
+		if cid[-1].isalpha(): # Special precaution for Innistrad
+			cid = (cid[:-1] + str(int(cid[-1], 36) - 9)).rjust(4, "0")
+		else:
+			cid = cid.rjust(3, "0")
+		cardid = date.strftime("%y%m%d") + cid
+		return int(cardid)
 	
 	def markup(self):
 		"""Return the card details as a gtk markup text"""
@@ -55,7 +81,7 @@ class Card(object):
 			text += "\n\n%s" % esc(self.text)
 		if self.flavor != "":
 			text += "\n\n<i>%s</i>" % esc(self.flavor)
-		text += "\n\n\n<small>%s #%d" % (self.cardset, self.cardid % 1000)
+		text += "\n\n\n<small>%s #%s" % (self.cardset, self.collectorsid)
 		if self.price >= 0:
 			text += "    $%.2f</small>" % (float(self.price) / 100,)
 		else:
@@ -86,23 +112,42 @@ class Card(object):
 			self.converted_cost, self.iswhite, self.isblue, self.isblack, \
 			self.isred, self.isgreen, self.iscolorless, self.cardtype, \
 			self.subtype, self.text, self.flavor, self.artist, self.rarity, \
-			self.power, self.toughness, self.price, self.releasedate
+			self.power, self.toughness, self.price, self.releasedate, \
+			self.collectorsid, self.linkedto
+
+
+class Token(Card):
+	"""A token instance"""
 	
-	def get_pic(self):
-		"""Returns the pixmap containing the card picture"""
-		return pics.get(self.cardid)
-
-
-def convert_mana(manacost):
-	if manacost is None:
-		return 0
-	cc = manacost
-	for z in "WUBRGXYZP{/}":
-		cc = cc.replace(z, "")
-	cc = "0" if cc == "" else cc
-	return sum(map(lambda s: manacost.count(s), "WUBRGP")) + int(cc) - \
-		manacost.count("}")
-			# alternative colors e.g. {W/G} have 1 less than counted
+	def __init__(self, *args):
+		if args == ():
+			args = (0, "", 0, 0, 0, 0, 0, 0, "", "", "", "", "", "", "", "", 0,
+				0)
+		assert(isinstance(args[0], int))
+		(self.tokenid, self.cardset, self.iswhite, self.isblue, self.isblack,
+			self.isred, self.isgreen, self.iscolorless, self.cardtype,
+			self.subtype, self.text, self.flavor, self.artist, self.power,
+			self.toughness, self.releasedate, self.collectorsid) = args
+	
+	def markup(self):
+		"""Return the card details as a gtk markup text"""
+		esc = glib.markup_escape_text # escape function
+		text += "%s - %s" % (esc(self.cardtype), esc(self.subtype)) if \
+			self.subtype != "" else esc(self.cardtype)
+		if self.text != "":
+			text += "\n\n%s" % esc(self.text)
+		if self.flavor != "":
+			text += "\n\n<i>%s</i>" % esc(self.flavor)
+		text += "\n\n\n<small>%s #%d" % (self.cardset, self.collectorsid)
+		text += "</small>"
+		return text
+	
+	def as_tuple(self):
+		"""Return the token as a tuple"""
+		return self.tokenid, self.cardset, self.iswhite, self.isblue, \
+			self.isblack, self.isred, self.isgreen, self.iscolorless, \
+			self.cardtype, self.subtype, self.text, self.flavor, self.artist, \
+			self.power, self.toughness, self.releasedate, self.collectorsid
 
 
 def create_db(filename):
@@ -110,13 +155,22 @@ def create_db(filename):
 	assert(not os.path.exists(filename))
 	conn = sqlite3.connect(filename)
 	c = conn.cursor()
+	c.execute(u'CREATE TABLE "sets" ("id" INTEGER PRIMART KEY, "name" TEXT, ' \
+		'"code" TEXT, "cards" INTEGER, "releasedate" INTEGER)')
 	c.execute(u'CREATE TABLE "cards" ("id" INTEGER PRIMARY KEY, "name" TEXT, ' \
 		'"set" TEXT, "manacost" TEXT, "converted" INTEGER, '\
 		'"iswhite" INTEGER, "isblue" INTEGER, "isblack" INTEGER, ' \
 		'"isred" INTEGER, "isgreen" INTEGER, "iscolorless" INTEGER, ' \
 		'"type" TEXT, "subtype" TEXT, "text" TEXT, "flavor" TEXT, ' \
 		'"artist" TEXT, "rarity" TEXT, "power" TEXT, "toughness" TEXT, ' \
-		'"price" INTEGER, "releasedate" INTEGER)')
+		'"price" INTEGER, "releasedate" INTEGER, "collectorsid" TEXT, ' \
+		'"linkedto" INTEGER)')
+	c.execute(u'CREATE TABLE "tokens" ("id" INTEGER PRIMARY KEY, ' \
+		'"set" TEXT, "iswhite" INTEGER, "isblue" INTEGER, ' \
+		'"isblack" INTEGER, "isred" INTEGER, "isgreen" INTEGER, ' \
+		'"iscolorless" INTEGER, "type" TEXT, "subtype" TEXT, "text" TEXT, ' \
+		'"flavor" TEXT, "artist" TEXT, "power" TEXT, "toughness" TEXT, ' \
+		'"releasedate" INTEGER, "collectorsid" TEXT)')
 	conn.commit()
 
 

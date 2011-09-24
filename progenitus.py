@@ -36,6 +36,7 @@ if len(sys.argv) > 1 and sys.argv[1] == "--client":
 elif len(sys.argv) > 1 and sys.argv[1] == "--updater":
 	iface = updatergui.Interface()
 	iface.main()
+	updatergui.miner.disconnect()
 else:
 	iface = editorgui.Interface()
 	iface.main_win.show()
