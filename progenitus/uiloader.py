@@ -97,12 +97,18 @@ class Interface(object):
 		"""Start the GTK loop"""
 		gtk.main()
 	
+	def show_exception(self, exception):
+		"""Display a dialog showing details about an exception"""
+		text = ("An exception %s occured:\n%s" %
+			(type(exception), str(exception)))
+		self.show_dialog(self.download_win, text, dialog_type="error")
+	
 	def except_safe(self, function, *args, **kwargs):
-		"""Run a function, check for exceptions and display them in a dialog"""
+		"""Run a function, check for exceptions and display them"""
 		try:
 			function(*args, **kwargs)
 		except Exception as e:
-			self.show_dialog(None, str(e), dialog_type="error")
+			self.show_exception(e)
 	
 	def quit(self, *args):
 		"""Stop the GTK loop"""

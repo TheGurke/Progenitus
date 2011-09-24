@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk+" version="2.16"/>
+  <requires lib="gtk+" version="2.18"/>
   <!-- interface-naming-policy project-wide -->
   <object class="GtkWindow" id="disclaimer_win">
     <property name="can_focus">False</property>
@@ -21,7 +21,7 @@
             <property name="ypad">10</property>
             <property name="label" translatable="yes">&lt;b&gt;Disclaimer&lt;/b&gt;
 
-This program will download all required data and pictures from the online server &lt;a href="http://magiccards.info/"&gt;magiccards.info&lt;/a&gt;.
+This program will download all required data and pictures from an online server.
 
 This process might be a copyright violation in the country of your residence.
 
@@ -59,14 +59,14 @@ Neither the author of this program, nor the supplier can be held responsible, sh
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
-              <object class="GtkButton" id="button_start">
-                <property name="label" translatable="yes">Start downloading</property>
+              <object class="GtkButton" id="button_agree">
+                <property name="label" translatable="yes">Agree</property>
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="use_action_appearance">False</property>
-                <signal name="clicked" handler="start_download" swapped="no"/>
+                <signal name="clicked" handler="agree" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -86,7 +86,7 @@ Neither the author of this program, nor the supplier can be held responsible, sh
   </object>
   <object class="GtkWindow" id="download_win">
     <property name="can_focus">False</property>
-    <property name="title" translatable="yes">Download in progress</property>
+    <property name="title" translatable="yes">Progenitus database update</property>
     <property name="window_position">center</property>
     <property name="default_width">500</property>
     <property name="type_hint">dialog</property>
@@ -102,7 +102,8 @@ Neither the author of this program, nor the supplier can be held responsible, sh
             <property name="can_focus">False</property>
             <property name="ypad">5</property>
             <property name="label" translatable="yes">This download may take several hours to complete.
-You can stop it by clicking the 'stop' button below, the download will be resumed next time this program starts.</property>
+Once started, you can stop the download at any time.
+It will be resumed next time this program starts.</property>
             <property name="justify">center</property>
             <property name="wrap">True</property>
           </object>
@@ -113,8 +114,123 @@ You can stop it by clicking the 'stop' button below, the download will be resume
           </packing>
         </child>
         <child>
-          <object class="GtkTable" id="table1">
+          <object class="GtkVBox" id="vbox_settings">
             <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <child>
+              <object class="GtkHBox" id="hbox1">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkLabel" id="label2">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">Server:</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="padding">10</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkComboBox" id="combobox_servers">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="model">liststore_servers</property>
+                    <child>
+                      <object class="GtkCellRendererText" id="cellrenderertext1"/>
+                      <attributes>
+                        <attribute name="text">0</attribute>
+                      </attributes>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkCheckButton" id="checkbutton_download_pics">
+                <property name="label" translatable="yes">download card images</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="use_action_appearance">False</property>
+                <property name="active">True</property>
+                <property name="draw_indicator">True</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkCheckButton" id="checkbutton_download_prices">
+                <property name="label" translatable="yes">download prices</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="use_action_appearance">False</property>
+                <property name="active">True</property>
+                <property name="draw_indicator">True</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkCheckButton" id="checkbutton_download_tokens">
+                <property name="label" translatable="yes">download tokens</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="use_action_appearance">False</property>
+                <property name="active">True</property>
+                <property name="draw_indicator">True</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkCheckButton" id="checkbutton_download_extra">
+                <property name="label" translatable="yes">download extra sets</property>
+                <property name="sensitive">False</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="use_action_appearance">False</property>
+                <property name="draw_indicator">True</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">4</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkTable" id="table_progress">
             <property name="can_focus">False</property>
             <property name="n_rows">2</property>
             <property name="n_columns">2</property>
@@ -123,7 +239,7 @@ You can stop it by clicking the 'stop' button below, the download will be resume
               <object class="GtkLabel" id="label1">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Expansion:</property>
+                <property name="label" translatable="yes">Set:</property>
               </object>
               <packing>
                 <property name="x_options">GTK_FILL</property>
@@ -135,6 +251,7 @@ You can stop it by clicking the 'stop' button below, the download will be resume
               <object class="GtkProgressBar" id="progressbar_expansion">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="show_text">True</property>
                 <property name="text" translatable="yes"> </property>
               </object>
               <packing>
@@ -148,7 +265,7 @@ You can stop it by clicking the 'stop' button below, the download will be resume
               <object class="GtkLabel" id="label3">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Cards:</property>
+                <property name="label" translatable="yes">Card:</property>
               </object>
               <packing>
                 <property name="top_attach">1</property>
@@ -162,6 +279,7 @@ You can stop it by clicking the 'stop' button below, the download will be resume
               <object class="GtkProgressBar" id="progressbar_cards">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="show_text">True</property>
                 <property name="text" translatable="yes"> </property>
               </object>
               <packing>
@@ -177,7 +295,7 @@ You can stop it by clicking the 'stop' button below, the download will be resume
           <packing>
             <property name="expand">False</property>
             <property name="fill">False</property>
-            <property name="position">1</property>
+            <property name="position">2</property>
           </packing>
         </child>
         <child>
@@ -185,9 +303,8 @@ You can stop it by clicking the 'stop' button below, the download will be resume
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
-              <object class="GtkButton" id="button1">
+              <object class="GtkButton" id="button_stop">
                 <property name="label">gtk-stop</property>
-                <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="use_action_appearance">False</property>
@@ -200,16 +317,31 @@ You can stop it by clicking the 'stop' button below, the download will be resume
                 <property name="position">0</property>
               </packing>
             </child>
+            <child>
+              <object class="GtkButton" id="button_start">
+                <property name="label" translatable="yes">Start</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="use_action_appearance">False</property>
+                <property name="image">image3</property>
+                <signal name="clicked" handler="start_download" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">False</property>
-            <property name="position">2</property>
+            <property name="position">3</property>
           </packing>
         </child>
         <child>
-          <object class="GtkExpander" id="expander1">
-            <property name="visible">True</property>
+          <object class="GtkExpander" id="expander_details">
             <property name="can_focus">True</property>
             <child>
               <object class="GtkScrolledWindow" id="scrolledwindow1">
@@ -241,10 +373,31 @@ You can stop it by clicking the 'stop' button below, the download will be resume
           <packing>
             <property name="expand">True</property>
             <property name="fill">True</property>
-            <property name="position">3</property>
+            <property name="position">4</property>
           </packing>
         </child>
       </object>
     </child>
+  </object>
+  <object class="GtkImage" id="image1">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-apply</property>
+  </object>
+  <object class="GtkImage" id="image2">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-apply</property>
+  </object>
+  <object class="GtkImage" id="image3">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-apply</property>
+  </object>
+  <object class="GtkListStore" id="liststore_servers">
+    <columns>
+      <!-- column-name servername -->
+      <column type="gchararray"/>
+    </columns>
   </object>
 </interface>

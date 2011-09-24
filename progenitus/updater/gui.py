@@ -3,34 +3,66 @@
 
 import os
 import datetime
-import sqlite3
+import urllib
 
+import sqlite3
 import glib
 import gtk
 
 from progenitus import *
 from progenitus.db import *
+from progenitus.miner import *
 
 
+def fetch_downloadlist(url):
+	"""Fetch the download list from an url"""
+	f = urllib.urlopen(url)
+	data = f.read()
+	f.close()
+	return data
 
-DOWNLOADLIST_FILE = "downloadlist.txt"
-DOWNLOAD_PICS = True
 
-downloadlist = []
+def parse_downloadlist(data):
+	"""Fetch the download list from a file"""
+	downloadlist = []
+	for line in data.split('\n'):
+		if line != "" and line[0] not in ("#", "%"):
+			code, num, idprefix = line.strip().split()[0:3]
+			downloadlist.append((code, int(num), idprefix))
+	return downloadlist
+
 
 
 class Interface(uiloader.Interface):
+	
+	downloadlist = None
+	
 	def __init__(self):
 		super(self.__class__, self).__init__()
 		self.load(config.GTKBUILDER_UPDATER)
+		
+		# Insert download servers
+		self.liststore_servers.append(("magiccards.info",))
+		self.combobox_servers.set_active(0)
+		
 		if not settings.disclaimer_agreed:
 			self.disclaimer_win.show()
+			self.checkbutton_confirm.grab_focus()
 		else:
-			self.start_download()
+			self.download_win.show()
 	
 	def toggle_confirm(self, widget):
 		"""The user toggles the 'I confirm' checkbutton"""
-		self.button_start.set_sensitive(self.checkbutton_confirm.get_active())
+		self.button_agree.set_sensitive(self.checkbutton_confirm.get_active())
+	
+	def agree(self, widget):
+		"""The user agreed to the disclaimer"""
+		self.disclaimer_win.hide()
+		self.download_win.show()
+		
+		# Save to settings
+		settings.disclaimer_agreed = True
+		glib.idle_add(settings.save)
 	
 	def log(self, message):
 		"""Print a status log message"""
@@ -40,23 +72,24 @@ class Interface(uiloader.Interface):
 		buf.insert(buf.get_end_iter(), message, -1)
 		mark = buf.get_mark("insert")
 		self.logview.scroll_to_mark(mark, 0)
-	
-	def show_except(self, exc):
-		text = "Exception %s:\n%s" % (type(exc), str(exc))
-		self.show_dialog(self.download_win, text, dialog_type="error")
-	
+		
 	def start_download(self, widget=None):
 		"""Interface callback to start the download"""
-		self.disclaimer_win.hide()
-		self.download_win.show()
-		async.run_threaded(self._run_download(), self.show_except)
-		
+		self.vbox_settings.set_sensitive(False)
+		self.table_progress.show()
+		self.expander_details.show()
+		self.button_start.hide()
+		self.button_stop.show()
+		async.run_threaded(self._run_download(), self.show_exception)
+	
 	def _run_download(self):
-		"""Run the download"""
+		"""Threaded download function"""
 		
 		# Get download list
-		self.log("Getting downloadlist...")
-		yield load_downloadlist()
+		if self.downloadlist is None:
+			self.log("Getting downloadlist...")
+			data = yield fetch_downloadlist(settings.list_url)
+			self.downloadlist = parse_downloadlist(data)
 		
 		# Establish database access
 		if not os.path.isfile(settings.cards_db):
@@ -74,12 +107,12 @@ class Interface(uiloader.Interface):
 		self.log("Starting download.")
 		
 		# Download every expansion
-		for expansion_num in range(len(downloadlist)):
-			code, num, idprefix = downloadlist[expansion_num]
+		for expansion_num in range(len(self.downloadlist)):
+			code, num, idprefix = self.downloadlist[expansion_num]
 			
 			# Update gui
 			self.progressbar_expansion.set_fraction(float(expansion_num) \
-				/ len(downloadlist))
+				/ len(self.downloadlist))
 			self.progressbar_cards.set_fraction(0)
 			self.progressbar_cards.set_text("0 / %d" % num)
 			
@@ -117,10 +150,11 @@ class Interface(uiloader.Interface):
 				card.releasedate = date.toordinal()
 				
 				# Download pricing information
-				card.price = yield miner.mine_price(code, card_num)
+				if self.checkbutton_download_prices.get_active():
+					card.price = yield miner.mine_price(code, card_num)
 				
 				# Download picture
-				if DOWNLOAD_PICS:
+				if self.checkbutton_download_pics.get_active():
 					pic_filename = pics._get_path(int(card.cardid))
 					yield miner.getpic(code, card_num, pic_filename)
 				
@@ -141,17 +175,6 @@ class Interface(uiloader.Interface):
 		md.run()
 		md.destroy()
 		glib.idle_add(self.quit)
-
-
-def load_downloadlist():
-	"""Fetch the download list from a file"""
-	global downloadlist
-	downloadlist = []
-	with open(DOWNLOADLIST_FILE, 'r') as f:
-		for line in f:
-			if line != "\n" and line[0] not in ("#", "%"):
-				code, num, idprefix = line.strip().split()[0:3]
-				downloadlist.append((code, int(num), idprefix))
 
 
 
