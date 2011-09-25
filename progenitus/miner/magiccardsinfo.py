@@ -55,7 +55,7 @@ def mine_set(setcode):
 	
 	# Get set cards
 	result = re_set2.findall(html)
-	return name, result
+	return name.strip(), result
 
 
 def mine_card(setcode, collectorsid):
