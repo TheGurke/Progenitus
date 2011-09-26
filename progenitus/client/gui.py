@@ -305,12 +305,15 @@ class Interface(uiloader.Interface):
 		self._deck_load_async_handle = \
 			async.start(decks.load(filename, progresscallback, finish_deckload))
 	
-	def reset_game(self, widget):
-		"""shuffle everything into the library, reset life"""
-		self.my_player.reset()
-	
 	
 	# Interface callbacks
+	
+	def reset_game(self, widget):
+		self.my_player.reset()
+	
+	def spectate(self, widget):
+		self.my_player.reset()
+		self.my_player.remove_tray()
 	
 	def shuffle_library(self, widget):
 		self.my_player.shuffle_library()
@@ -321,10 +324,13 @@ class Interface(uiloader.Interface):
 	def draw_7_cards(self, widget):
 		self.my_player.draw_x_cards(7)
 	
+	def lib_top_to_bottom(self, widget):
+		self.my_player.library.insert(0, self.my_player.library.pop())
+	
 	def discard_this(self, widget):
 		self.my_player.discard(self._popup)
 	
-	def remove_this(self, widget):
+	def exile_this(self, widget):
 		pl = self.my_player
 		pl.move_card(self._popup, pl.hand, pl.removed)
 	
@@ -349,6 +355,10 @@ class Interface(uiloader.Interface):
 	
 	def return_to_hand_from_graveyard(self, widget):
 		self.my_player.graveyard_top_to_hand()
+	
+	def exile_from_graveyard(self, widget):
+		pl = self.my_player
+		pl.move_card(pl.graveyard[-1], pl.graveyard, pl.removed)
 	
 	def switch_sides(self, widget):
 		self.cd.flip_y = not self.cd.flip_y
@@ -396,7 +406,7 @@ class Interface(uiloader.Interface):
 	def card_show_details(self, widget):
 		pass # TODO
 	
-	def browse_removed(self, widget):
+	def browse_exile(self, widget):
 		self.show_cardbrowser(self.my_player.removed, None)
 		# Hide useless buttons
 		self.button_to_top.hide()

@@ -717,9 +717,9 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="use_action_appearance">False</property>
-        <property name="label" translatable="yes">browse removed...</property>
+        <property name="label" translatable="yes">browse exile...</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="browse_removed" swapped="no"/>
+        <signal name="activate" handler="browse_exile" swapped="no"/>
       </object>
     </child>
     <child>
@@ -765,6 +765,16 @@
         <property name="label" translatable="yes">return to hand</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="return_to_hand_from_graveyard" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="menuitem5">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
+        <property name="label" translatable="yes">exile</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="exile_from_graveyard" swapped="no"/>
       </object>
     </child>
     <child>
@@ -817,9 +827,9 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="use_action_appearance">False</property>
-        <property name="label" translatable="yes">remove this card</property>
+        <property name="label" translatable="yes">exile this card</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="remove_this" swapped="no"/>
+        <signal name="activate" handler="exile_this" swapped="no"/>
       </object>
     </child>
     <child>
@@ -915,6 +925,17 @@
       </object>
     </child>
     <child>
+      <object class="GtkMenuItem" id="menuitem4">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="tooltip_text" translatable="yes">Put the top card of your library to the bottom.</property>
+        <property name="use_action_appearance">False</property>
+        <property name="label" translatable="yes">top to bottom</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="lib_top_to_bottom" swapped="no"/>
+      </object>
+    </child>
+    <child>
       <object class="GtkMenuItem" id="menuitem24">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
@@ -992,6 +1013,7 @@
         <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">spectate</property>
         <property name="use_underline">True</property>
+        <signal name="activate" handler="spectate" swapped="no"/>
       </object>
     </child>
   </object>
