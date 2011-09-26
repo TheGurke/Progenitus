@@ -319,6 +319,14 @@ class Interface(uiloader.Interface):
 	
 	# Interface callbacks
 	
+	def zoom_in(self, widget):
+		self.cd.zoom *= 0.8
+		self.cd.queue_draw()
+	
+	def zoom_out(self, widget):
+		self.cd.zoom *= 1.2
+		self.cd.queue_draw()
+	
 	def reset_game(self, widget):
 		self.my_player.reset()
 	
