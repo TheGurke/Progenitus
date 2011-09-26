@@ -5,6 +5,7 @@ import os
 import datetime
 import urllib
 
+from gettext import gettext as _
 import sqlite3
 import glib
 import gtk
@@ -71,24 +72,23 @@ class Interface(uiloader.Interface):
 	def start_download(self, widget=None):
 		"""Interface callback to start the download"""
 		self.vbox_settings.set_sensitive(False)
-		self.table_progress.show()
+		self.hbox_progress.show()
 		self.expander_details.show()
 		self.button_start.hide()
 		self.button_stop.show()
 		async.run_threaded(self._run_download(), self.show_exception)
 	
-	def _run_download(self):
-		"""Threaded download function"""
+	def _prepare_download(self):
+		"""Prepare everything for the download"""
 		
 		# Get download list
-		if self.downloadlist is None:
-			self.log("Getting downloadlist...")
-			data = yield miner.fetch_downloadlist(settings.list_url)
-			self.downloadlist = miner.parse_downloadlist(data)
+		self.log(_("Getting downloadlist..."))
+		data = miner.fetch_downloadlist(settings.list_url)
+		downloadlist = miner.parse_downloadlist(data)
 		
 		# Establish database access
 		if not os.path.isfile(settings.cards_db):
-			self.log("Creating a new database file...")
+			self.log(_("Creating a new database file..."))
 			cards.create_db(settings.cards_db)
 		
 		cards.connect()
@@ -96,83 +96,118 @@ class Interface(uiloader.Interface):
 		self.cursor = self.sqlconn.cursor()
 		
 		# Create directories
-		if not os.path.exists(settings.pics_path):
-			os.mkdir(settings.pics_path)
+		if not os.path.exists(settings.cache_path):
+			os.mkdir(settings.cache_path)
+		if self.checkbutton_download_pics.get_active():
+			if not os.path.exists(os.path.join(settings.cache_path, "cards")):
+				os.mkdir(os.path.join(settings.cache_path, "cards"))
 		
-		self.log("Starting download.")
+		self.log(_("Starting download."))
 		
 		# Establish connections
 		magiccardsinfo.connect()
 		tcgplayercom.connect()
+		return downloadlist
+	
+	def _run_download(self):
+		"""Threaded download function"""
+		
+		downloadlist = yield self._prepare_download()
+		assert(downloadlist is not None)
+		assert(len(downloadlist) > 0)
 		
 		# Download every card set
-		for set_num in range(len(self.downloadlist)):
-			setcode, releasedate = self.downloadlist[set_num]
-			
-			# Get set information
-			setname, cardlist = yield magiccardsinfo.mine_set(setcode)
+		for set_num in range(len(downloadlist)):
+			setcode, releasedate, mcinfosetcode, setname = downloadlist[set_num]
 			
 			# Update gui
-			self.progressbar_expansion.set_fraction(float(set_num)
-				/ len(self.downloadlist))
-			self.progressbar_expansion.set_text(setname)
-			self.progressbar_cards.set_fraction(0)
-			self.progressbar_cards.set_text("0 / %d" % len(cardlist))
+			self.progressbar1.set_fraction(float(set_num)
+				/ len(downloadlist))
+			self.progressbar1.set_text(setname)
+			self.progressbar2.set_fraction(0)
+			self.progressbar2.set_text(" ")
 			
 			# Check if expansion has already been downloaded
-			l = yield cards.search('"set" == ?', (setname,), 1)
-			if len(l) > 0:
-				self.log("'%s' was found in the database." % setname)
-				continue
-			self.log("Downloading '%s'..." % setname)
-			
-			# Insert set information
-			self.cursor.execute(u'INSERT INTO "sets" VALUES (?,?,?,?,?)',
-				(set_num, setname, setcode, len(cardlist),
-				releasedate.toordinal()))
-			
-			# Create picture directory
-			pic_dir = os.path.dirname(pics._get_path(int(
-				releasedate.strftime("%y%m%d") + "000")))
-			if not os.path.exists(pic_dir):
-				os.mkdir(pic_dir)
-			
-			# Download individual cards
-			for i in range(len(cardlist)):
-				collectorsid = cardlist[i]
-				card = yield magiccardsinfo.mine_card(setcode, collectorsid)
+			self.cursor.execute('SELECT * FROM "sets" WHERE "id" = ?',
+				(setcode,))
+			cardlist = None
+			if self.cursor.fetchone() is not None:
+				self.log(_("'%s' was found in the database.") % setname)
+				cardlist = cards.search('"setid" = ?', (setcode,))
+			else:
+				self.log(_("Downloading '%s'...") % setname)
+				self.progressbar1.set_text(_("Getting card information..."))
 				
-				# Set id and release date
-				card.releasedate = releasedate.toordinal()
-				card.cardid = card.derive_id()
-				
-				# Download pricing information
-				if self.checkbutton_download_prices.get_active():
-					card.price = yield tcgplayercom.mine_price(setcode,
-						collectorsid)
-				
-				# Download picture
-				pic_filename = pics._get_path(int(card.cardid))
-				if (not os.path.exists(pic_filename) and
-						self.checkbutton_download_pics.get_active()):
-					yield magiccardsinfo.mine_pic(setcode, collectorsid,
-						pic_filename)
+				# Get full spoilers information
+				setname, cardlist = yield magiccardsinfo.mine_set(
+					*downloadlist[set_num][:3])
 				
 				# Insert into the database
-				self.cursor.execute(u'INSERT INTO "cards" VALUES (' +
-					22 * '?,' + '?)', card.as_tuple())
-				self.progressbar_cards.set_fraction(float(i) / len(cardlist))
-				self.progressbar_cards.set_text("%d / %d" % (i, len(cardlist)))
+				self.cursor.execute(u'INSERT INTO "sets" VALUES (?,?,?,?)',
+					(setcode, setname, len(cardlist), releasedate.toordinal()))
+				for i in range(len(cardlist)):
+					self.progressbar2.set_fraction(float(i) / len(cardlist))
+					self.cursor.execute(u'INSERT INTO "cards" VALUES (' +
+						23 * '?,' + '?)', cardlist[i].as_tuple())
+				self.sqlconn.commit()
+			assert(cardlist is not None)
 			
-			# Save db to disk
-			self.sqlconn.commit()
+			# Download card pictures
+			if self.checkbutton_download_pics.get_active():
+				self.progressbar2.set_text(_("Getting card pictures..."))
+				# Create picture directory
+				pic_dir = os.path.dirname(pics._get_path(setcode + "." + "000"))
+				if not os.path.exists(pic_dir):
+					os.mkdir(pic_dir)
+				
+				# Get pics
+				for i in range(len(cardlist)):
+					self.progressbar2.set_fraction(float(i) / len(cardlist))
+					card = cardlist[i]
+					pic_filename = pics._get_path(card.cardid)
+					if not os.path.exists(pic_filename):
+						yield magiccardsinfo.mine_pic(magiccardsinfo.url_pic
+							% (mcinfosetcode, card.collectorsid), pic_filename)
+			
+			# Download pricing information
+			if self.checkbutton_download_prices.get_active():
+				self.progressbar2.set_text(_("Getting card prices..."))
+				for i in range(len(cardlist)):
+					self.progressbar2.set_fraction(float(i) / len(cardlist))
+					card = cardlist[i]
+					card.price = yield tcgplayercom.mine_price(mcinfosetcode,
+						card.collectorsid)
+					self.cursor.execute(
+						'UPDATE "cards" SET "price"=? WHERE "id" = ?',
+						(card.cardid, card.price))
+				self.sqlconn.commit()
+		
+		# Download tokens
+		if self.checkbutton_download_tokens.get_active():
+			self.progressbar1.set_text(_("Tokens"))
+			self.log(_("Downloading tokens..."))
+			
+			# Create token pic directory
+			if not os.path.exists(os.path.join(settings.cache_path, "tokens")):
+				os.mkdir(os.path.join(settings.cache_path, "tokens"))
+			
+			# Get token information
+			tokens = magiccardsinfo.mine_tokens()
+			for i in range(len(tokens))
+				pic_url, name, power, toughness, number, artist = tokens[i]
+				self.progressbar2.set_fraction(float(i) / len(cardlist))
+				magiccardsinfo.mine_pic(pic_url, pics._get_token_path(number))
+#			self.cursor.execute(u'INSERT INTO "tokens" VALUES (' +
+#						17 * '?,' + '?)', ())
+#			self.sqlconn.commit()
+		
 		glib.idle_add(self.download_complete)
 	
 	def download_complete(self):
-		self.log("Download complete.")
+		self.log(_("Download complete."))
 		md = gtk.MessageDialog(self.download_win,
 			gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_INFO,
-			gtk.BUTTONS_CLOSE, "Download complete.")
+			gtk.BUTTONS_CLOSE, _("Download complete."))
 		md.connect("response", self.quit)
 		md.show()
 

@@ -41,10 +41,9 @@ class Card(object):
 	
 	def __init__(self, *args):
 		if len(args) == 0:
-			args = (0, "", "", "", 0, 0, 0, 0, 0, 0, 0, "", "", "", "", "", "",
-				"", "", 0, 0, "", 0)
-		assert(isinstance(args[0], int))
-		(self.cardid, self.name, self.cardset, self.manacost,
+			args = ("", "", "", "", "", 0, 0, 0, 0, 0, 0, 0, "", "", "", "", "",
+				"", "", "", 0, 0, "", 0)
+		(self.cardid, self.name, self.setid, self.setname, self.manacost,
 			self.converted_cost, self.iswhite, self.isblue, self.isblack,
 			self.isred, self.isgreen, self.iscolorless, self.cardtype,
 			self.subtype, self.text, self.flavor, self.artist,
@@ -58,15 +57,24 @@ class Card(object):
 		return "%s (%s)" % (self.name, self.cardset)
 	
 	def derive_id(self):
-		"""Derive the card id based on collectors id and release date"""
-		date = datetime.date.fromordinal(self.releasedate)
-		cid = self.collectorsid
-		if cid[-1].isalpha(): # Special precaution for Innistrad
-			cid = (cid[:-1] + str(int(cid[-1], 36) - 9)).rjust(4, "0")
-		else:
-			cid = cid.rjust(3, "0")
-		cardid = date.strftime("%y%m%d") + cid
-		return int(cardid)
+		"""Derive the card id based on collectors id and setid"""
+		self.cardid = "%s.%s" % (self.setid, self.collectorsid)
+	
+	def derive_colors(self):
+		"""Derive this card's color"""
+		for c in ("white", "blue", "black", "red", "green", "colorless"):
+			setattr(self, "is" + c, False)
+		for c in ("white", "blue", "black", "red", "green", "colorless"):
+			if self.text.find("%s is %s." % (self.name, c)) >= 0:
+				setattr(self, "is" + c, True)
+				return
+		iscolorless = True
+		for c, z in (("white", "W"), ("blue", "U"), ("black", "B"),
+			("red", "R"), ("green", "G")):
+			setattr(self, "is" + c, z in self.manacost)
+			iscolorless = iscolorless and not z in self.manacost
+		self.iscolorless = False if self.cardtype.find("Land") >= 0 else \
+			iscolorless # Lands do not count as colorless
 	
 	def markup(self):
 		"""Return the card details as a gtk markup text"""
@@ -81,7 +89,7 @@ class Card(object):
 			text += "\n\n%s" % esc(self.text)
 		if self.flavor != "":
 			text += "\n\n<i>%s</i>" % esc(self.flavor)
-		text += "\n\n\n<small>%s #%s" % (self.cardset, self.collectorsid)
+		text += "\n\n\n<small>%s #%s" % (self.setname, self.collectorsid)
 		if self.price >= 0:
 			text += "    $%.2f</small>" % (float(self.price) / 100,)
 		else:
@@ -108,12 +116,12 @@ class Card(object):
 	
 	def as_tuple(self):
 		"""Return the magic card as a tuple"""
-		return self.cardid, self.name, self.cardset, self.manacost, \
-			self.converted_cost, self.iswhite, self.isblue, self.isblack, \
-			self.isred, self.isgreen, self.iscolorless, self.cardtype, \
-			self.subtype, self.text, self.flavor, self.artist, self.rarity, \
-			self.power, self.toughness, self.price, self.releasedate, \
-			self.collectorsid, self.linkedto
+		return (self.cardid, self.name, self.setid, self.setname, self.manacost,
+			self.converted_cost, self.iswhite, self.isblue, self.isblack,
+			self.isred, self.isgreen, self.iscolorless, self.cardtype,
+			self.subtype, self.text, self.flavor, self.artist, self.rarity,
+			self.power, self.toughness, self.price, self.releasedate,
+			self.collectorsid, self.linkedto)
 
 
 class Token(Card):
@@ -121,13 +129,13 @@ class Token(Card):
 	
 	def __init__(self, *args):
 		if args == ():
-			args = (0, "", 0, 0, 0, 0, 0, 0, "", "", "", "", "", "", "", "", 0,
-				0)
-		assert(isinstance(args[0], int))
-		(self.tokenid, self.cardset, self.iswhite, self.isblue, self.isblack,
-			self.isred, self.isgreen, self.iscolorless, self.cardtype,
-			self.subtype, self.text, self.flavor, self.artist, self.power,
-			self.toughness, self.releasedate, self.collectorsid) = args
+			args = ("", "", "", 0, 0, 0, 0, 0, 0, "", "", "", "", "", "", "",
+				"", 0, 0)
+		(self.tokenid, self.setid, self.setname, self.iswhite, self.isblue,
+			self.isblack, self.isred, self.isgreen, self.iscolorless,
+			self.cardtype, self.subtype, self.text, self.flavor, self.artist,
+			self.power, self.toughness, self.releasedate, self.collectorsid) \
+				= args
 	
 	def markup(self):
 		"""Return the card details as a gtk markup text"""
@@ -144,10 +152,11 @@ class Token(Card):
 	
 	def as_tuple(self):
 		"""Return the token as a tuple"""
-		return self.tokenid, self.cardset, self.iswhite, self.isblue, \
-			self.isblack, self.isred, self.isgreen, self.iscolorless, \
-			self.cardtype, self.subtype, self.text, self.flavor, self.artist, \
-			self.power, self.toughness, self.releasedate, self.collectorsid
+		return (self.tokenid, self.setid, self.setname, self.iswhite,
+			self.isblue, self.isblack, self.isred, self.isgreen,
+			self.iscolorless, self.cardtype, self.subtype, self.text,
+			self.flavor, self.artist, self.power, self.toughness,
+			self.releasedate, self.collectorsid)
 
 
 def create_db(filename):
@@ -155,18 +164,18 @@ def create_db(filename):
 	assert(not os.path.exists(filename))
 	conn = sqlite3.connect(filename)
 	c = conn.cursor()
-	c.execute(u'CREATE TABLE "sets" ("id" INTEGER PRIMART KEY, "name" TEXT, ' \
-		'"code" TEXT, "cards" INTEGER, "releasedate" INTEGER)')
-	c.execute(u'CREATE TABLE "cards" ("id" INTEGER PRIMARY KEY, "name" TEXT, ' \
-		'"set" TEXT, "manacost" TEXT, "converted" INTEGER, '\
+	c.execute(u'CREATE TABLE "sets" ("id" TEXT PRIMART KEY, "name" TEXT, ' \
+		'"cards" INTEGER, "releasedate" INTEGER)')
+	c.execute(u'CREATE TABLE "cards" ("id" TEXT PRIMARY KEY, "name" TEXT, ' \
+		'"setid" TEXT, "setname" TEXT, "manacost" TEXT, "converted" INTEGER, '\
 		'"iswhite" INTEGER, "isblue" INTEGER, "isblack" INTEGER, ' \
 		'"isred" INTEGER, "isgreen" INTEGER, "iscolorless" INTEGER, ' \
 		'"type" TEXT, "subtype" TEXT, "text" TEXT, "flavor" TEXT, ' \
 		'"artist" TEXT, "rarity" TEXT, "power" TEXT, "toughness" TEXT, ' \
 		'"price" INTEGER, "releasedate" INTEGER, "collectorsid" TEXT, ' \
 		'"linkedto" INTEGER)')
-	c.execute(u'CREATE TABLE "tokens" ("id" INTEGER PRIMARY KEY, ' \
-		'"set" TEXT, "iswhite" INTEGER, "isblue" INTEGER, ' \
+	c.execute(u'CREATE TABLE "tokens" ("id" TEXT PRIMARY KEY, ' \
+		'"setid" TEXT, "setname" TEXT, "iswhite" INTEGER, "isblue" INTEGER, ' \
 		'"isblack" INTEGER, "isred" INTEGER, "isgreen" INTEGER, ' \
 		'"iscolorless" INTEGER, "type" TEXT, "subtype" TEXT, "text" TEXT, ' \
 		'"flavor" TEXT, "artist" TEXT, "power" TEXT, "toughness" TEXT, ' \

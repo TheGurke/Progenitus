@@ -11,7 +11,6 @@ from progenitus import settings
 
 #
 # Given a card id it returns the corresponding picture as a gdk.Pixbuf.
-# 0 = deckmaster
 #
 
 _map = dict() # data structure to hold the pics
@@ -19,16 +18,13 @@ _map = dict() # data structure to hold the pics
 
 def _get_path(cardid):
 	"""The the file path for the card picture"""
-	assert(isinstance(cardid, int))
-	if cardid == 0: # Deckmaster has id 0
+	if cardid == "deckmaster":
 		return config.DECKMASTER_PATH
-	idstr = str(cardid).rjust(9, "0")
-	return os.path.join(settings.pics_path, config.CARD_PICS_PATH(idstr))
+	return os.path.join(settings.cache_path, config.CARD_PICS_PATH(cardid))
 
 
 def _load(cardid):
 	"""Load a magic card picture from the disk"""
-	assert(isinstance(cardid, int))
 	filename = _get_path(cardid)
 	if not os.path.isfile(filename):
 		print("Picture for card #%d not found." % cardid)
@@ -40,7 +36,6 @@ def _load(cardid):
 
 def get(cardid):
 	"""Get the pixmap for a card"""
-	assert(isinstance(cardid, int))
 	global _map
 	if cardid not in _map:
 		_load(cardid)

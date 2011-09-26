@@ -1,132 +1,150 @@
+#-------------------------------------------------
+#
+# This is a list of Magic The Gathering card sets
+# and their release date.
+#
+#-------------------------------------------------
 
+#
 # Sets that are not in this list:
 # Chronicles, Portal, Portal Second Age, Portal Three Kingdoms,
 # Magic Oversize Cards, Starter 1999, Magic Miscellaneous, Vanguard
+#
 
-# Note: the release date must be unique!
-# set code \t release date YYYY-MM-DD \t commented: name of the expansion
-al	1993-08-05	# Alpha Edition
-be	1993-10-01	# Beta Edition
-un	1993-12-01	# Unlimited Edition
-rv	1994-04-01	# Revised Edition
+# set code \t release date YYYY-MM-DD \t magiccard.info set code \t name of the card set
+lea	1993-08-05	al	Alpha Edition
+leb	1993-10-01	be	Beta Edition
+2ed	1993-12-01	un	Unlimited Edition
+3ed	1994-04-01	rv	Revised Edition
 
-an	1993-12-02	# Arabian Nights
-aq	1994-03-01	# Antiquities
-lg	1994-06-01	# Legends
-dk	1994-08-01	# The Dark
-fe	1994-11-01	# Fallen Empires
-hl	1995-10-01	# Homelands
+arn	1993-12-01	an	Arabian Nights
+atq	1994-03-01	aq	Antiquities
+leg	1994-06-01	lg	Legends
+drk	1994-08-01	dk	The Dark
+fem	1994-11-01	fe	Fallen Empires
+hml	1995-10-01	hl	Homelands
 
-4e	1995-04-01	# Forth Edition
+4ed	1995-04-01	4e	Forth Edition
 
-ia	1995-06-01	# Ice Age
-ai	1996-06-10	# Alliances
+ice	1995-06-01	ia	Ice Age
+all	1996-06-10	ai	Alliances
+csp	2006-07-21	cs	Coldsnap
 
-mr	1996-10-08	# Mirage
-vi	1997-02-03	# Visions
-wl	1997-06-09	# Weatherlight
+mir	1996-10-08	mr	Mirage
+vis	1997-02-03	vi	Visions
+wth	1997-06-09	wl	Weatherlight
 
-5e	1997-03-24	# Fifth Edition
+5ed	1997-03-24	5e	Fifth Edition
 
-tp	1997-10-14	# Tempest
-sh	1998-03-02	# Stronghold
-ex	1998-06-15	# Exodus
+tmp	1997-10-14	tp	Tempest
+sth	1998-03-02	sh	Stronghold
+exo	1998-06-15	ex	Exodus
 
-us	1998-10-12	# Urza's Saga
-ul	1999-02-15	# Urza's Legacy
-ud	1999-06-07	# Urza's Destiny
+usg	1998-10-12	us	Urza's Saga
+ulg	1999-02-15	ul	Urza's Legacy
+uds	1999-06-07	ud	Urza's Destiny
 
-6e	1999-04-28	# Sixth Edition
+6ed	1999-04-28	6e	Sixth Edition
 
-mm	1999-10-04	# Mercadian Masques
-ne	2000-02-14	# Nemesis
-pr	2000-06-05	# Prophecy
+mmq	1999-10-04	mm	Mercadian Masques
+nms	2000-02-14	ne	Nemesis
+pcy	2000-06-05	pr	Prophecy
 
-in	2000-10-02	# Invasion
-ps	2001-02-05	# Planeshift
-ap	2001-06-04	# Apocalyspe
+inv	2000-10-02	in	Invasion
+pls	2001-02-05	ps	Planeshift
+apc	2001-06-04	ap	Apocalyspe
 
-7e	2001-04-11	# 7th Edition
+7ed	2001-04-11	7e	7th Edition
 
-od	2001-10-01	# Odyssey
-tr	2002-02-04	# Torment
-ju	2002-05-27	# Judgment
+ody	2001-10-01	od	Odyssey
+tor	2002-02-04	tr	Torment
+jud	2002-05-27	ju	Judgment
 
-on	2002-10-07	# Onslaught
-le	2003-02-03	# Legions
-sc	2003-05-26	# Scourge
+ons	2002-10-07	on	Onslaught
+lgn	2003-02-03	le	Legions
+scg	2003-05-26	sc	Scourge
 
-8e	2003-07-28	# Eighth Edition
+8ed	2003-07-28	8e	Eighth Edition
 
-mi	2003-10-02	# Mirrodin
-ds	2004-02-06	# Darksteel
-5dn	2004-06-04	# Fifth Dawn
+mrd	2003-10-02	mi	Mirrodin
+dst	2004-02-06	ds	Darksteel
+5dn	2004-06-04	5dn	Fifth Dawn
 
-chk	2004-09-18	# Champions of Kamigawa
-bok	2005-02-04	# Betrayers of Kamigawa
-sok	2005-06-03	# Saviours of Kamigawa
+chk	2004-09-18	chk	Champions of Kamigawa
+bok	2005-02-04	bok	Betrayers of Kamigawa
+sok	2005-06-03	sok	Saviours of Kamigawa
 
-9e	2005-07-29	# Ninth Edition
+9ed	2005-07-29	9e	Ninth Edition
 
-rav	2005-10-07	# Ravnica: City of Guilds
-gp	2006-02-03	# Guildpact
-di	2006-05-05	# Dissension
-cs	2006-07-21	# Coldsnap
+rav	2005-10-07	rav	Ravnica: City of Guilds
+gpt	2006-02-03	gp	Guildpact
+dis	2006-05-05	di	Dissension
 
-ts	2006-10-06	# Time Spiral
-tsts	2006-10-07	# Time Spiral "Time Shifted"
-pc	2007-02-02	# Planar Chaos
-fut	2007-05-04	# Future Sight
+tsp	2006-10-06	ts	Time Spiral
+tsb	2006-10-06	tsts	Time Spiral "Time Shifted"
+plc	2007-02-02	pc	Planar Chaos
+fut	2007-05-04	fut	Future Sight
 
-10e	2007-07-14	# Tenth Edition
+10e	2007-07-14	10e	Tenth Edition
 
-lw	2007-10-12	# Lorwyn
-mt	2008-02-01	# Morningtide
+lrw	2007-10-12	lw	Lorwyn
+mor	2008-02-01	mt	Morningtide
 
-shm	2008-05-02	# Shadowmoor
-eve	2008-07-25	# Eventide
+shm	2008-05-02	shm	Shadowmoor
+eve	2008-07-25	eve	Eventide
 
-ala	2008-10-03	# Shards of Alara
-cfx	2009-02-06	# Conflux
-arb	2009-04-30	# Alara Reborn
+ala	2008-10-03	ala	Shards of Alara
+con	2009-02-06	cfx	Conflux
+arb	2009-04-30	arb	Alara Reborn
 
-m10	2009-07-17	# Magic 2010
+m10	2009-07-17	m10	Magic 2010
 
-zen	2009-10-02	# Zendikar
-wwk	2010-02-05	# Worldwake
-roe	2010-04-23	# Rise of the Eldrazi
+zen	2009-10-02	zen	Zendikar
+wwk	2010-02-05	wwk	Worldwake
+roe	2010-04-23	roe	Rise of the Eldrazi
 
-m11	2010-07-16	# Magic 2011
+m11	2010-07-16	m11	Magic 2011
 
-som	2010-10-01	# Scars of Mirrodin
-mbs	2011-02-04	# Mirrodin Besieged
-nph	2011-05-13	# New Phyrexia
+som	2010-10-01	som	Scars of Mirrodin
+mbs	2011-02-04	mbs	Mirrodin Besieged
+nph	2011-05-13	nph	New Phyrexia
 
-m12	2011-07-15	# Magic 2012
+m12	2011-07-15	m12	Magic 2012
 
-isd	2011-09-30	# Innistrad
-#dka	2012-02-03	# Dark Ascension
+isd	2011-09-30	isd	Innistrad
+#dka	2012-02-03	dka	Dark Ascension
+
 
 # Fun sets
-ug	1998-08-17	# Unglued
-uh	2004-11-19	# Unhinged
+ug	1998-08-17	ug	Unglued
+uh	2004-11-19	uh	Unhinged
+
 
 # Reprint sets
-pch	2009-09-04	# Planechase
-dpa	2010-06-04	# Duels of the Planeswalkers
-arc	2010-06-18	# Archenemy
-cmd	2011-06-17	# Commander
+hop	2009-09-04	pch	Planechase
+dpa	2010-06-04	dpa	Duels of the Planeswalkers
+arc	2010-06-18	arc	Archenemy
+cmd	2011-06-17	cmd	Commander
+
+
+# Introductory sets
+por	1997-06-01	po	Portal
+po2	1998-06-01	po2	Portal Second Age
+ptk	1999-05-01	p3k	Portal Three Kingdoms
+s99	1999-07-01	st	Starter 1999
+s00	2000-07-01	st2k	Starter 2000
+
 
 # Duel decks
-evg 2007-11-16	# Elves vs. Goblins
-jvc 2008-11-07	# Jace vs. Chandra
-dvd	2009-04-10	# Divine vs. Demonic
-gvl	2009-10-30	# Garruk vs. Liliana
-pvc	2010-03-19	# Phyrexia vs. The Coalition
-ddf	2010-09-03	# Elspeth vs. Tezzeret
-ddg	2011-04-01	# Knights vs. Dragons
-ddh	2011-09-02	# Ajani vs. Nicol Bolas
-#ddi	2012-03-30	# Venser vs. Koth
+evg	2007-11-16	evg	Elves vs. Goblins
+dd2	2008-11-07	jvc	Jace vs. Chandra
+ddc	2009-04-10	dvd	Divine vs. Demonic
+ddd	2009-10-30	gvl	Garruk vs. Liliana
+dde	2010-03-19	pvc	Phyrexia vs. The Coalition
+ddf	2010-09-03	ddf	Elspeth vs. Tezzeret
+ddg	2011-04-01	ddg	Knights vs. Dragons
+ddh	2011-09-02	ddh	Ajani vs. Nicol Bolas
+#ddi	2012-03-30	ddi	Venser vs. Koth
 
 
 

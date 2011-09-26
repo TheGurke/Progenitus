@@ -20,7 +20,7 @@ import config
 _settings = [
 	# section, variable name, type, default value, description
 	("DEFAULT", "cards_db", "file", "mtg.sqlite", "Path to card database"),
-	("DEFAULT", "pics_path", "dir", "cache/", "Path to card picture folders"),
+	("DEFAULT", "cache_path", "dir", "cache/", "Path to picture cache folder"),
 	("DEFAULT", "deck_dir", "dir", "$HOME/.progenitus-decks",
 		"Path to deck folder"),
 	("Updater", "disclaimer_agreed", "bool", False,

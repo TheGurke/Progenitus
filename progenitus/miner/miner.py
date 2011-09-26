@@ -27,9 +27,9 @@ def parse_downloadlist(data):
 	downloadlist = []
 	for line in data.split('\n'):
 		if line != "" and line[0] not in ("#", "%"):
-			code, rd = line.strip().split()[0:2]
+			code, rd, mccode, name = line.split('\t')[:4]
 			releasedt = datetime.date(int(rd[0:4]), int(rd[5:7]), int(rd[8:10]))
-			downloadlist.append((code, releasedt))
+			downloadlist.append((code, releasedt, mccode, name))
 	return downloadlist
 
 
@@ -45,7 +45,6 @@ def download(con, url, convert_to_unicode=True):
 	if convert_to_unicode:
 		data = unicode(data, 'utf-8')
 	return data
-
 
 def new_connection(server):
 	"""Create a new httplib.HTTPConnection object and remember to destroy it"""
