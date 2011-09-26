@@ -182,7 +182,7 @@ class Interface(uiloader.Interface):
 		exact_color = self.checkbutton_exclude.get_active()
 		clist = ["white", "blue", "black", "red", "green", "colorless"]
 		if any(map(lambda c: getattr(self, "checkbutton_" + c).get_active(),
-				clist)):
+				clist)) or self.checkbutton_lands.get_active():
 			if not exact_color:
 				query += '('
 			for c in clist:
@@ -191,14 +191,15 @@ class Interface(uiloader.Interface):
 					query += ' "is%s" == ? %s' % (c,
 						'AND' if exact_color else 'OR')
 					args.append(cb)
+			if self.checkbutton_lands.get_active():
+				query += '"type" LIKE "%Land%" '
+				query += 'AND' if exact_color else 'OR'
 			if not exact_color:
 				query = query[:-2] + ') AND'
 		if self.checkbutton_multicolor.get_active():
 			query += ' "iswhite" + "isblue" + "isblack" + "isred" + "isgreen"' \
 				' >= 2 AND'
-		if self.checkbutton_lands.get_active():
-			query += ' "type" LIKE "%Land%" AND'
-		# FIXME can't or type land!
+		
 		eq = ["", "=", "<=", ">="]
 		price_eq = self.combobox_eq_price.get_active()
 		if price_eq > 0:
@@ -237,6 +238,7 @@ class Interface(uiloader.Interface):
 			else:
 				query += ' "converted" >= ? AND'
 				args.append(total + i)
+		
 		# Execute query
 		if self._execute_search(query[:-3], args) != []:
 			self.no_results.hide()

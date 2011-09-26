@@ -69,9 +69,6 @@ Known issues:
 - No possibility to create, rename or remove folders
 - No possibility to move deck between folders
 - Cannot single click on the sideboard checkbuttons
-- Cannot use power/thoughness based search since they are text fields in the db
-  FIX: CAST("power" AS INTEGER)
-- Searching for colors and lands at the same time is broken
 - "No results" in the extended search is not visible enough
 
 Planned features:

@@ -8,9 +8,16 @@ Updater:
   information will have to be downloaded again.
 - Fixed: Updater longer crashes upon completion.
 - Fixed: Connection is reestablished for every card
+
 Editor:
 - Fixed: New deck doesn't remove the color symbols
 - Fixed: Show expansion breaks when window is closed once
 - Fixed: Author and description entries are not disabled while deck is loading
 - Fixed: Cannot use power/thoughness based search since they are text fields in
   the db
+- Fixed: Searching for colors and lands at the same time is broken
+
+
+Version 0.29:
+`````````````
+First release.
