@@ -125,7 +125,8 @@ Known issues:
 - Enlarged card flicker when the mouse is near the center of the screen
 - If a card is flipped, the enlarged picture is not
 - the log does not always scroll down
-- moving the tray while the deck loads causes the tray to vanish
+- When the client recieves an illegal card id, it should search for the card by
+  name
 
 Desired features:
 - roll dice of flip coins
