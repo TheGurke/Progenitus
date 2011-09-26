@@ -29,7 +29,7 @@ re_set2 = re.compile(r'<td align="right">([^<]*)</td>\s*'
 re_card = re.compile(r'<a href="[^"]*">([^<]+)</a>\s*<[^<]*</span>\s*<p>(.*?)'
 	'(?:\s([\d\*X]+)/|)([\d\*X]+|)(?:,\s+([\d\{\}/WUBRGXYZP]+)\s*'
 	'(?:\(\d+\)|)|)</p>\s*<p\s+class="ctext"><b>(.*?)</b></p>\s*'
-	'<p><i>(.*?)</i></p>\s*<p>Illus. ([^<]*)</p>')
+	'<p><i>([\d\D]*?)</i></p>\s*<p>Illus. ([^<]*)</p>')
 re_card2 = re.compile(r'<br><u><b>Editions:</b></u><br>(?:.|\n)*'
 	'<b>(.*?) \((.+?)\)</b><br>(?:.|\n)*'
 	'<br><u><b>Languages:</b></u><br>')
