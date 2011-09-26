@@ -33,7 +33,7 @@ class Player(object):
 	updated_hand      = do_nothing
 	updated_library   = do_nothing
 	updated_graveyard = do_nothing
-	updated_removed   = do_nothing
+	updated_exile     = do_nothing
 	updated_life      = do_nothing
 	
 	# Exception handler
@@ -54,7 +54,7 @@ class Player(object):
 		self.library = [] # cards in the library
 		self.graveyard = [] # cards in the graveyard
 		self.hand = [] # cards in the hand
-		self.removed = [] # cards removed from play
+		self.exile = [] # cards removed from play
 		self.battlefield = [] # card and token items in play
 		self._items = dict() # Item map: itemid -> item
 	
@@ -103,7 +103,7 @@ class Player(object):
 		self.library = []
 		self.graveyard = []
 		self.hand = []
-		self.removed = []
+		self.exile = []
 		for item in self.battlefield[:]:
 			self.delete_item(item)
 		self.battlefield = []
@@ -115,7 +115,7 @@ class Player(object):
 		self.updated_hand()
 		self.updated_library()
 		self.updated_graveyard()
-		self.updated_removed()
+		self.updated_exile()
 		
 		self.send_network_cmd("reset")
 		self.send_network_cmd("update", len(self.library), len(self.hand))
@@ -223,7 +223,7 @@ class Player(object):
 		"""Move a single card between two zones"""
 		
 		# Check parameters
-		valid = [self.library, self.graveyard, self.hand, self.removed,
+		valid = [self.library, self.graveyard, self.hand, self.exile,
 			self.battlefield, None]
 		assert(any(map(lambda x: origin is x, valid)))
 		assert(any(map(lambda x: target is x, valid)))
@@ -247,10 +247,8 @@ class Player(object):
 		
 		# Move card
 		if origin is not None and origin is not self.battlefield:
-			# remove card by pointer
-			index = 0
-			while origin[index] is not card:
-				index += 1
+			# remove card by index
+			index = origin.index(card)
 			origin[index:index + 1] = []
 		elif origin is self.battlefield and target is not self.battlefield:
 			self.remove_carditem(item)
@@ -270,22 +268,22 @@ class Player(object):
 				self.updated_graveyard()
 			elif l is self.hand:
 				self.updated_hand()
-			elif l is self.removed:
-				self.updated_removed()
+			elif l is self.exile:
+				self.updated_exile()
 		
 		# Send network commands
 		cmdlist = []
 		if origin is self.graveyard:
 			cmdlist.append(("unbury", (index,)))
-		elif origin is self.removed:
-			cmdlist.append(("unremove", (card.cardid,)))
+		elif origin is self.exile:
+			cmdlist.append(("unexile", (index,)))
 		elif origin is self.battlefield and target is self.battlefield:
 			cmdlist.append(("move", (item.itemid, item.x, item.y)))
 		if target is self.graveyard:
 			cmdlist.append(("bury", (card.cardid,)))
-		elif target is self.removed:
-			cmdlist.append(("remove", (card.cardid,)))
-		l = [self.library, self.hand, self.removed]
+		elif target is self.exile:
+			cmdlist.append(("exile", (card.cardid,)))
+		l = [self.library, self.hand, self.exile]
 		if any(map(lambda x: origin is x or target is x, l)):
 			cmdlist.append(("update", (len(self.library), len(self.hand))))
 		self.send_network_cmds(cmdlist)
@@ -330,8 +328,8 @@ class Player(object):
 		]
 		for card in self.graveyard:
 			cmdlist.append(("bury", (card.cardid,)))
-		for card in self.removed:
-			cmdlist.append(("remove", (card.cardid,)))
+		for card in self.exile:
+			cmdlist.append(("exile", (card.cardid,)))
 		for item in self.battlefield:
 			cmdlist.append(("enter", (item.card.cardid, item.card.name,
 				item.itemid, item.x, item.y)))
@@ -349,7 +347,7 @@ class Player(object):
 			self.library = []
 			self.hand = []
 			self.graveyard = []
-			self.removed = []
+			self.exile = []
 			self.set_life(config.DEFAULT_LIFE)
 			for item in self.battlefield[:]:
 				self.remove_carditem(item)
@@ -357,7 +355,7 @@ class Player(object):
 			self.updated_library()
 			self.updated_hand()
 			self.updated_graveyard()
-			self.updated_removed()
+			self.updated_exile()
 		elif cmd == "tray":
 			self.create_tray(args[0])
 			self.tray.x = args[1]
@@ -386,14 +384,14 @@ class Player(object):
 			i = args[0]
 			self.graveyard[i:i+1] = []
 			self.updated_graveyard()
-		elif cmd == "remove":
-			self.removed.append(cards.get(args[0]))
-			self.updated_removed()
-		elif cmd == "unremove":
-			assert(args[0] < len(self.removed))
+		elif cmd == "exile":
+			self.exile.append(cards.get(args[0]))
+			self.updated_exile()
+		elif cmd == "unexile":
+			assert(args[0] < len(self.exile))
 			i = args[0]
-			self.removed[i:i+1] = []
-			self.updated_removed()
+			self.exile[i:i+1] = []
+			self.updated_exile()
 		elif cmd == "mulligan":
 			self.library.append(self.hand.pop())
 			self.updated_library()

@@ -24,7 +24,9 @@ Client:
 - Changed network protocol; Now broadcasting client version and sending
   card names in addition to ids.
 - Player list now displays a version tooltip
+- Spectating a game is now possible
 - FIXED: user list is not updated
+- FIXED: library/graveyard/exile browsing bugs
 
 Version 0.29:
 `````````````

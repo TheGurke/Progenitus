@@ -15,9 +15,9 @@ from progenitus import config
 import muc
 
 
-# 5 Zones where cards can be: library, graveyard, hand, battlefield, removed,
+# 5 Zones where cards can be: library, graveyard, hand, battlefield, exile,
 #    void
-zones = ["L", "G", "H", "B", "R", "V"]
+zones = ["L", "G", "H", "B", "E", "V"]
 
 assert(' ' not in config.VERSION)
 
@@ -34,8 +34,8 @@ commands = {
 	"exit":     "[Exit] %x", # exit the battlefield
 	"bury":     "[Bury] %d", # add a card to the graveyard
 	"unbury":   "[Unbury] %d", # remove a card from the graveyard by index
-	"remove":   "[Remove] %d", # put a card in the removed zone
-	"unremove": "[Unremove] %d", # remove a card from the removed zone by index
+	"exile":    "[Exile] %d", # move a card to the exile zone
+	"unexile":  "[Unexile] %d", # remove a card from the exile by index
 	"mulligan": "[Mulligan]", # take a mulligan
 	"shuffle":  "[Shuffle]", # shuffle the library
 	"move":     "[Move] %x to (%d,%d)", # move a card on the battlefield

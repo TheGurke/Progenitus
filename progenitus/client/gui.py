@@ -332,7 +332,7 @@ class Interface(uiloader.Interface):
 	
 	def exile_this(self, widget):
 		pl = self.my_player
-		pl.move_card(self._popup, pl.hand, pl.removed)
+		pl.move_card(self._popup, pl.hand, pl.exile)
 	
 	def hand_to_library(self, widget):
 		pl = self.my_player
@@ -358,7 +358,7 @@ class Interface(uiloader.Interface):
 	
 	def exile_from_graveyard(self, widget):
 		pl = self.my_player
-		pl.move_card(pl.graveyard[-1], pl.graveyard, pl.removed)
+		pl.move_card(pl.graveyard[-1], pl.graveyard, pl.exile)
 	
 	def switch_sides(self, widget):
 		self.cd.flip_y = not self.cd.flip_y
@@ -376,9 +376,9 @@ class Interface(uiloader.Interface):
 		pl = self.my_player
 		pl.move_card(self._popup, pl.battlefield, pl.graveyard)
 	
-	def card_to_removed(self, widget):
+	def exile_card(self, widget):
 		pl = self.my_player
-		pl.move_card(self._popup, pl.battlefield, pl.removed)
+		pl.move_card(self._popup, pl.battlefield, pl.exile)
 	
 	def clone_card(self, widget):
 		pl = self.my_player
@@ -407,11 +407,11 @@ class Interface(uiloader.Interface):
 		pass # TODO
 	
 	def browse_exile(self, widget):
-		self.show_cardbrowser(self.my_player.removed, None)
+		self.show_cardbrowser(self.my_player.exile, None)
 		# Hide useless buttons
 		self.button_to_top.hide()
 		self.button_to_bottom.hide()
-		self.button_to_removed.hide()
+		self.button_exile.hide()
 	
 	def browse_graveyard(self, widget):
 		# Find the graveyard's owner
@@ -531,20 +531,25 @@ class Interface(uiloader.Interface):
 			self.checkbutton_shuffle.set_active(shuffle)
 		# Show buttons
 		for widget in [self.button_to_graveyard, self.button_to_library,
-				self.button_to_removed, self.button_to_hand, self.button_to_top,
+				self.button_exile, self.button_to_hand, self.button_to_top,
 				self.button_to_bottom]:
 			widget.show()
 		for widget in [self.button_to_graveyard, self.button_to_library,
-				self.button_to_removed, self.button_to_hand,
+				self.button_exile, self.button_to_hand,
 				self.checkbutton_shuffle]:
 			widget.set_sensitive(mine)
-		# Fill card list
 		self._browser_cardlist = cardlist
-		self.liststore_browse.clear()
-		for i in range(len(cardlist)):
-			card = cardlist[i]
-			self.liststore_browse.append((card.name, card.manacost, i))
+		self.update_cardlist()
 		self.win_browse.show()
+	
+	def update_cardlist(self):
+		"""Update the card browser list"""
+		if len(self._browser_cardlist) == 0:
+			self.hide_cardbrowser()
+		self.liststore_browse.clear()
+		for i in range(len(self._browser_cardlist)):
+			card = self._browser_cardlist[i]
+			self.liststore_browse.append((i, card.name, card.manacost))
 	
 	def hide_cardbrowser(self, widget=None, stuff=None):
 		"""Hide the card browser"""
@@ -570,10 +575,11 @@ class Interface(uiloader.Interface):
 		model, it = self.treeview_browse.get_selection().get_selected()
 		if it is None:
 			return # Nothing selected
-		card = self._browser_cardlist[model.get_value(it, 2)]
+		card = self._browser_cardlist[model.get_value(it, 0)]
 		self.my_player.move_card(card, self._browser_cardlist,
 			self.my_player.graveyard)
 		model.remove(it)
+		self.update_cardlist()
 	
 	def browser_to_library(self, widget):
 		"""Move the selected card to the library"""
@@ -581,21 +587,23 @@ class Interface(uiloader.Interface):
 		model, it = self.treeview_browse.get_selection().get_selected()
 		if it is None:
 			return # Nothing selected
-		card = self._browser_cardlist[model.get_value(it, 2)]
+		card = self._browser_cardlist[model.get_value(it, 0)]
 		self.my_player.move_card(card, self._browser_cardlist,
 			self.my_player.library)
 		model.remove(it)
+		self.update_cardlist()
 	
-	def browser_to_removed(self, widget):
-		"""Move the selected card to the removed zone"""
+	def browser_exile(self, widget):
+		"""Move the selected card to the exile"""
 		assert(self._browser_cardlist is not None)
 		model, it = self.treeview_browse.get_selection().get_selected()
 		if it is None:
 			return # Nothing selected
-		card = self._browser_cardlist[model.get_value(it, 2)]
+		card = self._browser_cardlist[model.get_value(it, 0)]
 		self.my_player.move_card(card, self._browser_cardlist,
-			self.my_player.removed)
+			self.my_player.exile)
 		model.remove(it)
+		self.update_cardlist()
 	
 	def browser_to_hand(self, widget):
 		"""Move the selected card to the hand"""
@@ -603,10 +611,11 @@ class Interface(uiloader.Interface):
 		model, it = self.treeview_browse.get_selection().get_selected()
 		if it is None:
 			return # Nothing selected
-		card = self._browser_cardlist[model.get_value(it, 2)]
+		card = self._browser_cardlist[model.get_value(it, 0)]
 		self.my_player.move_card(card, self._browser_cardlist,
 			self.my_player.hand)
 		model.remove(it)
+		self.update_cardlist()
 	
 	
 	# Debug
