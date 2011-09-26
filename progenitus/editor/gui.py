@@ -464,7 +464,7 @@ class Interface(uiloader.Interface):
 		c1 = 1000 if t1.find("Land") >= 0 else cards.convert_mana(v1)
 		c2 = 1000 if t2.find("Land") >= 0 else cards.convert_mana(v2)
 		if c1 == c2:
-			pass # TODO
+			return cmp(v1[::-1], v2[::-1])
 		return cmp(c1, c2)
 	
 	# Popup menu

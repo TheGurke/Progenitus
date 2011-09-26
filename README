@@ -39,7 +39,12 @@ $HOME/.progenitus.cfg
 This is a small program for downloading and updating the magic set data and
 card pictures. Please read the disclaimer carefully before using it.
 
+Known bugs:
+- When the download fails, the program doesn't quit after the error message and
+  it looks like everything is still downloading
+
 Planned features:
+- More comprehensive error messages
 - More backends: e.g. gatherer.wizards.com
 - Option to download pictures/pricing information later
 - Fetch tokens
@@ -65,11 +70,15 @@ sideboard.
 'ctrl + e' edits the current deck's description and author
 'f11' toggles fullscreen
 
-Known issues:
+Known bugs:
 - No possibility to create, rename or remove folders
 - No possibility to move deck between folders
 - Cannot single click on the sideboard checkbuttons
 - "No results" in the extended search is not visible enough
+- can rename a deck to an already used name
+- renaming fails sometimes (?)
+- moving the center bar to the right while in extended search causes graphic
+  bugs
 
 Planned features:
 - List deck price
@@ -86,14 +95,6 @@ Planned features:
 - Card sets as symbols
 - Copy and paste for card lists
 
-Bugs:
-- can rename to an already used name
-- renaming fails sometimes
-- Sorting by mana cost does not cluster colors where converted costs are the
-	same
-- moving the center bar to the right while in extended search causes graphic
-  bugs
-
 
 
 --------
@@ -108,7 +109,7 @@ for example http://www.jabber.org/.
 Unlike most other programs of this kind there is no limit how many player can
 join in one game.
 
-The client has 3 hidden commands:
+The client has 3 (hidden) commands:
 /life set the life points
 /nick changes the user's nick
 /draw draws a number of cards

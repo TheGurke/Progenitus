@@ -16,6 +16,8 @@ Editor:
 - Fixed: Cannot use power/thoughness based search since they are text fields in
   the db
 - Fixed: Searching for colors and lands at the same time is broken
+- Fixed: Sorting by mana cost does not cluster colors where converted costs are
+  the same
 
 
 Version 0.29:
