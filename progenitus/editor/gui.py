@@ -210,11 +210,11 @@ class Interface(uiloader.Interface):
 			args.append(self.spinbutton_converted_cost.get_value_as_int())
 		power_eq = self.combobox_eq_power.get_active()
 		if power_eq > 0:
-			query += ' "power" %s ? AND' % eq[power_eq]
+			query += ' CAST("power" AS INTEGER) %s ? AND' % eq[power_eq]
 			args.append(self.spinbutton_power.get_value_as_int())
 		toughness_eq = self.combobox_eq_toughness.get_active()
 		if toughness_eq > 0:
-			query += ' "toughness" %s ? AND' % eq[toughness_eq]
+			query += ' CAST("toughness" AS INTEGER) %s ? AND' % eq[toughness_eq]
 			args.append(self.spinbutton_toughness.get_value_as_int())
 		mana_eq = self.combobox_eq_manacost.get_active()
 		manacost = self.entry_manacost.get_text()
@@ -594,8 +594,6 @@ class Interface(uiloader.Interface):
 					card.get_composed_type(), card.power, card.toughness,
 					card.rarity[0], card.cardset, sb, False, card.price,
 					_price_to_text(card.price), card.releasedate))
-		self.cardview.set_sensitive(True)
-		self.deckname_entry.set_sensitive(True)
 		self.update_cardcount()
 	
 	def sort_deck(self, *args):
@@ -695,6 +693,8 @@ class Interface(uiloader.Interface):
 		self.textview_deckdesc.get_buffer().set_text(self.deck.description)
 		self.cardview.set_sensitive(True)
 		self.deckname_entry.set_sensitive(True)
+		self.entry_author.set_sensitive(True)
+		self.textview_deckdesc.set_sensitive(True)
 		self.button_deckedit.set_sensitive(True)
 		self.toolbutton_copy_deck.set_sensitive(True)
 		self.toolbutton_delete_deck.set_sensitive(True)
@@ -707,6 +707,7 @@ class Interface(uiloader.Interface):
 	
 	def new_deck(self, *args):
 		"""Create a new empty deck"""
+		self.unload_deck()
 		model, it = self.decklistview.get_selection().get_selected()
 		# TODO: model.iter_parent(it)
 		newname = _("new")
@@ -816,6 +817,10 @@ class Interface(uiloader.Interface):
 		self.toolbutton_deckedit.set_sensitive(False)
 		self.toolbutton_stats.set_sensitive(False)
 		self.toolbutton_search_lands.set_sensitive(False)
+		self.entry_author.set_sensitive(False)
+		self.textview_deckdesc.set_sensitive(False)
+		for c in ["white", "blue", "black", "red", "green"]:
+			getattr(self, "mana_" + c).hide()
 		self.update_cardcount()
 	
 	def save_deck(self):

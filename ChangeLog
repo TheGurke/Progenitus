@@ -1,0 +1,16 @@
+
+Version 0.30-beta:
+``````````````````
+Updater:
+- Rewritten most of the updater's code in oder to handle the Innistrad cards.
+  (The non-numeric characters in the collector's id caused trouble.)
+  Because of this, the database format changed and therefore the card
+  information will have to be downloaded again.
+- Fixed: Updater longer crashes upon completion.
+- Fixed: Connection is reestablished for every card
+Editor:
+- Fixed: New deck doesn't remove the color symbols
+- Fixed: Show expansion breaks when window is closed once
+- Fixed: Author and description entries are not disabled while deck is loading
+- Fixed: Cannot use power/thoughness based search since they are text fields in
+  the db

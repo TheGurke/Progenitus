@@ -113,6 +113,11 @@ class Interface(object):
 		except Exception as e:
 			self.show_exception(e)
 	
+	def dont_delete(self, widget, event):
+		"""Callback function to hide a widget instead of destroying it"""
+		widget.hide()
+		return True
+	
 	def quit(self, *args):
 		"""Stop the GTK loop"""
 		gtk.main_quit()

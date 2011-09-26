@@ -67,13 +67,12 @@ sideboard.
 
 Known issues:
 - No possibility to create, rename or remove folders
-- No possibility to move deck within folders
-- Cannot click on the sideboard checkbuttons
+- No possibility to move deck between folders
+- Cannot single click on the sideboard checkbuttons
 - Cannot use power/thoughness based search since they are text fields in the db
   FIX: CAST("power" AS INTEGER)
 - Searching for colors and lands at the same time is broken
 - "No results" in the extended search is not visible enough
-- Show expansion breaks when window is closed once
 
 Planned features:
 - List deck price
@@ -88,15 +87,13 @@ Planned features:
 - Deck cache
 - Mana cost as symbols
 - Card sets as symbols
-- Search icon for find lands: a mountain in the magnification glass
+- Copy and paste for card lists
 
 Bugs:
-- settings are not saved automatically
 - can rename to an already used name
 - renaming fails sometimes
 - Sorting by mana cost does not cluster colors where converted costs are the
 	same
-- New deck doesn't remove the color symbols
 - moving the center bar to the right while in extended search causes graphic
   bugs
 
