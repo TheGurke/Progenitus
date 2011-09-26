@@ -77,6 +77,7 @@ class Interface(uiloader.Interface):
 		self.button_start.hide()
 		self.button_stop.show()
 		async.run_threaded(self._run_download(), self.show_exception)
+#		async.run(self._run_download())
 	
 	def _prepare_download(self):
 		"""Prepare everything for the download"""
@@ -132,7 +133,6 @@ class Interface(uiloader.Interface):
 				(setcode,))
 			cardlist = None
 			if self.cursor.fetchone() is not None:
-				self.log(_("'%s' was found in the database.") % setname)
 				cardlist = cards.search('"setid" = ?', (setcode,))
 			else:
 				self.log(_("Downloading '%s'...") % setname)
@@ -193,21 +193,32 @@ class Interface(uiloader.Interface):
 			
 			# Get token information
 			tokens = magiccardsinfo.mine_tokens()
-			for i in range(len(tokens))
-				pic_url, name, power, toughness, number, artist = tokens[i]
-				self.progressbar2.set_fraction(float(i) / len(cardlist))
-				magiccardsinfo.mine_pic(pic_url, pics._get_token_path(number))
-#			self.cursor.execute(u'INSERT INTO "tokens" VALUES (' +
-#						17 * '?,' + '?)', ())
-#			self.sqlconn.commit()
+			for i in range(len(tokens)):
+				pic_url, token = tokens[i]
+				self.progressbar2.set_fraction(float(i) / len(tokens))
+				
+				# Get token picture
+				pic_filename = pics._get_token_path(token.tokenid)
+				if not os.path.exists(pic_filename):
+					magiccardsinfo.mine_pic(pic_url, pic_filename)
+				
+				# Insert database entry
+				try:
+					cards.get_token(token.tokenid)
+				except RuntimeError:
+					self.cursor.execute(u'INSERT INTO "tokens" VALUES (' +
+						17 * '?,' + '?)', token.as_tuple())
+					self.sqlconn.commit()
 		
 		glib.idle_add(self.download_complete)
 	
 	def download_complete(self):
-		self.log(_("Download complete."))
+		self.progressbar1.set_fraction(1)
+		self.progressbar2.set_fraction(1)
+		self.log(_("Update complete."))
 		md = gtk.MessageDialog(self.download_win,
 			gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_INFO,
-			gtk.BUTTONS_CLOSE, _("Download complete."))
+			gtk.BUTTONS_CLOSE, _("Update complete."))
 		md.connect("response", self.quit)
 		md.show()
 

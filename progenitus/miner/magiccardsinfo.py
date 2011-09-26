@@ -119,14 +119,39 @@ def mine_tokens():
 	"""Mine all tokens"""
 	html = miner.download(con, url_tokens)
 	tokens = []
-	for part in html.split('<table>'):
-		setname = re_token.search(part).group(1)
+	for part in html.split('</table>'):
+		setname_match = re_token.search(part)
+		if setname_match is None:
+			continue
+		setname = setname_match.group(1)
+		
+		# Get the set id
+		cards._cursor.execute('SELECT * FROM "sets" WHERE "name" = ?',
+			(setname,))
+		row = cards._cursor.fetchone()
+		if row is None:
+			continue
+#			raise RuntimeError(_("Set not found in the database: '%s'.")
+#				% setname)
+		setid = row[0]
+		releasedate = row[3]
+		
 		tokens_ = re_token2.findall(part)
 		if tokens_ is None:
 			continue
 		for link, name, power, toughness, number, artist in tokens_:
-			tokens.append((link[:-4] + "jpg", name, setname, power, toughness,
-				number, artist))
+			link = "/extras/" + link[7:-4] + "jpg"
+			token = cards.Token()
+			token.name = name
+			token.power = power
+			token.toughness = toughness
+			token.collectorsid = number if number != "" else "0"
+			token.artist = artist
+			token.setname = setname
+			token.setid = setid
+			token.releasedate = releasedate
+			token.derive_id()
+			tokens.append((link, token))
 	if len(tokens) == 0:
 		raise RuntimeError(_("Pattern (4) match failed."))
 	return tokens

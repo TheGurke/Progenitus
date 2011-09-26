@@ -407,7 +407,7 @@ class Interface(uiloader.Interface):
 			for card in l:
 				self.cards.append((card.cardid, card.name, card.manacost,
 					card.get_composed_type(), card.power, card.toughness,
-					card.rarity[0], card.cardset, sb, False, card.price,
+					card.rarity[0], card.setname, sb, False, card.price,
 					_price_to_text(card.price), card.releasedate))
 		self.update_cardcount()
 	
@@ -644,7 +644,7 @@ class Interface(uiloader.Interface):
 		else:
 			it = self.cards.append((card.cardid, card.name, card.manacost,
 				card.get_composed_type(), card.power, card.toughness,
-				card.rarity, card.cardset, sideboard, False, card.price,
+				card.rarity, card.setname, sideboard, False, card.price,
 				_price_to_text(card.price), card.releasedate))
 			self.cardview.get_selection().select_iter(it)
 			self.cardview.scroll_to_cell(self.cardview.get_model().get_path(it))
@@ -975,7 +975,7 @@ class Interface(uiloader.Interface):
 			for card in versions:
 				self.results.append(it, (card.cardid, card.name, card.manacost,
 					card.get_composed_type(), card.power, card.toughness,
-					card.rarity[0], card.cardset, card.price,
+					card.rarity[0], card.setname, card.price,
 					_price_to_text(card.price), card.releasedate))
 		
 		# Handle gui

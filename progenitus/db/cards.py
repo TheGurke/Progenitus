@@ -124,18 +124,30 @@ class Card(object):
 			self.collectorsid, self.linkedto)
 
 
-class Token(Card):
+class Token(object):
 	"""A token instance"""
 	
 	def __init__(self, *args):
 		if args == ():
 			args = ("", "", "", 0, 0, 0, 0, 0, 0, "", "", "", "", "", "", "",
-				"", 0, 0)
+				0, "")
 		(self.tokenid, self.setid, self.setname, self.iswhite, self.isblue,
 			self.isblack, self.isred, self.isgreen, self.iscolorless,
 			self.cardtype, self.subtype, self.text, self.flavor, self.artist,
 			self.power, self.toughness, self.releasedate, self.collectorsid) \
 				= args
+	
+	def __eq__(self, other):
+		return self.tokenid == other.tokenid
+	
+	def __str__(self):
+		if self.power != "" and self.toughness != "":
+			return "%s/%s %s" % (self.power, self.toughnes, self.name)
+		return "%s" % (self.name)
+	
+	def derive_id(self):
+		"""Derive the card id based on collectors id and setid"""
+		self.tokenid = "%s.%s" % (self.setid, self.collectorsid)
 	
 	def markup(self):
 		"""Return the card details as a gtk markup text"""
@@ -185,14 +197,19 @@ def create_db(filename):
 
 def get(cardid):
 	"""Get a card by id"""
-	assert(isinstance(cardid, int))
 	l = search('"id" = ?', (cardid,), 1)
 	if l == []:
-		raise RuntimeError(_("Card with id %d not found.") % cardid)
-	if len(l) > 1:
-		# SQL will see to that this never happends
-		raise RuntimeError(_("Card id %d is ambiguous.") % cardid)
+		raise RuntimeError(_("Card with id %s not found.") % cardid)
 	return l[0]
+
+def get_token(tokenid):
+	"""Get a token by id"""
+	global _cursor
+	_cursor.execute('SELECT * FROM "tokens" WHERE "id" = ?', (tokenid,))
+	row = _cursor.fetchone()
+	if row is None:
+		raise RuntimeError(_("Token with id %s not found.") % cardid)
+	return Token(*row)
 
 
 def search(query, args=(), limit=settings.results_limit):

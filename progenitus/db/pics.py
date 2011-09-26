@@ -17,11 +17,14 @@ _map = dict() # data structure to hold the pics
 
 
 def _get_path(cardid):
-	"""The the file path for the card picture"""
+	"""Returns the file path for the card picture"""
 	if cardid == "deckmaster":
 		return config.DECKMASTER_PATH
 	return os.path.join(settings.cache_path, config.CARD_PICS_PATH(cardid))
 
+def _get_token_path(tokenid):
+	"""Returns the file path for the token picture"""
+	return os.path.join(settings.cache_path, config.TOKEN_PICS_PATH(tokenid))
 
 def _load(cardid):
 	"""Load a magic card picture from the disk"""
