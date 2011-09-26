@@ -128,7 +128,6 @@ Known issues:
 - cannot roll dice of flip coins
 - the second card searched from the library is wrong
 - fetch card from removed produces error messages
-- user list is not updated
 - log does not always scroll down
 - moving the tray while the deck loads causes the tray to vanish
 

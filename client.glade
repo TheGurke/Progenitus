@@ -18,10 +18,18 @@
       <column type="guint"/>
     </columns>
   </object>
-  <object class="GtkListStore" id="liststore_players">
+  <object class="GtkListStore" id="liststore_users">
     <columns>
+      <!-- column-name userid -->
+      <column type="guint"/>
       <!-- column-name nick -->
       <column type="gchararray"/>
+      <!-- column-name jid -->
+      <column type="gchararray"/>
+      <!-- column-name version -->
+      <column type="gchararray"/>
+      <!-- column-name spectating -->
+      <column type="gboolean"/>
     </columns>
   </object>
   <object class="GtkWindow" id="login_win">
@@ -320,9 +328,17 @@
                   <object class="GtkTreeView" id="treeview_players">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="model">liststore_players</property>
+                    <property name="model">liststore_users</property>
                     <property name="headers_visible">False</property>
-                    <property name="search_column">0</property>
+                    <property name="search_column">1</property>
+                    <property name="tooltip_column">3</property>
+                    <child>
+                      <object class="GtkTreeViewColumn" id="treeviewcolumn4">
+                        <child>
+                          <object class="GtkCellRendererPixbuf" id="cellrendererpixbuf1"/>
+                        </child>
+                      </object>
+                    </child>
                     <child>
                       <object class="GtkTreeViewColumn" id="treeviewcolumn1">
                         <property name="title" translatable="yes">nick</property>
@@ -331,7 +347,7 @@
                         <child>
                           <object class="GtkCellRendererText" id="cellrenderertext1"/>
                           <attributes>
-                            <attribute name="text">0</attribute>
+                            <attribute name="text">1</attribute>
                           </attributes>
                         </child>
                       </object>

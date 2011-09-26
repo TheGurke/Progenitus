@@ -255,7 +255,7 @@ class Player(object):
 		if target is not None and target is not self.battlefield:
 			target.append(card)
 		elif target is self.battlefield and origin is not self.battlefield:
-			item = self.create_carditem(card.cardid, None, x, y)
+			item = self.create_carditem(card.cardid, card.name, None, x, y)
 		elif target is self.battlefield and origin is self.battlefield:
 			item.x = x
 			item.y = y
@@ -291,14 +291,15 @@ class Player(object):
 	
 	# Battlefield
 	
-	def create_carditem(self, cardid, itemid=None, x=0, y=0):
+	def create_carditem(self, cardid, cardname, itemid=None, x=0, y=0):
 		item = self.new_item(cardid, self, x, y)
+		# FIXME: check for card id
 		if itemid is None:
 			itemid = self._get_new_itemid(item)
 		else:
 			self._set_itemid(itemid, item)
 		item.itemid = itemid
-		self.send_network_cmd("enter", cardid, itemid, item.x, item.y)
+		self.send_network_cmd("enter", cardid, cardname, itemid, item.x, item.y)
 		self.battlefield.append(item)
 		return item
 	
@@ -318,7 +319,7 @@ class Player(object):
 		"""Assemble a list of commands that describe this player's full current
 		status"""
 		cmdlist = [
-			("welcome", ()),
+			("welcome", (config.VERSION,)),
 			("tray", (self.tray.itemid, self.tray.x, self.tray.y)),
 			("update", (len(self.library), len(self.hand))),
 			("setlife", (self.life,))
@@ -328,8 +329,8 @@ class Player(object):
 		for card in self.removed:
 			cmdlist.append(("remove", (card.cardid,)))
 		for item in self.battlefield:
-			cmdlist.append(("enter",
-				(item.card.cardid, item.itemid, item.x, item.y)))
+			cmdlist.append(("enter", (item.card.cardid, item.card.name,
+				item.itemid, item.x, item.y)))
 			if item.tapped:
 				cmdlist.append(("tap", (item.itemid,)))
 			if item.flipped:

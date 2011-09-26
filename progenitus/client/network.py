@@ -19,6 +19,8 @@ import muc
 #    void
 zones = ["L", "G", "H", "B", "R", "V"]
 
+assert(' ' not in config.VERSION)
+
 # All network commands
 commands = {
 	"hello":    "[Hello] %s", # handshake initialization
@@ -27,8 +29,8 @@ commands = {
 	"tray":     "[CreateTray] as %x at (%d, %d)", # Tray item
 	"update":   "[Update] %d %d", # update tray: library count, hand card count
 	"setlife":  "[Setlife] %d", # set life points
-	"enter":    "[Enter] %d as %x at (%d,%d)", # enter the battlefield
-	"token":	"[Token] %d as %x at (%d,%d)", # create a new token
+	"enter":    "[Enter] %d %r as %x at (%d,%d)", # enter the battlefield
+	"token":	"[Token] %d %r as %x at (%d,%d)", # create a new token
 	"exit":     "[Exit] %x", # exit the battlefield
 	"bury":     "[Bury] %d", # add a card to the graveyard
 	"unbury":   "[Unbury] %d", # remove a card from the graveyard by index
@@ -107,10 +109,21 @@ class Roomhandler(MucRoomHandler):
 			else:
 				self.manager._incoming_chat(user, text)
 	
+	def user_joined(self, user, stanza):
+		"""A user joined the room"""
+		if self.manager.user_joined is not None:
+			self.manager.user_joined(user)
+	
 	def user_left(self, user, stanza):
 		"""A user left the room"""
 		if self.manager.user_left is not None:
 			self.manager.user_left(user)
+	
+	def nick_changed(self, user, old_nick, stanza):
+		"""A user changed their nick"""
+		if self.manager.user_nick_changed is not None:
+			self.manager.user_nick_changed(user)
+
 
 
 # Network manager class
@@ -123,7 +136,9 @@ class NetworkManager(object):
 	# Callback methods (please attach!)
 	incoming_commands = None
 	incoming_chat = None
+	user_joined = None
 	user_left = None
+	user_nick_changed = None
 	exception_handler = None
 	
 	def __init__(self):
@@ -183,6 +198,8 @@ class NetworkManager(object):
 			for i in range(len(l)):
 				if l[i][0] == "x":
 					args[i] = int(args[i], 16)
+				elif l[i][0] == "r":
+					args[i] = args[i][1:-1] # FIXME: unespace string
 				elif l[i][0] == "d":
 					args[i] = int(args[i])
 			cmdlist_.append((cmd, tuple(args)))

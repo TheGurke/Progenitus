@@ -20,6 +20,11 @@ Editor:
   the same
 - Fixed: Deck renaming issues
 
+Client:
+- Changed network protocol; Now broadcasting client version and sending
+  card names in addition to ids.
+- Player list now displays a version tooltip
+- FIXED: user list is not updated
 
 Version 0.29:
 `````````````
