@@ -5,7 +5,7 @@
   <object class="GtkListStore" id="cards">
     <columns>
       <!-- column-name id -->
-      <column type="gint64"/>
+      <column type="gchararray"/>
       <!-- column-name name -->
       <column type="gchararray"/>
       <!-- column-name cost -->
@@ -2536,7 +2536,7 @@ Legality: Legacy, Standard</property>
   <object class="GtkTreeStore" id="results">
     <columns>
       <!-- column-name id -->
-      <column type="gint64"/>
+      <column type="gchararray"/>
       <!-- column-name name -->
       <column type="gchararray"/>
       <!-- column-name cost -->

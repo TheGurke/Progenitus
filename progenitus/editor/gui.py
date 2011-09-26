@@ -227,7 +227,10 @@ class Interface(uiloader.Interface):
 	def show_card(self, cardid):
 		"""Show a card picture and information"""
 		if cardid is not None:
-			self.cardpic.set_from_pixbuf(pics.get(cardid))
+			try:
+				self.cardpic.set_from_pixbuf(pics.get(cardid))
+			except RuntimeError:
+				pass # If there is not picture, continue anyways
 			card = cards.get(cardid)
 			self.carddetails.set_markup(card.markup())
 	
@@ -702,7 +705,7 @@ class Interface(uiloader.Interface):
 		i = 0
 		for q in ['"id" == ?', '"manacost" == ?',
 				'"name" LIKE ? OR "type" LIKE ? OR "subtype" LIKE ?',
-				'"set" LIKE ?', '"artist" LIKE ?', '"text" LIKE ?']:
+				'"setname" LIKE ?', '"artist" LIKE ?', '"text" LIKE ?']:
 			l = cards.search(q, (query,) * q.count("?"))
 			if l != []:
 				break
@@ -775,7 +778,7 @@ class Interface(uiloader.Interface):
 			if cl != []:
 				query += ' ('
 				for cset in cl:
-					query += ' "set" LIKE ? OR'
+					query += ' "setname" LIKE ? OR'
 					args.append("%" + cset + "%")
 				query = query[:-2]
 				query += ') AND'
@@ -915,11 +918,13 @@ class Interface(uiloader.Interface):
 	
 	def view_new_cards(self, setname):
 		"""View all cards that where introduced in a particular set"""
-		query = ('"set" LIKE ? AND "name" IN '
-			+ '(SELECT "name" FROM "cards" WHERE "set" LIKE ? EXCEPT '
-			+ 'SELECT "name" FROM "cards" WHERE "releasedate" < '
-			+ '(SELECT "releasedate" FROM "cards" WHERE "set" LIKE ? LIMIT 1))')
-		al = cards.search('"set" LIKE ?', (setname,))
+		query = ('"setname" LIKE ? AND "name" IN '
+			'(SELECT "name" FROM "cards" WHERE "setname" LIKE ? EXCEPT '
+			'SELECT "name" FROM "cards" WHERE "releasedate" < '
+			'(SELECT "releasedate" FROM "cards" WHERE "setname" LIKE ? '
+			'LIMIT 1))'
+		)
+		al = cards.search('"setname" LIKE ?', (setname,))
 		l = self._execute_search(query, (setname,) * 3)
 		text = _("showing %d of %d cards") % (len(l), len(al))
 		self.label_results.set_text(text)

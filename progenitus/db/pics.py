@@ -30,7 +30,7 @@ def _load(cardid):
 	"""Load a magic card picture from the disk"""
 	filename = _get_path(cardid)
 	if not os.path.isfile(filename):
-		print("Picture for card #%d not found." % cardid)
+		print("Picture for card %s not found." % cardid)
 	pixbuf = gtk.gdk.pixbuf_new_from_file(filename).add_alpha(False, 0, 0, 0)
 	global _map
 	_map[cardid] = pixbuf
