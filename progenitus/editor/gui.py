@@ -466,8 +466,14 @@ class Interface(uiloader.Interface):
 		while v1.find(types[i]) < 0:
 			i += 1
 		while v2.find(types[j]) < 0:
-			j += 1		
-		return cmp(i, j)
+			j += 1
+		if i != j:	
+			return cmp(i, j)
+		n1 = model.get_value(it1, 1) # name of card at it1
+		n1 = "" if n1 is None else n1
+		n2 = model.get_value(it2, 1) # name of card at it2
+		n2 = "" if n2 is None else n2
+		return cmp(n1, n2)
 	
 	def sort_by_cost(self, model, it1, it2, column):
 		"""Sort function for the resultview/cardview"""
