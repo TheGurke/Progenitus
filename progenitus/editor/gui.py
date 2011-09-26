@@ -67,7 +67,7 @@ class Interface(uiloader.Interface):
 			_("The card database is empty. Please run the updater."), "warning")
 		dialog.connect("destroy", self.quit)
 	
-	def about_click(self, widget):
+	def show_about(self, widget):
 		"""Display information about this program"""
 		dialog = gtk.AboutDialog()
 		dialog.set_name(config.APP_NAME_EDITOR)

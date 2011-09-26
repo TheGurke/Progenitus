@@ -502,7 +502,7 @@
                 <property name="label" translatable="yes">About</property>
                 <property name="use_underline">True</property>
                 <property name="stock_id">gtk-about</property>
-                <signal name="clicked" handler="about_click" swapped="no"/>
+                <signal name="clicked" handler="show_about" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>

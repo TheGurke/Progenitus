@@ -58,6 +58,17 @@ class Interface(uiloader.Interface):
 		self.entry_gamename.set_text(settings.gamename)
 		self.entry_gamepwd.set_text(settings.gamepwd)
 	
+	def show_about(self, widget):
+		"""Display information about this program"""
+		dialog = gtk.AboutDialog()
+		dialog.set_name(config.APP_NAME_EDITOR)
+		dialog.set_version(str(config.VERSION))
+		dialog.set_copyright(_("Copyright by TheGurke 2011"))
+		dialog.set_website(config.APP_WEBSITE)
+		dialog.set_comments(_("This program is Free Software by the GPL3."))
+		dialog.run()
+		dialog.destroy()
+	
 	
 	# Network methods
 	
