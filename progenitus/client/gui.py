@@ -121,8 +121,8 @@ class Interface(uiloader.Interface):
 		if player is None:
 			return # Player did not join the game
 		self.players.remove(player)
-		player.reset()
-		player.remove_tray()
+		if player.tray is not None:
+			player.remove_tray()
 	
 	def user_nick_changed(self, user):
 		"""A user changed their nick name"""

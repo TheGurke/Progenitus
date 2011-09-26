@@ -88,7 +88,9 @@ class Player(object):
 		for item in self.battlefield:
 			self.delete_item(item)
 		if self.tray is not None:
+			self.send_network_cmd("exit", self.tray.itemid)
 			self.delete_item(self.tray)
+			self.tray = None
 	
 	def load_deck(self, deck):
 		"""Load a deck"""
@@ -318,8 +320,10 @@ class Player(object):
 	def make_welcome_message(self):
 		"""Assemble a list of commands that describe this player's full current
 		status"""
-		cmdlist = [
-			("welcome", (config.VERSION,)),
+		cmdlist = [("welcome", (config.VERSION,))]
+		if self.tray is None:
+			return cmdlist
+		cmdlist += [
 			("tray", (self.tray.itemid, self.tray.x, self.tray.y)),
 			("update", (len(self.library), len(self.hand))),
 			("setlife", (self.life,))
@@ -369,7 +373,11 @@ class Player(object):
 		elif cmd == "enter":
 			self.create_carditem(*args)
 		elif cmd == "exit":
-			self.remove_carditem(self._get_item_by_id(args[0]))
+			item = self._get_item_by_id(args[0])
+			if item is self.tray:
+				self.remove_tray()
+			else:
+				self.remove_carditem(item)
 		elif cmd == "bury":
 			self.graveyard.append(cards.get(args[0]))
 			self.updated_graveyard()
