@@ -51,7 +51,7 @@ class Deck(object):
 		self.color = []
 	
 	def derive_name(self, filename=None):
-		# The deckname is the filename without path and extension
+		"""The deckname is the filename without path and extension"""
 		if filename is None:
 			filename = self.filename
 		name = os.path.basename(filename)
@@ -59,7 +59,16 @@ class Deck(object):
 			name = name[:-5]
 		return name
 	
+	def derive_filename(self, deckname=None):
+		"""Suggest a path based on the decks name and previous location"""
+		if deckname is None:
+			deckname = self.name
+		filename = os.path.join(os.path.dirname(self.filename), deckname +
+			u".deck")
+		return filename
+	
 	def derive_color(self):
+		"""List a deck's color"""
 		self.color = []
 		for c in ["white", "blue", "black", "red", "green"]:
 			l = filter(lambda card: getattr(card, "is" + c), self.decklist)

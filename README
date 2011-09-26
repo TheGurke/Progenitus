@@ -39,7 +39,7 @@ $HOME/.progenitus.cfg
 This is a small program for downloading and updating the magic set data and
 card pictures. Please read the disclaimer carefully before using it.
 
-Known bugs:
+Known issues:
 - When the download fails, the program doesn't quit after the error message and
   it looks like everything is still downloading
 
@@ -70,17 +70,15 @@ sideboard.
 'ctrl + e' edits the current deck's description and author
 'f11' toggles fullscreen
 
-Known bugs:
-- No possibility to create, rename or remove folders
-- No possibility to move deck between folders
+Known issues:
 - Cannot single click on the sideboard checkbuttons
 - "No results" in the extended search is not visible enough
-- can rename a deck to an already used name
-- renaming fails sometimes (?)
-- moving the center bar to the right while in extended search causes graphic
+- Moving the center bar to the right while in extended search causes graphic
   bugs
 
 Planned features:
+- Create, rename or remove folders
+- Move deck between folders via drag and drop
 - List deck price
 - force only one instance
 - export as pdf (proxies)
@@ -116,7 +114,7 @@ The client has 3 (hidden) commands:
 
 'f11' toggles fullscreen
 
-Known bugs:
+Known issues:
 - sometimes cards glitch into play while still being in the hand. this is not
   seen across the network (has no itemid). Appearantly this is caused by fast
   double clicking and then dragging (removed -> card is still changed)
@@ -136,6 +134,7 @@ Known bugs:
 
 Desired features:
 - save login details
+- multiplayer lobby
 - move cards from/to the graveyard by drag and drop
 - play cards face down
 - set nick

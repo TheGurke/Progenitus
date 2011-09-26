@@ -18,6 +18,7 @@ Editor:
 - Fixed: Searching for colors and lands at the same time is broken
 - Fixed: Sorting by mana cost does not cluster colors where converted costs are
   the same
+- Fixed: Deck renaming issues
 
 
 Version 0.29:

@@ -415,11 +415,28 @@ class Interface(uiloader.Interface):
 	
 	def deckname_changed(self, widget):
 		"""The deckname has been changed"""
-		if not self._is_loading and self.deck is not None:
-			self.deck.name = self.deckname_entry.get_text()
+		if self._is_loading or self.deck is None:
+			return
+		new_name = self.deckname_entry.get_text()
+		new_filename = self.deck.derive_filename(new_name)
+		if new_name != "" and not os.path.exists(new_filename):
+			self.deckname_entry.set_property("secondary-icon-stock", None)
+			self.deck.name = new_name
 			model, it = self.decklistview.get_selection().get_selected()
-			model.set_value(it, 1, self.deckname_entry.get_text())
+			model.set_value(it, 0, new_filename)
+			model.set_value(it, 1, new_name)
 			self.delayed_decksave()
+		else:
+			self.deckname_entry.set_property("secondary-icon-stock",
+				gtk.STOCK_STOP)
+			if new_name == "":
+				tooltip = _("A deck's name cannot be empty.")
+			elif os.path.isdir(new_filename):
+				tooltip = _("A directory with that name exists.")
+			else:
+				tooltip = _("A deck with that name already exists.")
+			self.deckname_entry.set_property("secondary-icon-tooltip-text",
+				tooltip)
 	
 	def author_changed(self, widget):
 		"""The author has been changed"""
@@ -830,14 +847,12 @@ class Interface(uiloader.Interface):
 		if not self._waiting_for_decksave:
 			return # deck has been saved in the meantime
 		self._waiting_for_decksave = False
-		filename = self.deck.filename
 		old_filename = None
-		if self.deck.name != self.deck.derive_name(filename):
-			# Deck name has changed
-			old_filename = filename
-			self.deck.filename = \
-				os.path.join(os.path.dirname(old_filename),
-					self.deck.name + u".deck")
+		if self.deck.name != self.deck.derive_name():
+			new_filename = self.deck.derive_filename()
+			if not os.path.exists(new_filename):
+				old_filename = self.deck.filename
+				self.deck.filename = new_filename
 		self.except_safe(self.deck.save)
 		print(_("Deck saved: %s") % self.deck.filename)
 		if old_filename is not None and os.path.exists(old_filename):
