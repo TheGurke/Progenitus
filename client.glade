@@ -535,7 +535,7 @@
     <property name="can_focus">False</property>
     <property name="ubuntu_local">True</property>
     <child>
-      <object class="GtkMenuItem" id="menuitem4">
+      <object class="GtkMenuItem" id="menuitem_to_hand">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="use_action_appearance">False</property>
@@ -545,7 +545,7 @@
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="menuitem21">
+      <object class="GtkMenuItem" id="menuitem_to_lib">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="use_action_appearance">False</property>
@@ -555,7 +555,7 @@
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="menuitem5">
+      <object class="GtkMenuItem" id="menuitem_to_graveyard">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="use_action_appearance">False</property>
@@ -565,17 +565,17 @@
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="menuitem6">
+      <object class="GtkMenuItem" id="menuitem_exile">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="use_action_appearance">False</property>
-        <property name="label" translatable="yes">remove</property>
+        <property name="label" translatable="yes">exile</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="card_to_removed" swapped="no"/>
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="menuitem10">
+      <object class="GtkMenuItem" id="menuitem_clone">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="use_action_appearance">False</property>
@@ -585,13 +585,13 @@
       </object>
     </child>
     <child>
-      <object class="GtkSeparatorMenuItem" id="menuitem11">
+      <object class="GtkSeparatorMenuItem" id="menuitem_cardsep1">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="menuitem13">
+      <object class="GtkMenuItem" id="menuitem_attack">
         <property name="can_focus">False</property>
         <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">attack</property>
@@ -599,15 +599,7 @@
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="menuitem15">
-        <property name="can_focus">False</property>
-        <property name="use_action_appearance">False</property>
-        <property name="label" translatable="yes">attack without tapping</property>
-        <property name="use_underline">True</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="menuitem16">
+      <object class="GtkMenuItem" id="menuitem_block">
         <property name="can_focus">False</property>
         <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">block</property>
@@ -615,7 +607,7 @@
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="menuitem17">
+      <object class="GtkMenuItem" id="menuitem_use_effect">
         <property name="can_focus">False</property>
         <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">use effect</property>
@@ -623,7 +615,7 @@
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="menuitem18">
+      <object class="GtkMenuItem" id="menuitem_target">
         <property name="can_focus">False</property>
         <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">is targeted</property>
@@ -651,7 +643,7 @@
       </object>
     </child>
     <child>
-      <object class="GtkSeparatorMenuItem" id="menuitem14">
+      <object class="GtkSeparatorMenuItem" id="menuitem_cardsep2">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
       </object>
@@ -667,7 +659,7 @@
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="menuitem7">
+      <object class="GtkMenuItem" id="menuitem_set_counter">
         <property name="visible">True</property>
         <property name="sensitive">False</property>
         <property name="can_focus">False</property>
@@ -678,7 +670,7 @@
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="menuitem8">
+      <object class="GtkMenuItem" id="menuitem_give_to">
         <property name="visible">True</property>
         <property name="sensitive">False</property>
         <property name="can_focus">False</property>
@@ -689,13 +681,13 @@
       </object>
     </child>
     <child>
-      <object class="GtkSeparatorMenuItem" id="menuitem12">
+      <object class="GtkSeparatorMenuItem" id="menuitem_cardsep3">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="menuitem9">
+      <object class="GtkMenuItem" id="menuitem_details">
         <property name="visible">True</property>
         <property name="sensitive">False</property>
         <property name="can_focus">False</property>

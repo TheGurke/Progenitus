@@ -29,8 +29,8 @@ commands = {
 	"tray":     "[CreateTray] as %x at (%d, %d)", # Tray item
 	"update":   "[Update] %d %d", # update tray: library count, hand card count
 	"setlife":  "[Setlife] %d", # set life points
-	"enter":    "[Enter] %d %r as %x at (%d,%d)", # enter the battlefield
-	"token":	"[Token] %d %r as %x at (%d,%d)", # create a new token
+	"enter":    "[Enter] %d \"%s\" as %x at (%d,%d)", # enter the battlefield
+	"token":	"[Token] %d \"%s\" as %x at (%d,%d)", # create a new token
 	"exit":     "[Exit] %x", # exit the battlefield
 	"bury":     "[Bury] %d", # add a card to the graveyard
 	"unbury":   "[Unbury] %d", # remove a card from the graveyard by index
@@ -72,7 +72,8 @@ def create_res():
 		r = r.replace("[", '\[').replace("]", '\]')
 		r = r.replace("%d", '\s*(-?\d+)\s*')
 		r = r.replace("%x", '\s*([0-9abcdef]+)\s*')
-		r = r.replace("%s", '([^"])')
+		r = r.replace("\"%s\"", '\"([^"]*)\"')
+		r = r.replace("%s", '([^\s]+)')
 		r = r + "\s*"
 		res.append(re.compile(r))
 
@@ -198,8 +199,6 @@ class NetworkManager(object):
 			for i in range(len(l)):
 				if l[i][0] == "x":
 					args[i] = int(args[i], 16)
-				elif l[i][0] == "r":
-					args[i] = args[i][1:-1] # FIXME: unespace string
 				elif l[i][0] == "d":
 					args[i] = int(args[i])
 			cmdlist_.append((cmd, tuple(args)))

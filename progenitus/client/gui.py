@@ -443,6 +443,12 @@ class Interface(uiloader.Interface):
 			self.menuitem_flipped.set_active(item.flipped)
 			self.menuitem_face.set_active(not item.face)
 			self.menuitem_does_not_untap.set_active(item.does_not_untap)
+			for widgetname in ("to_hand", "to_lib", "to_graveyard", "exile",
+				"attack", "block", "use_effect", "cardsep2", "does_not_untap",
+				"set_counter", "give_to"):
+				getattr(self, "menuitem_" + widgetname).set_visible(item.mine)
+			for widgetname in ("flipped", "face"):
+				getattr(self, "menuitem_" + widgetname).set_sensitive(item.mine)
 			self.menu_card.popup(None, None, None, event.button, event.time)
 		if isinstance(item, desktop.Tray):
 			if item.mine:
