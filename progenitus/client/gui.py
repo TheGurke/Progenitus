@@ -465,6 +465,12 @@ class Interface(uiloader.Interface):
 				self.menu_tray.popup(None, None, None, event.button, event.time)
 		if isinstance(item, desktop.Library):
 			if item.mine:
+				self.menuitem_draw_7_from_lib.set_sensitive(
+					len(self.my_player.library) >= 7)
+				self.menuitem_draw_from_lib.set_sensitive(
+					len(self.my_player.library) >= 1)
+				self.menuitem_lib_top_to_bottom.set_sensitive(
+					len(self.my_player.library) >= 1)
 				self.menu_library.popup(None, None, None, event.button,
 					event.time)
 		if isinstance(item, desktop.Graveyard):

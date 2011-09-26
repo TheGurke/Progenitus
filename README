@@ -124,11 +124,11 @@ Known issues:
   This should be prevented by checking if there is an owned card around.
 - Enlarged card flicker when the mouse is near the center of the screen
 - If a card is flipped, the enlarged picture is not
-- cannot roll dice of flip coins
-- log does not always scroll down
+- the log does not always scroll down
 - moving the tray while the deck loads causes the tray to vanish
 
 Desired features:
+- roll dice of flip coins
 - save login details
 - multiplayer lobby
 - move cards from/to the graveyard by drag and drop

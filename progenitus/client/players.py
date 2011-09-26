@@ -247,8 +247,10 @@ class Player(object):
 		
 		# Move card
 		if origin is not None and origin is not self.battlefield:
-			# remove card by index
-			index = origin.index(card)
+			# remove card by pointer
+			index = 0
+			while origin[index] is not card:
+				index += 1
 			origin[index:index + 1] = []
 		elif origin is self.battlefield and target is not self.battlefield:
 			self.remove_carditem(item)

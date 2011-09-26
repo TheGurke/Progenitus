@@ -905,7 +905,7 @@
     <property name="can_focus">False</property>
     <property name="ubuntu_local">True</property>
     <child>
-      <object class="GtkMenuItem" id="menuitem25">
+      <object class="GtkMenuItem" id="menuitem_draw_from_lib">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="use_action_appearance">False</property>
@@ -915,7 +915,7 @@
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="menuitem22">
+      <object class="GtkMenuItem" id="menuitem_draw_7_from_lib">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="use_action_appearance">False</property>
@@ -925,7 +925,7 @@
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="menuitem4">
+      <object class="GtkMenuItem" id="menuitem_lib_top_to_bottom">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="tooltip_text" translatable="yes">Put the top card of your library to the bottom.</property>
