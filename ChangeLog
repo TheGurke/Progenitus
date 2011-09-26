@@ -1,11 +1,14 @@
 
 Version 0.30-beta:
 ``````````````````
+This version introduces a new card id pattern and database format. The database
+as well as the card pictures of the old version are incompatible and have to be
+re-downloaded!
+
 Updater:
-- Rewritten most of the updater's code in oder to handle the Innistrad cards.
+- Rewritten the updater in oder to handle the Innistrad cards.
   (The non-numeric characters in the collector's id caused trouble.)
-  Because of this, the database format changed and therefore the card
-  information will have to be downloaded again.
+- Now downloads tokens
 - Fixed: Updater longer crashes upon completion.
 - Fixed: Connection is reestablished for every card
 

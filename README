@@ -46,8 +46,6 @@ Known issues:
 Planned features:
 - More comprehensive error messages
 - More backends: e.g. gatherer.wizards.com
-- Option to download pictures/pricing information later
-- Fetch tokens
 - Fetch items on the fly
 
 
