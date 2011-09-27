@@ -2,6 +2,7 @@
 """GUI for the client program"""
 
 import random
+import math
 import os
 import re
 import gtk
@@ -37,6 +38,8 @@ class Interface(uiloader.Interface):
 		# Insert a CairoDesktop
 		self.cd = desktop.CairoDesktop(self, self.eventbox)
 		self.eventbox.add(self.cd)
+		self.cd.zoom = 8.66
+		self.hscale_zoom.set_value(3) # sync initial zoom level
 		
 		# Set CairoDesktop callbacks
 		self.cd.prop_callback = self.call_properties
@@ -484,8 +487,12 @@ class Interface(uiloader.Interface):
 		self.show_cardbrowser(self.my_player.library, True)
 		self.button_to_library.hide()
 	
+	def zoom_change(self, widget, scroll, value):
+		self.cd.zoom = math.sqrt(value + 1)*5
+		self.cd.queue_draw()
 	
-	# Desktop callbacks
+	
+	# CarioDesktop's callbacks
 	
 	def hover(self, item):
 		"""The user hovers the mouse over an item or handcard"""

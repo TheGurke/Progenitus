@@ -434,12 +434,13 @@ class CairoDesktop(gtk.DrawingArea):
 				self.hover_callback(item)
 	
 	def mouse_scroll(self, widget, event):
-		if event.direction == gtk.gdk.SCROLL_UP:
-			self.zoom /= 1.2
-			self.repaint()
-		if event.direction == gtk.gdk.SCROLL_DOWN:
-			self.zoom *= 1.2
-			self.repaint()
+		pass
+#		if event.direction == gtk.gdk.SCROLL_UP:
+#			self.zoom /= 1.2
+#			self.repaint()
+#		if event.direction == gtk.gdk.SCROLL_DOWN:
+#			self.zoom *= 1.2
+#			self.repaint()
 
 
 #
