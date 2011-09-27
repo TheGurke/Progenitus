@@ -28,6 +28,10 @@ Client:
   card names in addition to ids.
 - Player list now displays a version tooltip
 - Spectating a game is now possible
+- Setting the life total has now a gui interface
+- Token creation is now supported
+- Now handles card pictures of mixed sizes
+- FIXED: bugs with cloned cards
 - FIXED: user list is not updated
 - FIXED: library/graveyard/exile browsing bugs
 

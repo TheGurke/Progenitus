@@ -459,7 +459,7 @@ class Interface(uiloader.Interface):
 		self._popup.repaint()
 	
 	def turn_card_over(self, widget):
-		self._popup.set_face(not self.menuitem_face.get_active())
+		self._popup.set_faceup(not self.menuitem_faceup.get_active())
 		self._popup.repaint()
 	
 	def card_set_no_untap(self, widget):
@@ -523,17 +523,21 @@ class Interface(uiloader.Interface):
 		if item is None:
 			self._popup = event.x, event.y
 			if self.my_player.tray is not None:
+				self.menuitem_browse_exile.set_sensitive(
+					len(self.my_player.exile) > 0)
+				self.menuitem_browse_exile.set_label(
+					_("browse exile (%d)...") % len(self.my_player.exile))
 				self.menu_desktop.popup(None, None, None, event.button,
 					event.time)
 		if isinstance(item, desktop.CardItem):
 			self.menuitem_flipped.set_active(item.flipped)
-			self.menuitem_face.set_active(not item.faceup)
+			self.menuitem_faceup.set_active(not item.faceup)
 			self.menuitem_does_not_untap.set_active(item.does_not_untap)
 			for widgetname in ("to_hand", "to_lib", "to_graveyard", "exile",
 				"attack", "block", "use_effect", "cardsep2", "does_not_untap",
 				"set_counter", "give_to"):
 				getattr(self, "menuitem_" + widgetname).set_visible(item.mine)
-			for widgetname in ("flipped", "face"):
+			for widgetname in ("flipped", "faceup"):
 				getattr(self, "menuitem_" + widgetname).set_sensitive(item.mine)
 			self.menu_card.popup(None, None, None, event.button, event.time)
 		if isinstance(item, desktop.Tray):
@@ -576,17 +580,17 @@ class Interface(uiloader.Interface):
 		mine = player is self.my_player
 		tray = desktop.Tray(player, mine)
 		if len(self.players) == 1:
-			tray.x = -14
-			tray.y = 4
+			tray.x = -22
+			tray.y = 8
 		elif len(self.players) == 2:
-			tray.x = 14 - tray.w
-			tray.y = -4 - tray.h
+			tray.x = 22 - tray.w
+			tray.y = -8 - tray.h
 		elif len(self.players) == 3:
-			tray.x = 14 - tray.w
-			tray.y = 4
+			tray.x = 22 - tray.w
+			tray.y = 8
 		elif len(self.players) == 4:
-			tray.x = -14
-			tray.y = -4 - tray.h
+			tray.x = -22
+			tray.y = -8 - tray.h
 		self.cd.add_item(tray, None if mine else 0)
 		tray.repaint()
 		
@@ -605,6 +609,7 @@ class Interface(uiloader.Interface):
 	
 	def show_cardbrowser(self, cardlist, shuffle=True, mine=True):
 		"""Show the cardbrowser"""
+		assert(cardlist is not None)
 		if shuffle is None:
 			self.checkbutton_shuffle.hide()
 			self.checkbutton_shuffle.set_active(False)
@@ -628,6 +633,7 @@ class Interface(uiloader.Interface):
 		"""Update the card browser list"""
 		if len(self._browser_cardlist) == 0:
 			self.hide_cardbrowser()
+			return
 		self.liststore_browse.clear()
 		for i in range(len(self._browser_cardlist)):
 			card = self._browser_cardlist[i]

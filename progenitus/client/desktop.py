@@ -379,8 +379,10 @@ class CairoDesktop(gtk.DrawingArea):
 			if isinstance(item, CardItem) or isinstance(item, Tray):
 				player = self.interface.my_player
 				started = self._dragndrop.started
-				finished = (player.hand if self.is_over_hand(event.x, event.y)
-					and not item.istoken else player.battlefield)
+				finished = player.battlefield
+				if (isinstance(item, CardItem) and not item.istoken
+						and self.is_over_hand(event.x, event.y)):
+					finished = player.hand
 				if started is not player.battlefield:
 					self.remove_item(item)
 					item_ = item.card
@@ -411,8 +413,8 @@ class CairoDesktop(gtk.DrawingArea):
 				# Card items can be moved to the hand
 				item.visible = (not self.is_over_hand(event.x, event.y)
 					or item.istoken)
-			if not item.istoken and i is not self._dragndrop.hand_index:
-				self.repaint_hand()
+				if not item.istoken and i is not self._dragndrop.hand_index:
+					self.repaint_hand()
 			item.clamp_coords()
 			item.repaint()
 			
