@@ -45,8 +45,8 @@ class DragNDrop(object):
 		"""Update the item's position"""
 		dx = x - self.start_x
 		dy = y - self.start_y
-		self.item.x = dx * self.item.widget.zoom + self.item_x
-		self.item.y = dy * self.item.widget.zoom + self.item_y
+		self.item.x = dx / self.item.widget.zoom + self.item_x
+		self.item.y = dy / self.item.widget.zoom + self.item_y
 		self.set_hand_index(x, y)
 
 
@@ -58,7 +58,7 @@ class CairoDesktop(gtk.DrawingArea):
 	enlarged_card = None
 	enlarged_card_last_pos = None # Last x, y position of the enlarged card
 	bg_color = 1, 1, 1
-	zoom = 5.7 # initial zoom factor
+	zoom = 12. # initial zoom factor; the larger means zooming in
 	# position is always centered around (0,0)
 	flip_y = False
 	
@@ -74,7 +74,7 @@ class CairoDesktop(gtk.DrawingArea):
 	
 	def __init__(self, interface, eventbox=None):
 		super(self.__class__, self).__init__()
-		self.picfactory = pics.PicFactory(self.zoom)
+		self.picfactory = pics.PicFactory()
 		if eventbox is not None:
 			self.setup_eventbox(eventbox)
 		self.show() # Visible by default
@@ -107,11 +107,11 @@ class CairoDesktop(gtk.DrawingArea):
 	def get_wh(self):
 		"""Return the size (w, h) of the currently visible playing area"""
 		w, h = self.window.get_size()
-		return w * self.zoom, (h - self.get_hand_height()) * self.zoom
+		return w / self.zoom, (h - self.get_hand_height()) / self.zoom
 	
 	def get_hand_height(self):
 		"""Get the height of the bottom area reserved for the cards in hand"""
-		return int(1.2 * config.CARD_HEIGHT / self.zoom)
+		return int(math.ceil(1.2 * 3.5 * self.zoom))
 	
 	# Item container
 	
@@ -161,7 +161,8 @@ class CairoDesktop(gtk.DrawingArea):
 		hand = self.interface.my_player.hand[:]
 		# If dragging apply dragging information
 		if (self._dragndrop is not None
-				and isinstance(self._dragndrop.item, CardItem)):
+				and isinstance(self._dragndrop.item, CardItem)
+				and not self._dragndrop.item.istoken):
 			if self._dragndrop.initial_hand_index is not None:
 				i = self._dragndrop.initial_hand_index
 				hand = hand[:i] + hand[i+1:]
@@ -175,8 +176,8 @@ class CairoDesktop(gtk.DrawingArea):
 		# Note the difference to get_hand_card_index
 		hand = self.get_hand()
 		w, h = self.get_wh()
-		cw = int(config.CARD_WIDTH / self.zoom)
-		x = x - w / self.zoom / 2 + int(1.1 * cw) * (len(hand) + 1) / 2
+		cw = int(2.5 * self.zoom)
+		x = x - w * self.zoom / 2 + int(1.1 * cw) * (len(hand) + 1) / 2
 		i = int(x) / int(1.1 * cw)
 		if i < 0:
 			i = 0
@@ -195,10 +196,10 @@ class CairoDesktop(gtk.DrawingArea):
 		if hand is None:
 			return
 		w, h = self.get_wh()
-		if y < h / self.zoom or y > h / self.zoom + self.get_hand_height():
+		if y < h * self.zoom or y > h * self.zoom + self.get_hand_height():
 			return None
-		cw = int(config.CARD_WIDTH / self.zoom)
-		x = x - w / self.zoom / 2 + int(1.1 * cw) * len(hand) / 2
+		cw = int(2.5 * self.zoom)
+		x = x - w * self.zoom / 2 + int(1.1 * cw) * len(hand) / 2
 		if x % int(1.1 * cw) > cw:
 			return None
 		i = int(x) / int(1.1 * cw)
@@ -223,8 +224,8 @@ class CairoDesktop(gtk.DrawingArea):
 		hand = self.get_hand()
 		if hand is None:
 			return
-		w = int(config.CARD_WIDTH / self.zoom)
-		h = int(config.CARD_HEIGHT / self.zoom)
+		w = int(math.ceil(2.5 * self.zoom))
+		h = int(math.ceil(3.5 * self.zoom))
 		x = width / 2 - int(1.1 * w) * len(hand) / 2
 		y = height - int(1.1 * h)
 		
@@ -242,7 +243,7 @@ class CairoDesktop(gtk.DrawingArea):
 			cr.rectangle(x, y, w, h)
 			cr.translate(x, y)
 			cr.clip()
-			surface = self.picfactory.get(card.cardid, self.zoom)
+			surface = self.picfactory.get(card.id, w)
 			assert isinstance(surface, cairo.Surface)
 			cr.set_source_surface(surface)
 			cr.paint()
@@ -347,9 +348,8 @@ class CairoDesktop(gtk.DrawingArea):
 				# Create new card item
 				width, height = self.window.get_size()
 				item = CardItem(handcard, self.interface.my_player, True)
-				item.x = ((event.x - width / 2) * self.zoom -
-					config.CARD_WIDTH / 2)
-				item.y = (event.y - height / 2) * self.zoom
+				item.x = (event.x - width / 2) / self.zoom - 2.5 / 2
+				item.y = (event.y - height / 2) / self.zoom
 				item.visible = False
 				self.add_item(item)
 				item.clamp_coords()
@@ -380,7 +380,7 @@ class CairoDesktop(gtk.DrawingArea):
 				player = self.interface.my_player
 				started = self._dragndrop.started
 				finished = (player.hand if self.is_over_hand(event.x, event.y)
-					else player.battlefield)
+					and not item.istoken else player.battlefield)
 				if started is not player.battlefield:
 					self.remove_item(item)
 					item_ = item.card
@@ -409,8 +409,9 @@ class CairoDesktop(gtk.DrawingArea):
 			self._dragndrop.update_pos(event.x, event.y)
 			if isinstance(item, CardItem):
 				# Card items can be moved to the hand
-				item.visible = not self.is_over_hand(event.x, event.y)
-			if i is not self._dragndrop.hand_index:
+				item.visible = (not self.is_over_hand(event.x, event.y)
+					or item.istoken)
+			if not item.istoken and i is not self._dragndrop.hand_index:
 				self.repaint_hand()
 			item.clamp_coords()
 			item.repaint()
@@ -422,11 +423,11 @@ class CairoDesktop(gtk.DrawingArea):
 			item = self.get_item_at(event.x, event.y)
 			handcard = self.get_hand_card(event.x, event.y)
 			if handcard is not None:
-				self.show_enlarged_card(handcard.cardid)
+				self.show_enlarged_card(handcard.id)
 				if self.hover_callback is not None:
 					self.hover_callback(handcard)
 			elif (item is not None and item.visible
-				and isinstance(item, CardItem) and (item.mine or item.face)):
+				and isinstance(item, CardItem) and (item.mine or item.faceup)):
 				self.show_enlarged_card(item.cardid)
 			else:
 				self.show_enlarged_card(None)
@@ -490,10 +491,10 @@ class Item(object):
 	def get_screen_coords(self):
 		"""Get the on-screen-coordinates of this item"""
 		x, y, w, h = self.parent.get_screen_coords()
-		ix = int(math.floor(self.x / self.widget.zoom + w / 2))
-		iy = int(math.floor(self.y / self.widget.zoom + h / 2))
-		iw = int(self.w / self.widget.zoom) + 2
-		ih = int(self.h / self.widget.zoom) + 2
+		ix = int(math.floor(self.x * self.widget.zoom + w / 2))
+		iy = int(math.floor(self.y * self.widget.zoom + h / 2))
+		iw = int(self.w * self.widget.zoom) + 2
+		ih = int(self.h * self.widget.zoom) + 2
 		return ix, iy, iw, ih
 	
 	def clamp_coords(self):
@@ -531,8 +532,8 @@ class Container(Item):
 		item.widget = None
 	
 	def paint(self, desktop, cr):
-		w = int(self.w / desktop.zoom)
-		h = int(self.h / desktop.zoom)
+		w = int(math.ceil(self.w * desktop.zoom))
+		h = int(math.ceil(self.h * desktop.zoom))
 		
 		# Background fill
 		cr.set_source_rgb(*self.bg_color)
@@ -607,9 +608,9 @@ class TextItem(Item):
 		surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 0, 0)
 		cr = cairo.Context(surface)
 		cr.select_font_face(self.font_face)
-		cr.set_font_size(self.fontsize / self.widget.zoom)
+		cr.set_font_size(self.fontsize * self.widget.zoom)
 		xb, yb, w, h, xa, ya = cr.text_extents(self.text)
-		return w * self.widget.zoom + 2, h * self.widget.zoom + 2
+		return w / self.widget.zoom + 2, h / self.widget.zoom + 2
 	
 	def set_text(self, text):
 		"""Update the text and item width"""
@@ -621,8 +622,8 @@ class TextItem(Item):
 			self.update()
 		cr.set_source_rgb(*self.color)
 		cr.select_font_face(self.font_face)
-		cr.set_font_size(self.fontsize / self.widget.zoom)
-		cr.move_to(0, self.fontsize / self.widget.zoom)
+		cr.set_font_size(self.fontsize * self.widget.zoom)
+		cr.move_to(0, self.fontsize * self.widget.zoom)
 		cr.show_text(self.text)
 
 
@@ -633,32 +634,44 @@ class TextItem(Item):
 class CardItem(Item):
 	"""A magic card or token"""
 	
-	w = config.CARD_WIDTH
-	h = config.CARD_HEIGHT
+	w = 2.5 # Card width in inches
+	h = 3.5 # Card height in inches
 	
 	tapped = False
 	flipped = False
-	face = True # True is face up
+	faceup = True # True is face up
 	does_not_untap = False
-	token = False # Is this card only a token / copy?
+	
+	card = None
+	token = None
+	cardid = None
+	istoken = False # Is this card only a token / copy?
+		# Tokens cannot go to the library/graveyard/hand etc.
 	
 	border_color = None
 	dragable = True
 	
-	def __init__(self, card, owner, mine=False):
-		self.card = card
-		self.cardid = card.cardid
+	def __init__(self, cardortoken, owner, mine=False):
+		if isinstance(cardortoken, cards.Card):
+			self.card = cardortoken
+		elif isinstance(cardortoken, cards.Token):
+			self.token = cardortoken
+		else:
+			assert(False)
+		self.cardid = cardortoken.id
 		self.owner = owner
 		self.controller = owner
 		self.mine = mine
 		
 		# Check if the card does not untap by default
-		if self.card.text.find("doesn't untap during your untap step.") >= 0:
-			self.does_not_untap = True
+		if self.card is not None:
+			if self.card.text.find("doesn't untap during your untap step.") >= 0:
+				self.does_not_untap = True
 	
 	def paint(self, desktop, cr):
-		surface = desktop.picfactory.get(self.cardid if self.face else 0,
-			desktop.zoom)
+		cardid = self.cardid if self.faceup else "deckmaster"
+		width = int(math.ceil(self.w * desktop.zoom))
+		surface = desktop.picfactory.get(cardid, width)
 		assert(isinstance(surface, cairo.Surface))
 		
 		# rotate image
@@ -675,9 +688,14 @@ class CardItem(Item):
 	
 	def get_description(self):
 		"""Get a one line description of this card item"""
-		text = self.card.name if self.mine or self.face else _("face down card")
-		if self.token:
-			text += " (clone)"
+		text = ""
+		if self.card is not None:
+			text = (self.card.name if self.mine or self.faceup else
+				_("face down card"))
+			if self.istoken:
+				text += " (clone)"
+		else:
+			text = self.token.get_description()
 		if not self.mine:
 			text = _("{0}'s {1}").format(self.controller.name, text)
 		return text
@@ -716,14 +734,14 @@ class CardItem(Item):
 				])
 	
 	def turn_over(self):
-		self.set_face(not self.face)
+		self.set_faceup(not self.faceup)
 	
-	def set_face(self, face=True):
+	def set_faceup(self, faceup=True):
 		"""Set the direction the card is facing: up (True) or down (False)"""
-		assert(isinstance(face, bool))
-		if self.face != face:
+		assert(isinstance(faceup, bool))
+		if self.faceup != faceup:
 			self.repaint()
-			self.face = face
+			self.faceup = faceup
 			if self.mine:
 				self.widget.interface.network_manager.send_commands([
 					("face", (self.itemid,))
@@ -738,8 +756,8 @@ class Tray(Container):
 	"""The tray is composed of the library, the graveyard, the player name,
 	a life counter and a hand card counter (for other players)"""
 	
-	w = int(config.CARD_WIDTH * 3.4)
-	h = int(config.CARD_HEIGHT * 1.4)
+	w = 2.5 * 3.4
+	h = 3.5 * 1.4
 	bg_color = 0.9, 0.9, 0.9
 	dragable = True
 	
@@ -750,33 +768,33 @@ class Tray(Container):
 		
 		# Populate the container
 		self.library_item = Library()
-		self.library_item.x = int(config.CARD_WIDTH * 0.05)
-		self.library_item.y = -int(config.CARD_HEIGHT * 0.35)
+		self.library_item.x = 2.5 * 0.05
+		self.library_item.y = -3.5 * 0.35
 		self.add(self.library_item)
 		self.graveyard_item = Graveyard()
-		self.graveyard_item.x = -int(config.CARD_WIDTH * 1.05)
-		self.graveyard_item.y = -int(config.CARD_HEIGHT * 0.35)
+		self.graveyard_item.x = -2.5 * 1.05
+		self.graveyard_item.y = -3.5 * 0.35
 		self.add(self.graveyard_item)
 		self.name_item = TextItem()
 		self.name_item.x = -self.w / 2
 		self.name_item.y = -self.h / 2
-		self.name_item.fontsize = config.CARD_HEIGHT * 0.2
+		self.name_item.fontsize = 3.5 * 0.2
 		self.name_item.update = \
 			lambda: self.name_item.set_text(self.player.user.nick)
 		self.add(self.name_item)
 		self.life_item = TextItem()
 		self.life_item.color = 0.5, 0, 0
-		self.life_item.x = config.CARD_WIDTH * 1.1
+		self.life_item.x = 2.5 * 1.1
 		self.life_item.y = self.name_item.y
-		self.life_item.fontsize = config.CARD_HEIGHT * 0.14
+		self.life_item.fontsize = 3.5 * 0.14
 		self.life_item.update = \
 			lambda: self.life_item.set_text(str(self.player.life))
 		self.add(self.life_item)
 		self.card_count_item = TextItem()
 		self.card_count_item.color = 0.5, 0.5, 0
-		self.card_count_item.x = config.CARD_WIDTH * 1.5
+		self.card_count_item.x = 3.5 * 1.5
 		self.card_count_item.y = self.name_item.y
-		self.card_count_item.fontsize = config.CARD_HEIGHT * 0.14
+		self.card_count_item.fontsize = 3.5 * 0.14
 		self.card_count_item.update = \
 			lambda: self.card_count_item.set_text(str(len(self.player.hand)))
 		self.add(self.card_count_item)
@@ -786,15 +804,16 @@ class Tray(Container):
 
 class Library(Item):
 	
-	w = config.CARD_WIDTH
-	h = config.CARD_HEIGHT
+	w = 2.5
+	h = 3.5
 	
 	def double_click(self, event):
 		self.parent.player.draw_card()
 	
 	def paint(self, desktop, cr):
 		if len(self.parent.player.library) > 0:
-			surface = desktop.picfactory.get(0, desktop.zoom)
+			width = int(math.ceil(self.w * desktop.zoom))
+			surface = desktop.picfactory.get("deckmaster", width)
 			assert(isinstance(surface, cairo.Surface))
 			cr.set_source_surface(surface)
 			cr.paint()
@@ -802,13 +821,14 @@ class Library(Item):
 
 class Graveyard(Item):
 	
-	w = config.CARD_WIDTH
-	h = config.CARD_HEIGHT
+	w = 2.5
+	h = 3.5
 	
 	def paint(self, desktop, cr):
 		if len(self.parent.player.graveyard) > 0:
 			card = self.parent.player.graveyard[-1]
-			surface = desktop.picfactory.get(card.cardid, desktop.zoom)
+			width = int(math.ceil(self.w * desktop.zoom))
+			surface = desktop.picfactory.get(card.id, width)
 			assert(isinstance(surface, cairo.Surface))
 			cr.set_source_surface(surface)
 			cr.paint()

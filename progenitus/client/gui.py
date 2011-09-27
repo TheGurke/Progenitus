@@ -38,8 +38,8 @@ class Interface(uiloader.Interface):
 		# Insert a CairoDesktop
 		self.cd = desktop.CairoDesktop(self, self.eventbox)
 		self.eventbox.add(self.cd)
-		self.cd.zoom = 8.66
-		self.hscale_zoom.set_value(3) # sync initial zoom level
+		self.hscale_zoom.set_value(2) # sync initial zoom level
+		self.zoom_change()
 		
 		# Set CairoDesktop callbacks
 		self.cd.prop_callback = self.call_properties
@@ -81,8 +81,8 @@ class Interface(uiloader.Interface):
 		"""Load the tokens into the autocompleting combobox"""
 		cards.load_tokens()
 		for token in cards.tokens:
-			self.liststore_tokens.append((token.tokenid,
-				token.get_description(), token.setname, token.releasedate))
+			self.liststore_tokens.append((token.id, token.get_description(),
+				token.setname, token.releasedate))
 	
 	
 	# Network methods
@@ -346,7 +346,9 @@ class Interface(uiloader.Interface):
 		if 0 <= i < len(cards.tokens):
 			self.hbox_entrybar.hide()
 			token = cards.tokens[i]
-			print token.get_description()
+			item = self.my_player.create_carditem(token.id,
+				token.get_description())
+			item.istoken = True
 	
 	def set_life(self, widget):
 		self.spinbutton_life.set_value(self.my_player.life)
@@ -365,11 +367,11 @@ class Interface(uiloader.Interface):
 			self.hbox_entrybar.hide()
 	
 	def zoom_in(self, widget):
-		self.cd.zoom *= 0.8
+		self.cd.zoom *= 1.2
 		self.cd.queue_draw()
 	
 	def zoom_out(self, widget):
-		self.cd.zoom *= 1.2
+		self.cd.zoom *= 0.8
 		self.cd.queue_draw()
 	
 	def reset_game(self, widget):
@@ -447,8 +449,10 @@ class Interface(uiloader.Interface):
 	def clone_card(self, widget):
 		pl = self.my_player
 		item = self._popup
-		item2 = pl.create_carditem(item.cardid, None, item.x + 60, item.y + 60)
-		item2.token = True
+		item2 = pl.create_carditem(item.cardid, None, item.x + 1, item.y + 1)
+		item2.istoken = True
+		item2.card = item.card
+		item2.token = item.token
 	
 	def flip_card(self, widget):
 		self._popup.set_flipped(self.menuitem_flipped.get_active())
@@ -487,8 +491,9 @@ class Interface(uiloader.Interface):
 		self.show_cardbrowser(self.my_player.library, True)
 		self.button_to_library.hide()
 	
-	def zoom_change(self, widget, scroll, value):
-		self.cd.zoom = math.sqrt(value + 1)*5
+	def zoom_change(self, widget=None, scroll=None, value=None):
+		value = self.hscale_zoom.get_value()
+		self.cd.zoom = 35 / math.sqrt(value + 1)
 		self.cd.queue_draw()
 	
 	
@@ -505,7 +510,7 @@ class Interface(uiloader.Interface):
 			self.status_label.set_text(_("%s's graveyard: %d cards") %
 				(item.parent.player.name, len(graveyard)))
 			if len(graveyard) > 0:
-				self.cd.show_enlarged_card(graveyard[-1].cardid)
+				self.cd.show_enlarged_card(graveyard[-1].id)
 		if isinstance(item, desktop.Library):
 			self.status_label.set_text(_("%s's library: %d cards") %
 				(item.parent.player.name, len(item.parent.player.library)))
@@ -522,7 +527,7 @@ class Interface(uiloader.Interface):
 					event.time)
 		if isinstance(item, desktop.CardItem):
 			self.menuitem_flipped.set_active(item.flipped)
-			self.menuitem_face.set_active(not item.face)
+			self.menuitem_face.set_active(not item.faceup)
 			self.menuitem_does_not_untap.set_active(item.does_not_untap)
 			for widgetname in ("to_hand", "to_lib", "to_graveyard", "exile",
 				"attack", "block", "use_effect", "cardsep2", "does_not_untap",
@@ -571,17 +576,17 @@ class Interface(uiloader.Interface):
 		mine = player is self.my_player
 		tray = desktop.Tray(player, mine)
 		if len(self.players) == 1:
-			tray.x = -1800
-			tray.y = 500
+			tray.x = -14
+			tray.y = 4
 		elif len(self.players) == 2:
-			tray.x = 1800 - tray.w
-			tray.y = -500 - tray.h
+			tray.x = 14 - tray.w
+			tray.y = -4 - tray.h
 		elif len(self.players) == 3:
-			tray.x = 1800 - tray.w
-			tray.y = 500
+			tray.x = 14 - tray.w
+			tray.y = 4
 		elif len(self.players) == 4:
-			tray.x = -1800
-			tray.y = -500 - tray.h
+			tray.x = -14
+			tray.y = -4 - tray.h
 		self.cd.add_item(tray, None if mine else 0)
 		tray.repaint()
 		
@@ -703,10 +708,10 @@ class Interface(uiloader.Interface):
 	
 	def create_random_card(self, widget=None):
 		"""Create a random card on the desktop"""
-		cardid = 61007000 + random.randint(1,100)
+		cardid = "tsp." + str(random.randint(1, 301))
 		w, h = self.cd.get_wh()
-		x = random.randint(- int(w)/2, int(w)/2 - config.CARD_WIDTH)
-		y = random.randint(0, int(h)/2 - config.CARD_HEIGHT)
+		x = (random.random() - 0.5) * (w - 2.5)
+		y = random.random() * (h - 3.5) / 2
 		self.my_player.move_card(cards.get(cardid), None,
 			self.my_player.battlefield, x, y)
 

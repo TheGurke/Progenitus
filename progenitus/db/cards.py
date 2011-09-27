@@ -8,8 +8,11 @@ import sqlite3
 from gettext import gettext as _
 
 from progenitus import settings
-import pics
 
+#
+# Every card has a unique id string; tokens and cards have different ids.
+# Use the function cards.is_token(cardid) to tell them apart.
+#
 
 _cursor = None # The database cursor
 _last_search = None # The last query executed
@@ -36,6 +39,12 @@ def convert_mana(manacost):
 			# alternative colors e.g. {W/G} have 1 less than counted
 
 
+def is_token(cardid):
+	"""Determine if something is a token by its card id"""
+	return cardid.find('.T.') >= 0
+
+
+
 class Card(object):
 	"""Magic card instance"""
 	
@@ -43,7 +52,7 @@ class Card(object):
 		if len(args) == 0:
 			args = ("", "", "", "", "", 0, 0, 0, 0, 0, 0, 0, "", "", "", "", "",
 				"", "", "", -1, 0, "", 0)
-		(self.cardid, self.name, self.setid, self.setname, self.manacost,
+		(self.id, self.name, self.setid, self.setname, self.manacost,
 			self.converted_cost, self.iswhite, self.isblue, self.isblack,
 			self.isred, self.isgreen, self.iscolorless, self.cardtype,
 			self.subtype, self.text, self.flavor, self.artist,
@@ -51,14 +60,14 @@ class Card(object):
 			self.releasedate, self.collectorsid, self.linkedto) = args
 	
 	def __eq__(self, other):
-		return self.cardid == other.cardid
+		return self.id == other.id
 	
 	def __str__(self):
 		return "%s (%s)" % (self.name, self.cardset)
 	
 	def derive_id(self):
 		"""Derive the card id based on collectors id and setid"""
-		self.cardid = "%s.%s" % (self.setid, self.collectorsid)
+		self.id = "%s.%s" % (self.setid, self.collectorsid)
 	
 	def derive_colors(self):
 		"""Derive this card's color"""
@@ -116,12 +125,13 @@ class Card(object):
 	
 	def as_tuple(self):
 		"""Return the magic card as a tuple"""
-		return (self.cardid, self.name, self.setid, self.setname, self.manacost,
+		return (self.id, self.name, self.setid, self.setname, self.manacost,
 			self.converted_cost, self.iswhite, self.isblue, self.isblack,
 			self.isred, self.isgreen, self.iscolorless, self.cardtype,
 			self.subtype, self.text, self.flavor, self.artist, self.rarity,
 			self.power, self.toughness, self.price, self.releasedate,
 			self.collectorsid, self.linkedto)
+
 
 
 class Token(object):
@@ -131,14 +141,14 @@ class Token(object):
 		if args == ():
 			args = ("", "", "", 0, 0, 0, 0, 0, 0, "", "", "", "", "", "", "",
 				0, "")
-		(self.tokenid, self.setid, self.setname, self.iswhite, self.isblue,
+		(self.id, self.setid, self.setname, self.iswhite, self.isblue,
 			self.isblack, self.isred, self.isgreen, self.iscolorless,
 			self.cardtype, self.subtype, self.text, self.flavor, self.artist,
 			self.power, self.toughness, self.releasedate, self.collectorsid) \
 				= args
 	
 	def __eq__(self, other):
-		return self.tokenid == other.tokenid
+		return self.id == other.id
 	
 	def __str__(self):
 		if self.power != "" and self.toughness != "":
@@ -147,7 +157,7 @@ class Token(object):
 	
 	def derive_id(self):
 		"""Derive the card id based on collectors id and setid"""
-		self.tokenid = "%s.%s" % (self.setid, self.collectorsid)
+		self.id = "%s.T.%s" % (self.setid, self.collectorsid)
 	
 	def get_description(self):
 		"""Get a token description"""
@@ -171,11 +181,10 @@ class Token(object):
 	
 	def as_tuple(self):
 		"""Return the token as a tuple"""
-		return (self.tokenid, self.setid, self.setname, self.iswhite,
-			self.isblue, self.isblack, self.isred, self.isgreen,
-			self.iscolorless, self.cardtype, self.subtype, self.text,
-			self.flavor, self.artist, self.power, self.toughness,
-			self.releasedate, self.collectorsid)
+		return (self.id, self.setid, self.setname, self.iswhite, self.isblue,
+			self.isblack, self.isred, self.isgreen, self.iscolorless,
+			self.cardtype, self.subtype, self.text, self.flavor, self.artist,
+			self.power, self.toughness, self.releasedate, self.collectorsid)
 
 
 def create_db(filename):
@@ -203,20 +212,19 @@ def create_db(filename):
 
 
 def get(cardid):
-	"""Get a card by id"""
-	l = search('"id" = ?', (cardid,), 1)
-	if l == []:
-		raise RuntimeError(_("Card with id %s not found.") % cardid)
-	return l[0]
-
-def get_token(tokenid):
-	"""Get a token by id"""
-	global _cursor
-	_cursor.execute('SELECT * FROM "tokens" WHERE "id" = ?', (tokenid,))
-	row = _cursor.fetchone()
-	if row is None:
-		raise RuntimeError(_("Token with id %s not found.") % tokenid)
-	return Token(*row)
+	"""Get a card or token by id"""
+	if is_token(cardid):
+		global _cursor
+		_cursor.execute('SELECT * FROM "tokens" WHERE "id" = ?', (cardid,))
+		row = _cursor.fetchone()
+		if row is None:
+			raise RuntimeError(_("Token with id %s not found.") % cardid)
+		return Token(*row)
+	else:
+		l = search('"id" = ?', (cardid,), 1)
+		if l == []:
+			raise RuntimeError(_("Card with id %s not found.") % cardid)
+		return l[0]
 
 
 def search(query, args=(), limit=settings.results_limit):

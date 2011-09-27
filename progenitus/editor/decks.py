@@ -92,7 +92,7 @@ class Deck(object):
 	def remove(self, cardid, sideboard=False):
 		"""Remove a card by id from the deck"""
 		l = self.sideboard if sideboard else self.decklist
-		card = filter(lambda c: c.cardid == cardid, l)[0]
+		card = filter(lambda c: c.id == cardid, l)[0]
 		l.remove(card)
 	
 	def save(self):

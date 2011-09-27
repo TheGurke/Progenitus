@@ -35,10 +35,6 @@ DECKMASTER_PATH = "media/deckmaster.png"
 JOIN_DELAY = 1000 # time to wait for tray creation
 MAX_ITEMID = 2**16 - 1
 
-# Default card dimensions
-CARD_WIDTH = 312
-CARD_HEIGHT = 445
-
 # Default prefix for network games
 DEFAULT_GAME_PREFIX = "progenitus-"
 

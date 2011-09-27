@@ -408,7 +408,7 @@ class Interface(uiloader.Interface):
 		for sb in [True, False]:
 			l = self.deck.sideboard if sb else self.deck.decklist
 			for card in l:
-				self.cards.append((card.cardid, card.name, card.manacost,
+				self.cards.append((card.id, card.name, card.manacost,
 					card.get_composed_type(), card.power, card.toughness,
 					card.rarity[0], card.setname, sb, False, card.price,
 					_price_to_text(card.price), card.releasedate))
@@ -645,7 +645,7 @@ class Interface(uiloader.Interface):
 				row[9] = False
 				break
 		else:
-			it = self.cards.append((card.cardid, card.name, card.manacost,
+			it = self.cards.append((card.id, card.name, card.manacost,
 				card.get_composed_type(), card.power, card.toughness,
 				card.rarity, card.setname, sideboard, False, card.price,
 				_price_to_text(card.price), card.releasedate))
@@ -663,7 +663,7 @@ class Interface(uiloader.Interface):
 		cardid, sb, removed = self.get_selected_card()
 		if cardid is not None and not removed:
 			l = self.deck.sideboard if sb else self.deck.decklist
-			c = filter(lambda c: c.cardid == cardid, l)[0]
+			c = filter(lambda c: c.id == cardid, l)[0]
 			l.remove(c)
 			model, it = self.cardview.get_selection().get_selected()
 			model.set_value(it, 9, True)
@@ -686,7 +686,7 @@ class Interface(uiloader.Interface):
 		if cardid is not None and not removed:
 			old = self.deck.sideboard if sb else self.deck.decklist
 			new = self.deck.decklist if sb else self.deck.sideboard
-			card = filter(lambda c: c.cardid == cardid, old)[0]
+			card = filter(lambda c: c.id == cardid, old)[0]
 			old.remove(card)
 			new.append(card)
 			model, it = self.cardview.get_selection().get_selected()
@@ -972,13 +972,13 @@ class Interface(uiloader.Interface):
 					minprice = -1
 				else:
 					minprice = min(versions_, key=lambda card: card.price).price
-				it = self.results.append(None, (card.cardid, card.name,
+				it = self.results.append(None, (card.id, card.name,
 					card.manacost, card.get_composed_type(), card.power,
 					card.toughness, card.rarity[0], "...", minprice,
 					_price_to_text(minprice), card.releasedate))
 			# Insert all child cards
 			for card in versions:
-				self.results.append(it, (card.cardid, card.name, card.manacost,
+				self.results.append(it, (card.id, card.name, card.manacost,
 					card.get_composed_type(), card.power, card.toughness,
 					card.rarity[0], card.setname, card.price,
 					_price_to_text(card.price), card.releasedate))

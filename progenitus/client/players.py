@@ -238,7 +238,7 @@ class Player(object):
 			if target is not self.battlefield:
 				# item must be a desktop.CardItem
 				card = item.card
-			if (hasattr(item, "token") and item.token
+			if (hasattr(item, "token") and item.istoken
 					and target is not self.battlefield):
 				# Cannot let tokens leave the battlefield
 				target = None
@@ -257,7 +257,7 @@ class Player(object):
 		if target is not None and target is not self.battlefield:
 			target.append(card)
 		elif target is self.battlefield and origin is not self.battlefield:
-			item = self.create_carditem(card.cardid, card.name, None, x, y)
+			item = self.create_carditem(card.id, card.name, None, x, y)
 		elif target is self.battlefield and origin is self.battlefield:
 			item.x = x
 			item.y = y
@@ -282,9 +282,9 @@ class Player(object):
 		elif origin is self.battlefield and target is self.battlefield:
 			cmdlist.append(("move", (item.itemid, item.x, item.y)))
 		if target is self.graveyard:
-			cmdlist.append(("bury", (card.cardid,)))
+			cmdlist.append(("bury", (card.id,)))
 		elif target is self.exile:
-			cmdlist.append(("exile", (card.cardid,)))
+			cmdlist.append(("exile", (card.id,)))
 		l = [self.library, self.hand, self.exile]
 		if any(map(lambda x: origin is x or target is x, l)):
 			cmdlist.append(("update", (len(self.library), len(self.hand))))
@@ -304,19 +304,6 @@ class Player(object):
 		self.send_network_cmd("enter", cardid, cardname, itemid, item.x, item.y)
 		self.battlefield.append(item)
 		return item
-	
-	def create_token(self, tokenid, tokendescription, itemid=None, x=0, y=0):
-		pass
-#		item = self.new_item(cardid, self, x, y)
-#		# FIXME: check for card id
-#		if itemid is None:
-#			itemid = self._get_new_itemid(item)
-#		else:
-#			self._set_itemid(itemid, item)
-#		item.itemid = itemid
-#		self.send_network_cmd("enter", cardid, cardname, itemid, item.x, item.y)
-#		self.battlefield.append(item)
-#		return item		
 	
 	def remove_carditem(self, item):
 		self.battlefield.remove(item)
@@ -342,17 +329,19 @@ class Player(object):
 			("setlife", (self.life,))
 		]
 		for card in self.graveyard:
-			cmdlist.append(("bury", (card.cardid,)))
+			cmdlist.append(("bury", (card.id,)))
 		for card in self.exile:
-			cmdlist.append(("exile", (card.cardid,)))
+			cmdlist.append(("exile", (card.id,)))
 		for item in self.battlefield:
-			cmdlist.append(("enter", (item.card.cardid, item.card.name,
+			cmdlist.append(("enter", (item.cardid,
+				item.card.name if item.card is not None else
+					item.token.get_description(),
 				item.itemid, item.x, item.y)))
 			if item.tapped:
 				cmdlist.append(("tap", (item.itemid,)))
 			if item.flipped:
 				cmdlist.append(("flip", (item.itemid,)))
-			if not item.face:
+			if not item.faceup:
 				cmdlist.append(("face", (item.itemid,)))
 		return cmdlist
 	

@@ -29,12 +29,11 @@ commands = {
 	"tray":     "[CreateTray] as %x at (%d, %d)", # Tray item
 	"update":   "[Update] %d %d", # update tray: library count, hand card count
 	"setlife":  "[Setlife] %d", # set life points
-	"enter":    "[Enter] %d \"%s\" as %x at (%d,%d)", # enter the battlefield
-	"token":	"[Token] %d \"%s\" as %x at (%d,%d)", # create a new token
+	"enter":    "[Enter] %s \"%s\" as %x at (%d,%d)", # enter the battlefield
 	"exit":     "[Exit] %x", # exit the battlefield
-	"bury":     "[Bury] %d", # add a card to the graveyard
+	"bury":     "[Bury] %s", # add a card to the graveyard
 	"unbury":   "[Unbury] %d", # remove a card from the graveyard by index
-	"exile":    "[Exile] %d", # move a card to the exile zone
+	"exile":    "[Exile] %s", # move a card to the exile zone
 	"unexile":  "[Unexile] %d", # remove a card from the exile by index
 	"mulligan": "[Mulligan]", # take a mulligan
 	"shuffle":  "[Shuffle]", # shuffle the library

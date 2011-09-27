@@ -164,7 +164,7 @@ class Interface(uiloader.Interface):
 				for i in range(len(cardlist)):
 					self.progressbar2.set_fraction(float(i) / len(cardlist))
 					card = cardlist[i]
-					pic_filename = pics._get_path(card.cardid)
+					pic_filename = pics._get_path(card.id)
 					if not os.path.exists(pic_filename):
 						yield magiccardsinfo.mine_pic(magiccardsinfo.url_pic
 							% (mcinfosetcode, card.collectorsid), pic_filename)
@@ -179,7 +179,8 @@ class Interface(uiloader.Interface):
 						card.collectorsid)
 					self.cursor.execute(
 						'UPDATE "cards" SET "price"=? WHERE "id" = ?',
-						(card.cardid, card.price))
+						(card.id, card.price)
+					)
 				self.sqlconn.commit()
 		
 		# Download tokens
@@ -198,13 +199,13 @@ class Interface(uiloader.Interface):
 				self.progressbar2.set_fraction(float(i) / len(tokens))
 				
 				# Get token picture
-				pic_filename = pics._get_token_path(token.tokenid)
+				pic_filename = pics._get_path(token.id)
 				if not os.path.exists(pic_filename):
 					yield magiccardsinfo.mine_pic(pic_url, pic_filename)
 				
 				# Insert database entry
 				try:
-					yield cards.get_token(token.tokenid)
+					yield cards.get(token.id)
 				except RuntimeError:
 					self.cursor.execute(u'INSERT INTO "tokens" VALUES (' +
 						17 * '?,' + '?)', token.as_tuple())
