@@ -172,7 +172,7 @@ def load(filename, progresscallback=None, returncallback=None):
 	for i in range(len(cardlist)):
 		num, name, expansion, sb = cardlist[i]
 		if expansion is not None:
-			l = yield cards.search('"set" = ? AND "name" = ?' +
+			l = yield cards.search('"setname" = ? AND "name" = ?' +
 				' ORDER BY "releasedate" DESC', (expansion, name))
 		if expansion is None or l == []:
 			l = yield cards.search('"name" = ? ORDER BY "releasedate" DESC',
@@ -181,7 +181,7 @@ def load(filename, progresscallback=None, returncallback=None):
 			# try to find card by adding parenthesis
 			name = "%(" + name + ")%"
 			if expansion is not None:
-				l = yield cards.search('"set" LIKE ? AND "name" = ?' +
+				l = yield cards.search('"setname" LIKE ? AND "name" = ?' +
 					' ORDER BY "releasedate" DESC', (expansion, name))
 			if expansion is None or l == []:
 				l = yield cards.search('"name" LIKE ?' +

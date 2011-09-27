@@ -142,7 +142,8 @@ def mine_tokens():
 		for link, name, power, toughness, number, artist in tokens_:
 			link = "/extras/" + link[7:-4] + "jpg"
 			token = cards.Token()
-			token.name = name
+			token.subtype = name
+			token.cardtype = "Creature"
 			token.power = power
 			token.toughness = toughness
 			token.collectorsid = number if number != "" else "0"

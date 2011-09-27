@@ -13,7 +13,7 @@ import pics
 
 _cursor = None # The database cursor
 _last_search = None # The last query executed
-
+tokens = None # A list of all tokens
 
 
 def connect():
@@ -149,6 +149,13 @@ class Token(object):
 		"""Derive the card id based on collectors id and setid"""
 		self.tokenid = "%s.%s" % (self.setid, self.collectorsid)
 	
+	def get_description(self):
+		"""Get a token description"""
+		if self.power == "" and self.toughness == "":
+			return "%s (%s)" % (self.subtype, self.setname)
+		return "%s/%s %s (%s)" % (self.power, self.toughness, self.subtype,
+			self.setname)
+	
 	def markup(self):
 		"""Return the card details as a gtk markup text"""
 		esc = glib.markup_escape_text # escape function
@@ -208,7 +215,7 @@ def get_token(tokenid):
 	_cursor.execute('SELECT * FROM "tokens" WHERE "id" = ?', (tokenid,))
 	row = _cursor.fetchone()
 	if row is None:
-		raise RuntimeError(_("Token with id %s not found.") % cardid)
+		raise RuntimeError(_("Token with id %s not found.") % tokenid)
 	return Token(*row)
 
 
@@ -256,6 +263,16 @@ def more_results(limit=None):
 			print "Limit reached"
 			break
 	return l
+
+
+def load_tokens():
+	"""Load all tokens from the database to memory"""
+	global tokens
+	_cursor.execute('SELECT * FROM "tokens"')
+	tokens = []
+	for row in _cursor:
+		token = Token(*row)
+		tokens.append(token)
 
 
 

@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk+" version="2.18"/>
+  <requires lib="gtk+" version="2.24"/>
   <!-- interface-naming-policy project-wide -->
   <object class="GtkAdjustment" id="adjustment_life">
     <property name="lower">-1000000</property>
     <property name="upper">1000000</property>
+    <property name="value">20</property>
     <property name="step_increment">1</property>
     <property name="page_increment">5</property>
+  </object>
+  <object class="GtkAdjustment" id="adjustment_zoom">
+    <property name="upper">100</property>
+    <property name="value">50</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
   </object>
   <object class="GtkListStore" id="liststore_browse">
     <columns>
@@ -16,6 +23,18 @@
       <column type="gchararray"/>
       <!-- column-name cost -->
       <column type="gchararray"/>
+    </columns>
+  </object>
+  <object class="GtkListStore" id="liststore_tokens">
+    <columns>
+      <!-- column-name id -->
+      <column type="gchararray"/>
+      <!-- column-name description -->
+      <column type="gchararray"/>
+      <!-- column-name setname -->
+      <column type="gchararray"/>
+      <!-- column-name releasedate -->
+      <column type="guint"/>
     </columns>
   </object>
   <object class="GtkListStore" id="liststore_users">
@@ -291,7 +310,6 @@
     <property name="height_request">520</property>
     <property name="sensitive">False</property>
     <property name="can_focus">False</property>
-    <property name="title" translatable="yes">Client</property>
     <property name="default_width">1000</property>
     <property name="default_height">600</property>
     <signal name="destroy" handler="quit" swapped="no"/>
@@ -302,7 +320,6 @@
         <property name="can_focus">False</property>
         <child>
           <object class="GtkToolbar" id="toolbar">
-            <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="toolbar_style">icons</property>
             <child>
@@ -570,6 +587,7 @@
                     <property name="height_request">450</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <signal name="button-press-event" handler="entrybar_unfocused" swapped="no"/>
                     <child>
                       <placeholder/>
                     </child>
@@ -581,9 +599,129 @@
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkHBox" id="hbox_entrybar">
+                    <property name="can_focus">False</property>
+                    <property name="spacing">15</property>
+                    <child>
+                      <object class="GtkLabel" id="label_entrybar">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="xalign">1</property>
+                        <property name="label" translatable="yes">Description</property>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkSpinButton" id="spinbutton_life">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="invisible_char">•</property>
+                        <property name="invisible_char_set">True</property>
+                        <property name="primary_icon_activatable">False</property>
+                        <property name="secondary_icon_activatable">False</property>
+                        <property name="primary_icon_sensitive">True</property>
+                        <property name="secondary_icon_sensitive">True</property>
+                        <property name="adjustment">adjustment_life</property>
+                        <signal name="focus-out-event" handler="entrybar_unfocused" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkEntry" id="entry">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="invisible_char">•</property>
+                        <property name="invisible_char_set">True</property>
+                        <property name="primary_icon_activatable">False</property>
+                        <property name="secondary_icon_activatable">False</property>
+                        <property name="primary_icon_sensitive">True</property>
+                        <property name="secondary_icon_sensitive">True</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkComboBox" id="combobox_tokens">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="model">liststore_tokens</property>
+                        <property name="entry_text_column">1</property>
+                        <signal name="changed" handler="selected_token" swapped="no"/>
+                        <child>
+                          <object class="GtkCellRendererText" id="cellrenderertext5"/>
+                          <attributes>
+                            <attribute name="text">1</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">3</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkComboBoxEntry" id="comboboxentry1">
+                        <property name="can_focus">False</property>
+                        <property name="model">liststore_tokens</property>
+                        <property name="text_column">1</property>
+                        <child>
+                          <object class="GtkCellRendererText" id="cellrenderertext6"/>
+                        </child>
+                        <child internal-child="entry">
+                          <object class="GtkEntry" id="comboboxentry-entry">
+                            <property name="can_focus">False</property>
+                            <property name="primary_icon_activatable">False</property>
+                            <property name="secondary_icon_activatable">False</property>
+                            <property name="primary_icon_sensitive">True</property>
+                            <property name="secondary_icon_sensitive">True</property>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">4</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="padding">3</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkHBox" id="hbox1">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkHScale" id="hscale_zoom">
+                        <property name="width_request">140</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="adjustment">adjustment_zoom</property>
+                        <property name="round_digits">1</property>
+                        <property name="draw_value">False</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
                     <child>
                       <object class="GtkLabel" id="status_label">
                         <property name="visible">True</property>
@@ -593,7 +731,7 @@
                         <property name="expand">True</property>
                         <property name="fill">True</property>
                         <property name="padding">20</property>
-                        <property name="position">0</property>
+                        <property name="position">1</property>
                       </packing>
                     </child>
                     <child>
@@ -604,14 +742,14 @@
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
-                        <property name="position">1</property>
+                        <property name="position">2</property>
                       </packing>
                     </child>
                   </object>
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">1</property>
+                    <property name="position">2</property>
                   </packing>
                 </child>
               </object>
@@ -825,7 +963,6 @@
     <child>
       <object class="GtkMenuItem" id="menuitem2">
         <property name="visible">True</property>
-        <property name="sensitive">False</property>
         <property name="can_focus">False</property>
         <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">create token...</property>
@@ -835,7 +972,6 @@
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem20">
-        <property name="visible">True</property>
         <property name="sensitive">False</property>
         <property name="can_focus">False</property>
         <property name="use_action_appearance">False</property>
@@ -1098,11 +1234,11 @@
     <child>
       <object class="GtkMenuItem" id="menuitem42">
         <property name="visible">True</property>
-        <property name="sensitive">False</property>
         <property name="can_focus">False</property>
         <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">set life...</property>
         <property name="use_underline">True</property>
+        <signal name="activate" handler="set_life" swapped="no"/>
       </object>
     </child>
     <child>

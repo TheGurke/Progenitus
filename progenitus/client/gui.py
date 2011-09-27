@@ -21,6 +21,7 @@ class Interface(uiloader.Interface):
 	isfullscreen = False
 	_deck_load_async_handle = None
 	_browser_cardlist = None
+	_last_untapped = []
 	my_player = None # this client's player
 	players = [] # all players
 	users = dict() # all users that joined the chat room
@@ -57,6 +58,10 @@ class Interface(uiloader.Interface):
 		self.entry_server.set_text(settings.server)
 		self.entry_gamename.set_text(settings.gamename)
 		self.entry_gamepwd.set_text(settings.gamepwd)
+		
+		# Initialize tokens
+		glib.idle_add(self.init_token_autocomplete)
+	
 	
 	def show_about(self, widget):
 		"""Display information about this program"""
@@ -68,6 +73,13 @@ class Interface(uiloader.Interface):
 		dialog.set_comments(_("This program is Free Software by the GPL3."))
 		dialog.run()
 		dialog.destroy()
+	
+	def init_token_autocomplete(self):
+		"""Load the tokens into the autocompleting combobox"""
+		cards.load_tokens()
+		for token in cards.tokens:
+			self.liststore_tokens.append((token.tokenid,
+				token.get_description(), token.setname, token.releasedate))
 	
 	
 	# Network methods
@@ -261,14 +273,13 @@ class Interface(uiloader.Interface):
 	
 	def untap_all(self, widget=None):
 		"""Untap all cards"""
+		self._last_untapped = []
 		for carditem in self.cd._items:
 			if (isinstance(carditem, desktop.CardItem)
 					and not carditem.does_not_untap and carditem.mine):
+				if carditem.tapped:
+					self._last_untapped.append(carditem)
 				carditem.set_tapped(False)
-	
-	def create_token(self, widget):
-		"""Show a menu to create a token"""
-		pass
 	
 	def load_deck(self, widget):
 		"""Let the user pick a deck to load"""
@@ -318,6 +329,37 @@ class Interface(uiloader.Interface):
 	
 	
 	# Interface callbacks
+	
+	def create_token(self, widget):
+		self.spinbutton_life.hide()
+		self.entry.hide()
+		self.combobox_tokens.show()
+		self.label_entrybar.set_text(_("Choose a token:"))
+		self.hbox_entrybar.show()
+		self.combobox_tokens.grab_focus()
+	
+	def selected_token(self, widget):
+		i = self.combobox_tokens.get_active()
+		if 0 <= i < len(cards.tokens):
+			self.hbox_entrybar.hide()
+			token = cards.tokens[i]
+			print token.get_description()
+	
+	def set_life(self, widget):
+		self.spinbutton_life.set_value(self.my_player.life)
+		self.spinbutton_life.show()
+		self.entry.hide()
+		self.combobox_tokens.hide()
+		self.label_entrybar.set_text(_("Set your life total to:"))
+		self.hbox_entrybar.show()
+		self.spinbutton_life.grab_focus()
+	
+	def entrybar_unfocused(self, widget, event):
+		if self.hbox_entrybar.get_visible():
+			life = int(self.spinbutton_life.get_value())
+			if life != self.my_player.life:
+				self.my_player.set_life(life)
+			self.hbox_entrybar.hide()
 	
 	def zoom_in(self, widget):
 		self.cd.zoom *= 0.8
@@ -467,7 +509,10 @@ class Interface(uiloader.Interface):
 		"""Display the popup menu for an item or handcard"""
 		self._popup = item
 		if item is None:
-			self.menu_desktop.popup(None, None, None, event.button, event.time)
+			self._popup = event.x, event.y
+			if self.my_player.tray is not None:
+				self.menu_desktop.popup(None, None, None, event.button,
+					event.time)
 		if isinstance(item, desktop.CardItem):
 			self.menuitem_flipped.set_active(item.flipped)
 			self.menuitem_face.set_active(not item.face)

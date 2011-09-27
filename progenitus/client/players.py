@@ -305,6 +305,19 @@ class Player(object):
 		self.battlefield.append(item)
 		return item
 	
+	def create_token(self, tokenid, tokendescription, itemid=None, x=0, y=0):
+		pass
+#		item = self.new_item(cardid, self, x, y)
+#		# FIXME: check for card id
+#		if itemid is None:
+#			itemid = self._get_new_itemid(item)
+#		else:
+#			self._set_itemid(itemid, item)
+#		item.itemid = itemid
+#		self.send_network_cmd("enter", cardid, cardname, itemid, item.x, item.y)
+#		self.battlefield.append(item)
+#		return item		
+	
 	def remove_carditem(self, item):
 		self.battlefield.remove(item)
 		self.delete_item(item)

@@ -5,12 +5,6 @@
 #
 #-------------------------------------------------
 
-#
-# Sets that are not in this list:
-# Chronicles, Portal, Portal Second Age, Portal Three Kingdoms,
-# Magic Oversize Cards, Starter 1999, Magic Miscellaneous, Vanguard
-#
-
 # set code \t release date YYYY-MM-DD \t magiccard.info set code \t name of the card set
 lea	1993-08-05	al	Alpha Edition
 leb	1993-10-01	be	Beta Edition

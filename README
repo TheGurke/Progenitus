@@ -24,7 +24,7 @@ responsible for anything that you choose to do with it.
 
 Requirements:
 - Python 2.6 or 2.7
-- GTK 2.18 or higher
+- GTK 2.24 or higher
 - pygtk
 - pyxmpp
 

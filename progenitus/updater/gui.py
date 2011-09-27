@@ -200,11 +200,11 @@ class Interface(uiloader.Interface):
 				# Get token picture
 				pic_filename = pics._get_token_path(token.tokenid)
 				if not os.path.exists(pic_filename):
-					magiccardsinfo.mine_pic(pic_url, pic_filename)
+					yield magiccardsinfo.mine_pic(pic_url, pic_filename)
 				
 				# Insert database entry
 				try:
-					cards.get_token(token.tokenid)
+					yield cards.get_token(token.tokenid)
 				except RuntimeError:
 					self.cursor.execute(u'INSERT INTO "tokens" VALUES (' +
 						17 * '?,' + '?)', token.as_tuple())
