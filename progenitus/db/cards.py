@@ -42,7 +42,7 @@ class Card(object):
 	def __init__(self, *args):
 		if len(args) == 0:
 			args = ("", "", "", "", "", 0, 0, 0, 0, 0, 0, 0, "", "", "", "", "",
-				"", "", "", 0, 0, "", 0)
+				"", "", "", -1, 0, "", 0)
 		(self.cardid, self.name, self.setid, self.setname, self.manacost,
 			self.converted_cost, self.iswhite, self.isblue, self.isblack,
 			self.isred, self.isgreen, self.iscolorless, self.cardtype,

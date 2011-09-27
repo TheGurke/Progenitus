@@ -9,7 +9,7 @@ Updater:
 - Rewritten the updater in oder to handle the Innistrad cards.
   (The non-numeric characters in the collector's id caused trouble.)
 - Now downloads tokens
-- Fixed: Updater longer crashes upon completion.
+- Fixed: Updater crashes upon completion.
 - Fixed: Connection is reestablished for every card
 
 Editor:
@@ -30,6 +30,7 @@ Client:
 - Spectating a game is now possible
 - FIXED: user list is not updated
 - FIXED: library/graveyard/exile browsing bugs
+
 
 Version 0.29:
 `````````````

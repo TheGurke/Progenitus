@@ -4,7 +4,7 @@
   <!-- interface-naming-policy project-wide -->
   <object class="GtkWindow" id="disclaimer_win">
     <property name="can_focus">False</property>
-    <property name="title" translatable="yes">database downloader</property>
+    <property name="title" translatable="yes">Progenitus database update</property>
     <property name="window_position">center</property>
     <property name="type_hint">dialog</property>
     <signal name="destroy" handler="quit" swapped="no"/>
