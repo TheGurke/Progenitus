@@ -76,7 +76,8 @@ Known issues:
 
 Planned features:
 - Create, rename or remove folders
-- Move deck between folders via drag and drop
+- Move decks between folders via drag and drop
+- Copy and paste for card lists
 - List deck price
 - force only one instance
 - export as pdf (proxies)
@@ -84,12 +85,10 @@ Planned features:
 - card legality
 - Deck statistics overview: mana curve, color/land distribution, example hand
 - Auto-completion for types and card sets, maybe titles and artists
-- Drag 'n' drop for decks into folders
 - Deck list import/export for Magic Online, OCTGN2, OCTGN1, Apprentice formats
 - Deck cache
 - Mana cost as symbols
 - Card sets as symbols
-- Copy and paste for card lists
 
 
 
@@ -113,11 +112,11 @@ The client has 3 (hidden) commands:
 'f11' toggles fullscreen
 
 Known issues:
-- mouse is not exactly on the card when dragging a card to play
 - tray layout is kinda broken
+- mouse is not exactly on the card when dragging a card to play
+- Enlarged card flicker when the mouse is near the center of the screen
 - when just missing a card that is meant to be tapped, everything gets untapped.
   This should be prevented by checking if there is an owned card around.
-- Enlarged card flicker when the mouse is near the center of the screen
 - the log does not always scroll down
 - When the client recieves an illegal card id, it should search for the card by
   name
