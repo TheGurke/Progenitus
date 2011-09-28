@@ -24,12 +24,12 @@ class Interface(uiloader.Interface):
 	_browser_cardlist = None
 	_last_untapped = []
 	my_player = None # this client's player
+	network_manager = None # the network manager instance
 	players = [] # all players
 	users = dict() # all users that joined the chat room
 	
-	def __init__(self):
+	def __init__(self, solitaire):
 		super(self.__class__, self).__init__()
-		self.network_manager = network.NetworkManager()
 		self.load(config.GTKBUILDER_CLIENT)
 		self.main_win.set_title(config.APP_NAME_CLIENT)
 		self.main_win.maximize()
@@ -45,22 +45,38 @@ class Interface(uiloader.Interface):
 		self.cd.prop_callback = self.call_properties
 		self.cd.hover_callback = self.hover
 		
-		# Set NetworkManager callbacks
-		self.network_manager.logger.log_callback = self.add_log_line
-		self.network_manager.incoming_commands = self._incoming_cmds
-		self.network_manager.incoming_chat = self.add_chat_line
-		self.network_manager.user_joined = self.user_joined
-		self.network_manager.user_left = self.user_left
-		self.network_manager.user_nick_changed = self.user_nick_changed
-		self.network_manager.exception_handler = self.handle_exception
-		
-		# Set default login entries
-		self.entry_username.set_text(settings.username)
-		if settings.username != "":
-			self.entry_pwd.grab_focus()
-		self.entry_server.set_text(settings.server)
-		self.entry_gamename.set_text(settings.gamename)
-		self.entry_gamepwd.set_text(settings.gamepwd)
+		# Check if running in solitaire mode
+		self.solitaire = solitaire
+		if solitaire:
+			self.login_win.hide()
+			self.main_win.set_sensitive(True)
+			self.label_gamename.set_text(_("Solitaire game"))
+			
+			# Use a fake user class
+			class FakeUser(object):
+				nick = ""
+				def same_as(self, other):
+					return self is other
+			self.my_player = self.create_player(FakeUser(), config.VERSION)
+			glib.idle_add(self.my_player.create_tray, None, (0.8, 0.8, 1.0))
+		else:
+			self.network_manager = network.NetworkManager()
+			self.network_manager.logger.log_callback = self.add_log_line
+			self.network_manager.incoming_commands = self._incoming_cmds
+			self.network_manager.incoming_chat = self.add_chat_line
+			self.network_manager.user_joined = self.user_joined
+			self.network_manager.user_left = self.user_left
+			self.network_manager.user_nick_changed = self.user_nick_changed
+			self.network_manager.exception_handler = self.handle_exception
+			
+			# Set default login entries
+			self.entry_username.set_text(settings.username)
+			if settings.username != "":
+				self.entry_pwd.grab_focus()
+			self.entry_server.set_text(settings.server)
+			self.entry_gamename.set_text(settings.gamename)
+			self.entry_gamepwd.set_text(settings.gamepwd)
+			self.login_win.show()
 		
 		# Initialize tokens
 		glib.idle_add(self.init_token_autocomplete)
@@ -166,8 +182,11 @@ class Interface(uiloader.Interface):
 			assert(not player.user.same_as(user))
 		player = players.Player(user)
 		player.version = version
-		if user.same_as(self.network_manager.get_my_user()):
-			player.send_network_cmds = self.network_manager.send_commands
+		if self.network_manager is not None:
+			if user.same_as(self.network_manager.get_my_user()):
+				player.send_network_cmds = self.network_manager.send_commands
+				player.updated_hand = self.cd.repaint_hand
+		else:
 			player.updated_hand = self.cd.repaint_hand
 		player.new_item = self.new_item
 		player.new_tray = self.new_tray
@@ -249,10 +268,11 @@ class Interface(uiloader.Interface):
 			if match is not None:
 				self.my_player.draw_x_cards(int(match.groups()[0]))
 			match = re.match(r'/nick\s+(.+)', text)
-			if match is not None:
+			if match is not None and self.network_manager is not None:
 				self.network_manager.change_nick(match.groups()[0])
 		else:
-			self.network_manager.send_chat(text)
+			if self.network_manager is not None:
+				self.network_manager.send_chat(text)
 			self.add_log_line(_("You: %s") % text)
 		self.entry_chat.set_text("")
 	

@@ -136,11 +136,12 @@ class Interface(uiloader.Interface):
 				cardlist = cards.search('"setid" = ?', (setcode,))
 			else:
 				self.log(_("Downloading '%s'...") % setname)
-				self.progressbar1.set_text(_("Getting card information..."))
+				self.progressbar2.set_text(_("Getting card information..."))
 				
 				# Get full spoilers information
 				setname, cardlist = yield magiccardsinfo.mine_set(
 					*downloadlist[set_num][:3])
+				setname = setname.strip()
 				
 				# Insert into the database
 				self.cursor.execute(u'INSERT INTO "sets" VALUES (?,?,?,?)',

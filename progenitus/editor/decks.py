@@ -7,6 +7,8 @@ import codecs
 import re
 import os
 
+from gettext import gettext as _
+
 from progenitus import settings
 from progenitus.db import cards
 
@@ -151,9 +153,9 @@ def _parse_file(filename):
 			# card
 			match = _re2.match(line)
 			if match:
-				num, name, expansion = match.group(1, 2, 3)
+				num, name, setname = match.group(1, 2, 3)
 				num = int(num) if num is not None else 1
-				cardlist.append((num, name, expansion, atsideboard))
+				cardlist.append((num, name, setname, atsideboard))
 	
 	deck.description = deck.description[:-1] # remove the last newline
 	return deck, cardlist
@@ -170,20 +172,21 @@ def load(filename, progresscallback=None, returncallback=None):
 	
 	# lookup in the db
 	for i in range(len(cardlist)):
-		num, name, expansion, sb = cardlist[i]
-		if expansion is not None:
+		num, name, setname, sb = cardlist[i]
+		if setname is not None:
 			l = yield cards.search('"setname" = ? AND "name" = ?' +
-				' ORDER BY "releasedate" DESC', (expansion, name))
-		if expansion is None or l == []:
+				' ORDER BY "releasedate" DESC', (setname, name))
+		if setname is None or l == []:
+			print _("Card '%s' in set '%s' not found.") % (name, setname)
 			l = yield cards.search('"name" = ? ORDER BY "releasedate" DESC',
 				(name,))
 		if l == []:
 			# try to find card by adding parenthesis
 			name = "%(" + name + ")%"
-			if expansion is not None:
+			if setname is not None:
 				l = yield cards.search('"setname" LIKE ? AND "name" = ?' +
-					' ORDER BY "releasedate" DESC', (expansion, name))
-			if expansion is None or l == []:
+					' ORDER BY "releasedate" DESC', (setname, name))
+			if setname is None or l == []:
 				l = yield cards.search('"name" LIKE ?' +
 					' ORDER BY "releasedate" DESC', (name,))
 			if l == []:

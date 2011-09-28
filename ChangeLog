@@ -26,6 +26,7 @@ Editor:
 Client:
 - Changed network protocol; Now broadcasting client version and sending
   card names in addition to ids.
+- Now featuring a solitaire mode that doesn't require a network connection
 - Player list now displays a version tooltip
 - Spectating a game is now possible
 - Setting the life total has now a gui interface
