@@ -48,7 +48,6 @@ class Interface(uiloader.Interface):
 		# Check if running in solitaire mode
 		self.solitaire = solitaire
 		if solitaire:
-			self.login_win.hide()
 			self.main_win.set_sensitive(True)
 			self.label_gamename.set_text(_("Solitaire game"))
 			
@@ -74,9 +73,8 @@ class Interface(uiloader.Interface):
 			self.entry_server.set_text(settings.server)
 			self.entry_gamename.set_text(settings.gamename)
 			self.entry_gamepwd.set_text(settings.gamepwd)
-			self.login_win.show()
 			if settings.username != "":
-				self.entry_pwd.grab_focus()
+				glib.idle_add(self.entry_pwd.grab_focus)
 		
 		# Initialize tokens
 		glib.idle_add(self.init_token_autocomplete)

@@ -104,7 +104,7 @@ class Interface(object):
 		"""Display a dialog showing details about an exception"""
 		text = ("An exception %s occured:\n%s" %
 			(type(exception), str(exception)))
-		self.show_dialog(self.download_win, text, dialog_type="error")
+		self.show_dialog(None, text, dialog_type="error")
 	
 	def except_safe(self, function, *args, **kwargs):
 		"""Run a function, check for exceptions and display them"""

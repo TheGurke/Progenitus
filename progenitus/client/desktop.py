@@ -456,8 +456,18 @@ class CairoDesktop(gtk.DrawingArea):
 				if self.hover_callback is not None:
 					self.hover_callback(handcard)
 			elif (item is not None and item.visible
-				and isinstance(item, CardItem) and (item.mine or item.faceup)):
-				self.show_enlarged_card(item.cardid, item.flipped)
+					and isinstance(item, CardItem)):
+				if item.faceup:
+					self.show_enlarged_card(item.cardid, item.flipped)
+				# check for special "transform" cards that have two sides
+				elif (not cards.is_token(item.cardid)
+						and item.cardid[-1] == "a"):
+					self.show_enlarged_card(item.cardid[:-1] + "b",
+						item.flipped)
+				elif item.mine:
+					self.show_enlarged_card(item.cardid, item.flipped)
+				else:
+					self.show_enlarged_card(None)
 			else:
 				self.show_enlarged_card(None)
 			if item is not None and self.hover_callback is not None:
@@ -694,7 +704,14 @@ class CardItem(Item):
 				self.does_not_untap = True
 	
 	def paint(self, desktop, cr):
-		cardid = self.cardid if self.faceup else "deckmaster"
+		# check for special "transform" cards that have two sides
+		if self.faceup:
+			cardid = self.cardid
+		else:
+			if not cards.is_token(self.cardid) and self.cardid[-1] == "a":
+				cardid = self.cardid[:-1] + "b"
+			else:
+				cardid = "deckmaster"
 		width = int(math.ceil((self.h if self.tapped else self.w)
 			* desktop.zoom))
 		surface = desktop.picfactory.get(cardid, width)

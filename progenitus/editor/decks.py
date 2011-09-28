@@ -121,7 +121,7 @@ class Deck(object):
 						# Workaround for cards with '(' in their name
 						assert(name.find(")") >= 0)
 						name = name.split('(')[1].split(')')[0]
-					f.write("%d %s (%s)\n" % (num, name, card.cardset))
+					f.write("%d %s (%s)\n" % (num, name, card.setname))
 				if len(self.sideboard) > 0 and l == self.decklist:
 					f.write("\nSideboard:\n")
 
