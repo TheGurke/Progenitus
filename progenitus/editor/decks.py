@@ -174,17 +174,18 @@ def load(filename, progresscallback=None, returncallback=None):
 	for i in range(len(cardlist)):
 		num, name, setname, sb = cardlist[i]
 		if setname is not None:
-			l = yield cards.search('"setname" = ? AND "name" = ?' +
+			l = yield cards.search('"setname" = ? AND "name" = ?'
 				' ORDER BY "releasedate" DESC', (setname, name))
 		if setname is None or l == []:
-			print _("Card '%s' in set '%s' not found.") % (name, setname)
 			l = yield cards.search('"name" = ? ORDER BY "releasedate" DESC',
 				(name,))
+#			if l != []:
+#				print _("Card '%s' found, but not in '%s'.") % (name, setname)
 		if l == []:
 			# try to find card by adding parenthesis
 			name = "%(" + name + ")%"
 			if setname is not None:
-				l = yield cards.search('"setname" LIKE ? AND "name" = ?' +
+				l = yield cards.search('"setname" = ? AND "name" LIKE ?'
 					' ORDER BY "releasedate" DESC', (setname, name))
 			if setname is None or l == []:
 				l = yield cards.search('"name" LIKE ?' +

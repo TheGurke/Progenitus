@@ -218,7 +218,6 @@ It will be resumed next time this program starts.</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
                     <property name="use_action_appearance">False</property>
-                    <property name="active">True</property>
                     <property name="draw_indicator">True</property>
                     <signal name="toggled" handler="toggle_download_prices" swapped="no"/>
                   </object>
