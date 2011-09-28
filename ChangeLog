@@ -3,42 +3,43 @@ Version 0.30-beta:
 ``````````````````
 This version introduces a new card id pattern and database format. The database
 as well as the card pictures of the old version are incompatible and have to be
-re-downloaded!
+redownloaded!
 
 Updater:
 - Rewritten the updater in oder to handle the Innistrad cards.
   (The non-numeric characters in the collector's id caused trouble.)
 - Now downloads tokens
-- Fixed: Updater crashes upon completion.
-- Fixed: Connection is reestablished for every card
+- Fixed: Updater no longer crashes upon completion.
+- Fixed: Connection is no longer reestablished for every card
 
 Editor:
-- Fixed: New deck doesn't remove the color symbols
-- Fixed: Show expansion breaks when window is closed once
-- Fixed: Author and description entries are not disabled while deck is loading
-- Fixed: Cannot use power/thoughness based search since they are text fields in
-  the db
-- Fixed: Searching for colors and lands at the same time is broken
-- Fixed: Sorting by mana cost does not cluster colors where converted costs are
-  the same
+- Fixed: New deck removes the color symbols
+- Fixed: Show expansion no longer breaks when window is closed once
+- Fixed: Author and description entries are now disabled while deck is loading
+- Fixed: Can now use power/thoughness based search
+- Fixed: Searching for colors and lands at the same time is working now
+- Fixed: Sorting by mana cost now clusters colors where converted costs are the
+  same
 - Fixed: Deck renaming issues
 
 Client:
 - Changed network protocol; Now broadcasting client version and sending
   card names in addition to ids.
-- Now featuring a solitaire mode that doesn't require a network connection
-- Player list now displays a version tooltip
-- Spectating a game is now possible
-- Setting the life total has now a gui interface
 - Token creation is now supported
-- Now handles card pictures of mixed sizes
-- FIXED: card play glitch, where the played card would be copied
-- FIXED: bugs with cloned cards
-- FIXED: user list is not updated
+- New 'spectating' mode
+- Handles card pictures of mixed sizes
+- Introduced a solitaire mode that doesn't require a network connection
+- Setting the life total now has a gui interface
+- Player list now displays a version tooltip
+- FIXED: Card play glitch, where the played card would be copied
+- FIXED: Bugs with cloned cards
+- FIXED: User list was not updated
 - FIXED: library/graveyard/exile browsing bugs
-- FIXED: If a card is flipped, the enlarged picture is not
+- FIXED: the enlarged picture is flipped iff the card is
 
 
 Version 0.29:
 `````````````
 First release.
+
+
