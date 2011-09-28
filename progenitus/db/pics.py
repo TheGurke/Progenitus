@@ -62,9 +62,9 @@ class PicFactory(object):
 	def _update(self, cardid, width):
 		"""Update the entry at cardid"""
 		pixbuf = get(cardid)
-		zoom = float(width) / pixbuf.get_width()
+		zoom = math.ceil(width) / pixbuf.get_width()
 		surface, w, h = surface_from_pixbuf(pixbuf, zoom)
-		assert(w == math.ceil(width))
+		assert(w == int(math.ceil(width)))
 		self._map[cardid] = surface, w, datetime.datetime.now()
 	
 	def get(self, cardid, width):
