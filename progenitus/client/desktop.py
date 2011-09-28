@@ -13,6 +13,13 @@ from progenitus.db import cards
 from progenitus.db import pics
 
 
+#
+# There is an important distinction between on-screen coordinates (int) and
+# virtual desktop coordinates in inch (float).
+# The desktop can be zoomed freely about the point (0.0, 0.0), but not moved.
+#
+
+
 
 class DragNDrop(object):
 	"""An object to save drag and drop information"""
@@ -45,8 +52,8 @@ class DragNDrop(object):
 		"""Update the item's position"""
 		dx = x - self.start_x
 		dy = y - self.start_y
-		self.item.x = dx / self.item.widget.zoom + self.item_x
-		self.item.y = dy / self.item.widget.zoom + self.item_y
+		self.item.x = dx / float(self.item.widget.zoom) + self.item_x
+		self.item.y = dy / float(self.item.widget.zoom) + self.item_y
 		self.set_hand_index(x, y)
 
 
@@ -58,7 +65,7 @@ class CairoDesktop(gtk.DrawingArea):
 	enlarged_card = None
 	enlarged_card_last_pos = None # Last x, y position of the enlarged card
 	bg_color = 1, 1, 1
-	zoom = 12. # initial zoom factor; the larger means zooming in
+	zoom = 12. # current zoom factor; the larger means zooming in; type is float
 	# position is always centered around (0,0)
 	flip_y = False
 	
@@ -105,12 +112,15 @@ class CairoDesktop(gtk.DrawingArea):
 		return 0, 0, w, h - self.get_hand_height()
 	
 	def get_wh(self):
-		"""Return the size (w, h) of the currently visible playing area"""
+		"""Return the size of the currently visible playing area in desktop """
+		"""coordinates"""
+		assert(isinstance(self.zoom, float))
 		w, h = self.window.get_size()
-		return w / self.zoom, (h - self.get_hand_height()) / self.zoom
+		return w / self.zoom, (h - self.get_hand_height()) / float(self.zoom)
 	
 	def get_hand_height(self):
-		"""Get the height of the bottom area reserved for the cards in hand"""
+		"""Get the height of the bottom area reserved for the cards in hand """
+		"""in on-screen coordinates"""
 		return int(math.ceil(1.2 * 3.5 * self.zoom))
 	
 	# Item container
@@ -171,38 +181,47 @@ class CairoDesktop(gtk.DrawingArea):
 					self._dragndrop.item.card)
 		return hand
 	
+	def is_over_hand(self, x, y):
+		"""Determine whether an pointer position is over the hand area"""
+		return y > self.get_screen_coords()[3]
+	
 	def get_hand_index(self, x, y):
 		"""Get the list index where the position suggests insertion"""
 		# Note the difference to get_hand_card_index
+		x, y = int(x), int(y)
 		hand = self.get_hand()
-		w, h = self.get_wh()
-		cw = int(2.5 * self.zoom)
-		x = x - w * self.zoom / 2 + int(1.1 * cw) * (len(hand) + 1) / 2
-		i = int(x) / int(1.1 * cw)
+		if hand is None:
+			return
+		w, h = self.window.get_size()
+		card_width = int(math.ceil(2.5 * self.zoom))
+		spacing = int(math.ceil(2.5 * self.zoom * 0.1))
+		x = x - w / 2 + (card_width + spacing) * (len(hand) + 1) / 2
+			# relative coordinates on the hand
+		assert(isinstance(x, int))
+		i = x / (card_width + spacing)
 		if i < 0:
 			i = 0
 		if i > len(hand):
 			i = len(hand)
 		return i
 	
-	def is_over_hand(self, x, y):
-		"""Determine whether an pointer position is over the hand area"""
-		return y > self.get_screen_coords()[3]
-	
 	def get_hand_card_index(self, x, y):
 		# Note the difference to get_hand_index
-		"""Get a card in the hand by its x and y-coordinate"""
+		"""Get a card in the hand by its on-screen coordinates"""
+		x, y = int(x), int(y)
 		hand = self.get_hand()
 		if hand is None:
 			return
-		w, h = self.get_wh()
-		if y < h * self.zoom or y > h * self.zoom + self.get_hand_height():
+		w, h = self.window.get_size()
+		if y < h - self.get_hand_height() or y > h:
 			return None
-		cw = int(2.5 * self.zoom)
-		x = x - w * self.zoom / 2 + int(1.1 * cw) * len(hand) / 2
-		if x % int(1.1 * cw) > cw:
+		card_width = int(math.ceil(2.5 * self.zoom))
+		spacing = int(math.ceil(2.5 * self.zoom * 0.1))
+		x = x - w / 2 + ((card_width + spacing) * len(hand) - spacing) / 2
+		assert(isinstance(x, int))
+		if x % (card_width + spacing) > card_width:
 			return None
-		i = int(x) / int(1.1 * cw)
+		i = x / (card_width + spacing)
 		if 0 <= i < len(hand):
 			return i
 		return None
@@ -224,31 +243,32 @@ class CairoDesktop(gtk.DrawingArea):
 		hand = self.get_hand()
 		if hand is None:
 			return
-		w = int(math.ceil(2.5 * self.zoom))
-		h = int(math.ceil(3.5 * self.zoom))
-		x = width / 2 - int(1.1 * w) * len(hand) / 2
-		y = height - int(1.1 * h)
+		card_width = int(math.ceil(2.5 * self.zoom))
+		card_height = int(math.ceil(3.5 * self.zoom))
+		spacing = int(math.ceil(2.5 * self.zoom * 0.1))
+		x = width / 2 - ((card_width + spacing) * len(hand) - spacing) / 2
+		y = height - card_height - spacing
 		
 		# Divider line
 		cr.save()
 		cr.set_line_width(1)
 		cr.set_source_rgb(0.5, 0.5, 0.5)
-		cr.move_to(int(0.1 * width), y - int(0.05 * h))
-		cr.line_to(int(0.9 * width), y - int(0.05 * h))
+		cr.move_to(int(0.1 * width), y - spacing / 2)
+		cr.line_to(int(0.9 * width), y - spacing / 2)
 		cr.stroke()
 		cr.restore()
 		
 		for card in hand:
 			cr.save()
-			cr.rectangle(x, y, w, h)
+			cr.rectangle(x, y, card_width, card_height)
 			cr.translate(x, y)
 			cr.clip()
-			surface = self.picfactory.get(card.id, w)
+			surface = self.picfactory.get(card.id, card_width)
 			assert isinstance(surface, cairo.Surface)
 			cr.set_source_surface(surface)
 			cr.paint()
 			cr.restore()
-			x += int(1.1 * w)
+			x += card_width + spacing
 	
 	
 	# Enlarged card
@@ -332,7 +352,7 @@ class CairoDesktop(gtk.DrawingArea):
 	def mouse_down(self, widget, event):
 		item = self.get_item_at(event.x, event.y)
 		handcard = self.get_hand_card(event.x, event.y)
-		if item is not None and item.mine:
+		if item is not None and item.mine and item.visible:
 			if event.button == 1 and event.type == gtk.gdk._2BUTTON_PRESS:
 				item.double_click(event)
 			elif event.button == 1 and item.dragable:
@@ -438,12 +458,6 @@ class CairoDesktop(gtk.DrawingArea):
 	
 	def mouse_scroll(self, widget, event):
 		pass
-#		if event.direction == gtk.gdk.SCROLL_UP:
-#			self.zoom /= 1.2
-#			self.repaint()
-#		if event.direction == gtk.gdk.SCROLL_DOWN:
-#			self.zoom *= 1.2
-#			self.repaint()
 
 
 #
@@ -495,8 +509,8 @@ class Item(object):
 		x, y, w, h = self.parent.get_screen_coords()
 		ix = int(math.floor(self.x * self.widget.zoom + w / 2))
 		iy = int(math.floor(self.y * self.widget.zoom + h / 2))
-		iw = int(self.w * self.widget.zoom) + 2
-		ih = int(self.h * self.widget.zoom) + 2
+		iw = int(math.ceil(self.w * self.widget.zoom))
+		ih = int(math.ceil(self.h * self.widget.zoom))
 		return ix, iy, iw, ih
 	
 	def clamp_coords(self):
@@ -606,13 +620,14 @@ class TextItem(Item):
 		self.text = text
 	
 	def get_wh(self):
-		"""Get the expected width of the text"""
+		"""Get the expected width of the text in desktop coordinates"""
+		assert(isinstance(self.widget.zoom, float))
 		surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 0, 0)
 		cr = cairo.Context(surface)
 		cr.select_font_face(self.font_face)
 		cr.set_font_size(self.fontsize * self.widget.zoom)
 		xb, yb, w, h, xa, ya = cr.text_extents(self.text)
-		return w / self.widget.zoom + 2, h / self.widget.zoom + 2
+		return (w + 2) / self.widget.zoom, (h + 2) / self.widget.zoom # FIXME
 	
 	def set_text(self, text):
 		"""Update the text and item width"""
@@ -620,6 +635,7 @@ class TextItem(Item):
 		self.w, self.h = self.get_wh()
 	
 	def paint(self, desktop, cr):
+		assert(isinstance(self.widget.zoom, float))
 		if self.update is not None:
 			self.update()
 		cr.set_source_rgb(*self.color)
