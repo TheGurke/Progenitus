@@ -107,7 +107,7 @@ def mine_set(setcode, releasedate, magiccardsinfocode):
 		card.subtype = "" if len(t) <= 1 else t[1].strip()
 		card.converted_cost = cards.convert_mana(card.manacost)
 		card.setid = setcode
-		card.setname = setname
+		card.setname = setname.strip()
 		card.releasedate = releasedate.toordinal()
 		card.derive_id()
 		card.derive_colors()

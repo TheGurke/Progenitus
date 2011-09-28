@@ -141,7 +141,6 @@ class Interface(uiloader.Interface):
 				# Get full spoilers information
 				setname, cardlist = yield magiccardsinfo.mine_set(
 					*downloadlist[set_num][:3])
-				setname = setname.strip()
 				
 				# Insert into the database
 				self.cursor.execute(u'INSERT INTO "sets" VALUES (?,?,?,?)',
