@@ -32,9 +32,11 @@ Client:
 - Setting the life total has now a gui interface
 - Token creation is now supported
 - Now handles card pictures of mixed sizes
+- FIXED: card play glitch, where the played card would be copied
 - FIXED: bugs with cloned cards
 - FIXED: user list is not updated
 - FIXED: library/graveyard/exile browsing bugs
+- FIXED: If a card is flipped, the enlarged picture is not
 
 
 Version 0.29:

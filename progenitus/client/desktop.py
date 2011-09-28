@@ -278,19 +278,19 @@ class CairoDesktop(gtk.DrawingArea):
 		px, py, mask = self.get_parent_window().get_pointer()
 		_x, _y, w, h, bd = self.get_parent_window().get_geometry()
 		# Display card on the left or on the right?
-		x = w - self.enlarged_card.get_width() if px < w / 2 else 0
-		y = int((h - self.enlarged_card.get_height()) / 2)
+		x = w - self.enlarged_card[0].get_width() if px < w / 2 else 0
+		y = int((h - self.enlarged_card[0].get_height()) / 2)
 		return x, y
 	
 	def repaint_enlarged_card(self):
 		"""Repaint the area where the enlarged card is"""
 		if self.enlarged_card_last_pos is not None:
 			x, y = self.enlarged_card_last_pos
-			w = self.enlarged_card.get_width()
-			h = self.enlarged_card.get_height()
+			w = self.enlarged_card[0].get_width()
+			h = self.enlarged_card[0].get_height()
 			self.queue_draw_area(x, y, w, h)
 	
-	def show_enlarged_card(self, cardid=None):
+	def show_enlarged_card(self, cardid=None, flipped=False):
 		"""Show the large version of a card"""
 		if cardid is None:
 			if self.enlarged_card is not None:
@@ -299,14 +299,21 @@ class CairoDesktop(gtk.DrawingArea):
 				self.enlarged_card_last_pos = None
 		else:
 			self.repaint_enlarged_card()
-			self.enlarged_card = pics.surface_from_pixbuf(pics.get(cardid))[0]
+			cardpic = pics.surface_from_pixbuf(pics.get(cardid))[0]
+			self.enlarged_card = cardpic, flipped
 			self.enlarged_card_last_pos = self._get_enlarged_card_pos()
 			self.repaint_enlarged_card()
 	
 	def _paint_enlarged_card(self, cr, width, height):
 		if self.enlarged_card is not None:
 			cr.translate(*self._get_enlarged_card_pos())
-			cr.set_source_surface(self.enlarged_card)
+			w = self.enlarged_card[0].get_width()
+			h = self.enlarged_card[0].get_height()
+			if self.enlarged_card[1]:
+				cr.translate(w / 2, h / 2)
+				cr.rotate(math.pi)
+				cr.translate(-w / 2, -h / 2)
+			cr.set_source_surface(self.enlarged_card[0])
 			cr.paint()
 	
 	
@@ -450,7 +457,7 @@ class CairoDesktop(gtk.DrawingArea):
 					self.hover_callback(handcard)
 			elif (item is not None and item.visible
 				and isinstance(item, CardItem) and (item.mine or item.faceup)):
-				self.show_enlarged_card(item.cardid)
+				self.show_enlarged_card(item.cardid, item.flipped)
 			else:
 				self.show_enlarged_card(None)
 			if item is not None and self.hover_callback is not None:
@@ -688,7 +695,8 @@ class CardItem(Item):
 	
 	def paint(self, desktop, cr):
 		cardid = self.cardid if self.faceup else "deckmaster"
-		width = int(math.ceil(self.w * desktop.zoom))
+		width = int(math.ceil((self.h if self.tapped else self.w)
+			* desktop.zoom))
 		surface = desktop.picfactory.get(cardid, width)
 		assert(isinstance(surface, cairo.Surface))
 		

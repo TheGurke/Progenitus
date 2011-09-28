@@ -113,15 +113,11 @@ The client has 3 (hidden) commands:
 'f11' toggles fullscreen
 
 Known issues:
-- sometimes cards glitch into play while still being in the hand. this is not
-  seen across the network (has no itemid). Appearantly this is caused by fast
-  double clicking and then dragging (removed -> card is still changed)
 - mouse is not exactly on the card when dragging a card to play
 - tray layout is kinda broken
 - when just missing a card that is meant to be tapped, everything gets untapped.
   This should be prevented by checking if there is an owned card around.
 - Enlarged card flicker when the mouse is near the center of the screen
-- If a card is flipped, the enlarged picture is not
 - the log does not always scroll down
 - When the client recieves an illegal card id, it should search for the card by
   name
