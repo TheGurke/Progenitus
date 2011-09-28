@@ -62,9 +62,9 @@ class PicFactory(object):
 	def _update(self, cardid, width):
 		"""Update the entry at cardid"""
 		pixbuf = get(cardid)
-		zoom = math.ceil(width) / pixbuf.get_width()
+		zoom = math.ceil(width) * (1. / pixbuf.get_width())
 		surface, w, h = surface_from_pixbuf(pixbuf, zoom)
-		assert(w == int(math.ceil(width)))
+		assert(w == int(math.ceil(width))) # might fail due to flop errors
 		self._map[cardid] = surface, w, datetime.datetime.now()
 	
 	def get(self, cardid, width):
@@ -81,7 +81,7 @@ def surface_from_pixbuf(pixbuf, zoom=1., antialiasing=True):
 	"""Create a (scaled) cairo surface from an gdk pixbuffer"""
 	w = pixbuf.get_width()
 	h = pixbuf.get_height()
-	w_, h_ = int(math.ceil(w * zoom)), int(math.ceil(h * zoom))
+	w_, h_ = int(math.ceil(zoom * w)), int(math.ceil(zoom * h))
 	surface = cairo.ImageSurface(0, w_, h_)
 	cr = gtk.gdk.CairoContext(cairo.Context(surface))
 	if antialiasing:
