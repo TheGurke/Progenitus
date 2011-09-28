@@ -105,9 +105,9 @@ Unlike most other programs of this kind there is no limit how many player can
 join in one game.
 
 The client has 3 (hidden) commands:
-/life set the life points
-/nick changes the user's nick
-/draw draws a number of cards
+/life	set the life points
+/nick	change one's nick
+/draw	draw a number of cards
 
 'f11' toggles fullscreen
 

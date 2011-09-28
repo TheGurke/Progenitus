@@ -71,12 +71,12 @@ class Interface(uiloader.Interface):
 			
 			# Set default login entries
 			self.entry_username.set_text(settings.username)
-			if settings.username != "":
-				self.entry_pwd.grab_focus()
 			self.entry_server.set_text(settings.server)
 			self.entry_gamename.set_text(settings.gamename)
 			self.entry_gamepwd.set_text(settings.gamepwd)
 			self.login_win.show()
+			if settings.username != "":
+				self.entry_pwd.grab_focus()
 		
 		# Initialize tokens
 		glib.idle_add(self.init_token_autocomplete)

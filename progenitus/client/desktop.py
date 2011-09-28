@@ -740,10 +740,7 @@ class CardItem(Item):
 			self.w, self.h = self.h, self.w
 			self.repaint()
 			self.tapped = tapped
-			if self.mine:
-				self.widget.interface.network_manager.send_commands([
-					("tap", (self.itemid,))
-				])
+			self.controller.send_network_cmd("tap", self.itemid)
 	
 	def toggle_flipped(self):
 		self.set_flipped(not self.flipped)
@@ -754,11 +751,8 @@ class CardItem(Item):
 		if self.flipped != flipped:
 			self.repaint()
 			self.flipped = flipped
-			if self.mine:
-				self.widget.interface.network_manager.send_commands([
-					("flip", (self.itemid,))
-				])
-	
+			self.controller.send_network_cmd("flip", self.itemid)
+		
 	def turn_over(self):
 		self.set_faceup(not self.faceup)
 	
@@ -768,10 +762,7 @@ class CardItem(Item):
 		if self.faceup != faceup:
 			self.repaint()
 			self.faceup = faceup
-			if self.mine:
-				self.widget.interface.network_manager.send_commands([
-					("face", (self.itemid,))
-				])
+			self.controller.send_network_cmd("face", self.itemid)
 
 
 #
@@ -795,11 +786,11 @@ class Tray(Container):
 		# Populate the container
 		self.library_item = Library()
 		self.library_item.x = 2.5 * 0.05
-		self.library_item.y = -3.5 * 0.35
+		self.library_item.y = 3.5 * (-0.35)
 		self.add(self.library_item)
 		self.graveyard_item = Graveyard()
-		self.graveyard_item.x = -2.5 * 1.05
-		self.graveyard_item.y = -3.5 * 0.35
+		self.graveyard_item.x = 2.5 * (-1.05)
+		self.graveyard_item.y = 3.5 * (-0.35)
 		self.add(self.graveyard_item)
 		self.name_item = TextItem()
 		self.name_item.x = -self.w / 2
@@ -808,22 +799,22 @@ class Tray(Container):
 		self.name_item.update = \
 			lambda: self.name_item.set_text(self.player.user.nick)
 		self.add(self.name_item)
-		self.life_item = TextItem()
-		self.life_item.color = 0.5, 0, 0
-		self.life_item.x = 2.5 * 1.1
-		self.life_item.y = self.name_item.y
-		self.life_item.fontsize = 3.5 * 0.14
-		self.life_item.update = \
-			lambda: self.life_item.set_text(str(self.player.life))
-		self.add(self.life_item)
 		self.card_count_item = TextItem()
 		self.card_count_item.color = 0.5, 0.5, 0
-		self.card_count_item.x = 3.5 * 1.5
-		self.card_count_item.y = self.name_item.y
+		self.card_count_item.x = 2.5 * 1.3
+		self.card_count_item.y = 3.5 * (-0.2)
 		self.card_count_item.fontsize = 3.5 * 0.14
 		self.card_count_item.update = \
 			lambda: self.card_count_item.set_text(str(len(self.player.hand)))
 		self.add(self.card_count_item)
+		self.life_item = TextItem()
+		self.life_item.color = 0.5, 0, 0
+		self.life_item.x = 2.5 * 1.3
+		self.life_item.y = 3.5 * 0.2
+		self.life_item.fontsize = 3.5 * 0.14
+		self.life_item.update = \
+			lambda: self.life_item.set_text(str(self.player.life))
+		self.add(self.life_item)
 		for item in self:
 			item.mine = self.mine
 

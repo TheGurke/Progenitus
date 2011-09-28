@@ -45,19 +45,7 @@
      pagecolor="#ffffff"
      bordercolor="#666666"
      borderopacity="1.0"
-     inkscape:pageopacity="0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="1.1865169"
-     inkscape:cx="1.7670514"
-     inkscape:cy="222.5"
-     inkscape:document-units="px"
-     inkscape:current-layer="layer1"
-     showgrid="false"
-     inkscape:window-width="1366"
-     inkscape:window-height="716"
-     inkscape:window-x="0"
-     inkscape:window-y="25"
-     inkscape:window-maximized="1" />
+     showgrid="false" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -73,14 +61,13 @@
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1"
-     transform="translate(0,-95)">
+     id="layer1">
     <rect
-       style="fill:url(#linearGradient5199);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:url(#linearGradient5199);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:6;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="rect2985"
-       width="246.03058"
-       height="346.03058"
-       x="1.9847064"
-       y="96.984718" />
+       width="244"
+       height="344"
+       x="3"
+       y="3" />
   </g>
 </svg>

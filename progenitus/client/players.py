@@ -11,6 +11,8 @@ clients just recieve network commands.
 import random
 from gettext import gettext as _
 
+import glib
+
 from progenitus import config
 from progenitus.db import cards
 
@@ -82,6 +84,7 @@ class Player(object):
 		if color is not None:
 			self.tray.bg_color = color
 		self.send_network_cmd("tray", itemid, self.tray.x, self.tray.y)
+		glib.idle_add(self.tray.repaint) # dirty fix for the textitem width bug
 	
 	def remove_tray(self):
 		"""Remove the tray and all items in play"""
