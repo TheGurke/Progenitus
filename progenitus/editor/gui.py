@@ -210,8 +210,8 @@ class Interface(uiloader.Interface):
 		if cardid is not None:
 			if removed:
 				self.add_to_deck(cardid, sb)
-			else:
-				self.toggle_sideboard()
+#			else:
+#				self.toggle_sideboard()
 	
 	def cardview_click(self, widget, event):
 		"""Clicked on the card view"""
@@ -682,15 +682,22 @@ class Interface(uiloader.Interface):
 			self.show_dialog(None, _("This deck is read-only."),
 				dialog_type="error")
 			return
-		cardid, sb, removed = self.get_selected_card()
+		if isinstance(args[0], gtk.CellRendererToggle):
+			path = args[1]
+			cardid = self.cards[path][0]
+			sb = self.cards[path][8]
+			removed = self.cards[path][9]
+			self.cards[path][8] = not sb
+		else:
+			cardid, sb, removed = self.get_selected_card()
+			model, it = self.cardview.get_selection().get_selected()
+			model.set_value(it, 8, not sb)
 		if cardid is not None and not removed:
 			old = self.deck.sideboard if sb else self.deck.decklist
 			new = self.deck.decklist if sb else self.deck.sideboard
 			card = filter(lambda c: c.id == cardid, old)[0]
 			old.remove(card)
 			new.append(card)
-			model, it = self.cardview.get_selection().get_selected()
-			model.set_value(it, 8, not sb)
 			self.delayed_decksave()
 			self.update_cardcount()
 	

@@ -155,7 +155,7 @@ class Interface(uiloader.Interface):
 				pricelist = yield tcgplayercom.mine_pricelist(setname)
 				for i in range(len(pricelist)):
 					name, price = pricelist[i]
-					self.progressbar2.set_fraction(float(i) / len(cardlist))
+					self.progressbar2.set_fraction(float(i) / len(pricelist))
 					self.cursor.execute('UPDATE "cards" SET "price" = ? '
 						'WHERE "name" = ? AND "setname" = ?',
 						(price, name, setname)

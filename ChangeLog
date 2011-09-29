@@ -22,6 +22,7 @@ Editor:
 - Fixed: Sorting by mana cost now clusters colors where converted costs are the
   same
 - Fixed: Deck renaming issues
+- Fixed: Could not single click on the sideboard checkbuttons
 
 Client:
 - Changed network protocol; Now broadcasting client version and sending

@@ -64,7 +64,6 @@ sideboard.
 'f11' toggles fullscreen
 
 Known issues:
-- Cannot single click on the sideboard checkbuttons
 - "No results" in the extended search is not visible enough
 - Moving the center bar to the right while in extended search causes graphic
   bugs
