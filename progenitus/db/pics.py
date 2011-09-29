@@ -5,6 +5,7 @@ import math
 import os.path
 import datetime
 
+from gettext import gettext as _
 import gtk.gdk
 import cairo
 
