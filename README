@@ -39,12 +39,7 @@ $HOME/.progenitus.cfg
 This is a small program for downloading and updating the magic set data and
 card pictures. Please read the disclaimer carefully before using it.
 
-Known issues:
-- When the download fails, the program doesn't quit after the error message and
-  it looks like everything is still downloading
-
 Planned features:
-- More comprehensive error messages
 - More backends: e.g. gatherer.wizards.com
 - Fetch items on the fly
 
@@ -89,6 +84,7 @@ Planned features:
 - Deck cache
 - Mana cost as symbols
 - Card sets as symbols
+- More comprehensive error messages
 
 
 

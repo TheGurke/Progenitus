@@ -36,7 +36,7 @@ class Interface(uiloader.Interface):
 			self.disclaimer_win.show()
 			self.checkbutton_confirm.grab_focus()
 		else:
-			self.download_win.show()
+			self.main_win.show()
 			self.button_start.grab_focus()
 	
 	def toggle_confirm(self, widget):
@@ -46,7 +46,7 @@ class Interface(uiloader.Interface):
 	def agree(self, widget):
 		"""The user agreed to the disclaimer"""
 		self.disclaimer_win.hide()
-		self.download_win.show()
+		self.main_win.show()
 		
 		# Save to settings
 		settings.disclaimer_agreed = True
@@ -77,7 +77,7 @@ class Interface(uiloader.Interface):
 		self.button_start.hide()
 		self.button_stop.show()
 		async.run_threaded(self._run_download(), self.show_exception)
-#		async.run(self._run_download())
+#		async.run(self._run_download()) # For debugging; prints traceback
 	
 	def _prepare_download(self):
 		"""Prepare everything for the download"""
@@ -104,10 +104,6 @@ class Interface(uiloader.Interface):
 				os.mkdir(os.path.join(settings.cache_path, "cards"))
 		
 		self.log(_("Starting download."))
-		
-		# Establish connections
-		magiccardsinfo.connect()
-		tcgplayercom.connect()
 		return downloadlist
 	
 	def _run_download(self):
@@ -128,7 +124,7 @@ class Interface(uiloader.Interface):
 			self.progressbar2.set_fraction(0)
 			self.progressbar2.set_text(" ")
 			
-			# Check if expansion has already been downloaded
+			# Check if the set has already been downloaded
 			self.cursor.execute('SELECT * FROM "sets" WHERE "id" = ?',
 				(setcode,))
 			cardlist = None
@@ -152,6 +148,20 @@ class Interface(uiloader.Interface):
 				self.sqlconn.commit()
 			assert(cardlist is not None)
 			
+			# Download pricing information
+			if self.checkbutton_download_prices.get_active():
+				self.progressbar2.set_text(_("Getting card prices..."))
+				
+				pricelist = yield tcgplayercom.mine_pricelist(setname)
+				for i in range(len(pricelist)):
+					name, price = pricelist[i]
+					self.progressbar2.set_fraction(float(i) / len(cardlist))
+					self.cursor.execute('UPDATE "cards" SET "price" = ? '
+						'WHERE "name" = ? AND "setname" = ?',
+						(price, name, setname)
+					)
+				self.sqlconn.commit()
+			
 			# Download card pictures
 			if self.checkbutton_download_pics.get_active():
 				self.progressbar2.set_text(_("Getting card pictures..."))
@@ -168,20 +178,6 @@ class Interface(uiloader.Interface):
 					if not os.path.exists(pic_filename):
 						yield magiccardsinfo.mine_pic(magiccardsinfo.url_pic
 							% (mcinfosetcode, card.collectorsid), pic_filename)
-			
-			# Download pricing information
-			if self.checkbutton_download_prices.get_active():
-				self.progressbar2.set_text(_("Getting card prices..."))
-				for i in range(len(cardlist)):
-					self.progressbar2.set_fraction(float(i) / len(cardlist))
-					card = cardlist[i]
-					card.price = yield tcgplayercom.mine_price(mcinfosetcode,
-						card.collectorsid)
-					self.cursor.execute(
-						'UPDATE "cards" SET "price"=? WHERE "id" = ?',
-						(card.id, card.price)
-					)
-				self.sqlconn.commit()
 		
 		# Download tokens
 		if self.checkbutton_download_tokens.get_active():
@@ -217,9 +213,16 @@ class Interface(uiloader.Interface):
 		self.progressbar1.set_fraction(1)
 		self.progressbar2.set_fraction(1)
 		self.log(_("Update complete."))
-		md = gtk.MessageDialog(self.download_win,
-			gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_INFO,
-			gtk.BUTTONS_CLOSE, _("Update complete."))
+		md = gtk.MessageDialog(self.main_win, gtk.DIALOG_DESTROY_WITH_PARENT,
+			gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, _("Update complete."))
+		md.connect("response", self.quit)
+		md.show()
+	
+	def show_exception(self, exception):
+		"""Show the exception and then quit"""
+		text = "An exception occured:\n%s" % str(exception)
+		md = gtk.MessageDialog(self.main_win, gtk.DIALOG_DESTROY_WITH_PARENT,
+			gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, text)
 		md.connect("response", self.quit)
 		md.show()
 

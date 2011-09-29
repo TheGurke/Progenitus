@@ -45,12 +45,8 @@ re_token2 = re.compile(r'<tr[^>]*>\s*'
 	'</tr>'
 )
 
-con = None # httplib.HTTPConnection
+con = miner.new_connection(server) # httplib.HTTPConnection
 
-
-def connect():
-	global con
-	con = miner.new_connection(server)
 
 
 def mine_set(setcode, releasedate, magiccardsinfocode):

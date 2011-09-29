@@ -722,7 +722,9 @@
                                     <property name="clickable">True</property>
                                     <property name="sort_column_id">8</property>
                                     <child>
-                                      <object class="GtkCellRendererToggle" id="cellrenderertoggle1"/>
+                                      <object class="GtkCellRendererToggle" id="cellrenderertoggle1">
+                                        <signal name="toggled" handler="toggle_sideboard" swapped="no"/>
+                                      </object>
                                       <attributes>
                                         <attribute name="active">8</attribute>
                                       </attributes>

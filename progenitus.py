@@ -66,7 +66,6 @@ elif options.run == "client":
 elif options.run == "updater":
 	iface = updatergui.Interface()
 	iface.main()
-	updatergui.miner.disconnect()
 else:
 	assert(False) # Should specify either editor, client or updater to run
 

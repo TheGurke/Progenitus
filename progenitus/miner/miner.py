@@ -13,8 +13,6 @@ from progenitus.db import cards
 MAX_TRIES = 10 # number of tries until the process is aborted
 
 
-connections = [] # List of all established connections
-
 
 def fetch_downloadlist(url):
 	"""Fetch the download list from an url"""
@@ -57,17 +55,6 @@ def download(con, url, convert_to_unicode=True):
 
 def new_connection(server):
 	"""Create a new httplib.HTTPConnection object and remember to destroy it"""
-	global connections
-	con = httplib.HTTPConnection(server)
-	connections.append(con)
-	return con
-
-
-def disconnect():
-	"""Disconnect all open http connections"""
-	global connections
-	for con in connections:
-		con.close()
-	connections = []
+	return httplib.HTTPConnection(server)
 
 

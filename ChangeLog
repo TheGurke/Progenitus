@@ -8,7 +8,8 @@ redownloaded!
 Updater:
 - Rewritten the updater in oder to handle the Innistrad cards.
   (The non-numeric characters in the collector's id caused trouble.)
-- Now downloads tokens
+- Download speed improved drastically
+- Downloads tokens
 - Fixed: Updater no longer crashes upon completion.
 - Fixed: Connection is no longer reestablished for every card
 
