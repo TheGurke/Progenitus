@@ -10,6 +10,8 @@ import urllib
 from progenitus.db import cards
 
 
+MAX_TRIES = 10 # number of tries until the process is aborted
+
 
 connections = [] # List of all established connections
 
@@ -36,12 +38,19 @@ def parse_downloadlist(data):
 def download(con, url, convert_to_unicode=True):
 	"""Download data from a web address"""
 	assert(isinstance(con, httplib.HTTPConnection))
-	con.request("GET", url)
-	res = con.getresponse()
-	if res.status != 200:
-		raise RuntimeError(str(res.status) + res.reason + ": " + url)
-	data = res.read()
-	con.close()
+	tries = 0
+	while True: # Try to connect a couple of times
+		try:
+			con.request("GET", url)
+			res = con.getresponse()
+			data = res.read()
+		except httplib.HTTPException:
+			tries += 1
+			if tries >= MAX_TRIES:
+				raise # Let the exception fall through
+			continue
+		break
+	
 	if convert_to_unicode:
 		data = unicode(data, 'utf-8')
 	return data
