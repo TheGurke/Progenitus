@@ -27,9 +27,9 @@ def parse_downloadlist(data):
 	downloadlist = []
 	for line in data.split('\n'):
 		if line != "" and line[0] not in ("#", "%"):
-			code, rd, mccode, name = line.split('\t')[:4]
+			code, rd, mccode, name, tcgplayername = line.split('\t')[:5]
 			releasedt = datetime.date(int(rd[0:4]), int(rd[5:7]), int(rd[8:10]))
-			downloadlist.append((code, releasedt, mccode, name))
+			downloadlist.append((code, releasedt, mccode, name, tcgplayername))
 	return downloadlist
 
 

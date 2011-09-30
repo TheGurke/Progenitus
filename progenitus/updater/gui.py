@@ -3,7 +3,6 @@
 
 import os
 import datetime
-import urllib
 
 from gettext import gettext as _
 import sqlite3
@@ -115,7 +114,8 @@ class Interface(uiloader.Interface):
 		
 		# Download every card set
 		for set_num in range(len(downloadlist)):
-			setcode, releasedate, mcinfosetcode, setname = downloadlist[set_num]
+			setcode, releasedate, mcinfosetcode, setname, tcgplayersetname \
+				= downloadlist[set_num]
 			
 			# Update gui
 			self.progressbar1.set_fraction(float(set_num)
@@ -132,7 +132,7 @@ class Interface(uiloader.Interface):
 				cardlist = cards.search('"setid" = ?', (setcode,))
 			else:
 				self.log(_("Downloading '%s'...") % setname)
-				self.progressbar2.set_text(_("Getting card information..."))
+				self.progressbar2.set_text(_("Fetching card information..."))
 				
 				# Get full spoilers information
 				setname, cardlist = yield magiccardsinfo.mine_set(
@@ -150,9 +150,10 @@ class Interface(uiloader.Interface):
 			
 			# Download pricing information
 			if self.checkbutton_download_prices.get_active():
-				self.progressbar2.set_text(_("Getting card prices..."))
-				
-				pricelist = yield tcgplayercom.mine_pricelist(setname)
+				self.progressbar2.set_text(_("Fetching pricing information..."))
+				pricelist = yield tcgplayercom.mine_pricelist(tcgplayersetname)
+				if pricelist == []:
+					print(_("No pricing information for '%s'.") % setname)
 				for i in range(len(pricelist)):
 					name, price = pricelist[i]
 					self.progressbar2.set_fraction(float(i) / len(pricelist))
@@ -164,7 +165,7 @@ class Interface(uiloader.Interface):
 			
 			# Download card pictures
 			if self.checkbutton_download_pics.get_active():
-				self.progressbar2.set_text(_("Getting card pictures..."))
+				self.progressbar2.set_text(_("Fetching card pictures..."))
 				# Create picture directory
 				pic_dir = os.path.dirname(pics._get_path(setcode + "." + "000"))
 				if not os.path.exists(pic_dir):
