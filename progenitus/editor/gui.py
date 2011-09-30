@@ -1003,10 +1003,13 @@ class Interface(uiloader.Interface):
 		self.label_results.set_text(text)
 		if len(cardlist) > 0:
 			self.notebook_search.set_current_page(0)
-			it = self.resultview.get_model().get_iter_first()
+			it = self.results.get_iter_first()
 			self.resultview.get_selection().select_iter(it)
 			self.resultview.grab_focus()
 			self.select_result(None)
+			# If there is only one card result, expand the versions
+			if self.results.iter_next(it) is None:
+				self.resultview.expand_all()
 		if len(cardlist) < settings.results_limit:
 			self.button_more_results.hide()
 

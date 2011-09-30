@@ -193,10 +193,10 @@ def load(filename, progresscallback=None, returncallback=None):
 			if l == []:
 				print("Card \"" + name[2:-2] + "\" not found.")
 				continue
-		card = random.choice(l)
 		assert(0 <= num < 1000)
 		for j in range(num):
-			(deck.sideboard if sb else deck.decklist).append(copy.copy(card))
+			targetlist = deck.sideboard if sb else deck.decklist
+			targetlist.append(copy.copy(random.choice(l)))
 		if progresscallback is not None:
 			progresscallback(float(i) / len(cardlist))
 	if returncallback is not None:
