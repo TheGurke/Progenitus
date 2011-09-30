@@ -28,6 +28,7 @@ Client:
 - Changed network protocol; Now broadcasting client version and sending
   card names in addition to ids.
 - Token creation is now supported
+- Counters on cards
 - New 'spectating' mode
 - Handles card pictures of mixed sizes
 - Introduced a solitaire mode that doesn't require a network connection

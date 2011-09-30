@@ -115,6 +115,7 @@ Known issues:
 - the log does not always scroll down
 - When the client recieves an illegal card id, it should search for the card by
   name
+- no counters on tokens
 
 Desired features:
 - roll dice and flip coins
@@ -124,7 +125,6 @@ Desired features:
 - play cards face down
 - set nick
 - search for cards automatically (basic lands...)
-- counters
 - pretty card browser
 - comprehensive match logger with colored output
 - console commands
