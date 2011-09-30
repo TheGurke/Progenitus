@@ -75,7 +75,7 @@ gpt	2006-02-03	gp	Guildpact	Guildpact
 dis	2006-05-05	di	Dissension	Dissension
 
 tsp	2006-10-06	ts	Time Spiral	Time Spiral
-tsb	2006-10-06	tsts	Time Spiral "Time Shifted"	Time Shifted
+tsb	2006-10-06	tsts	Time Spiral "Time Shifted"	Timeshifted
 plc	2007-02-02	pc	Planar Chaos	Planar Chaos
 fut	2007-05-04	fut	Future Sight	Future Sight
 
@@ -136,7 +136,7 @@ ddc	2009-04-10	dvd	Duel Decks: Divine vs. Demonic	Duel Decks: Divine vs. Demonic
 ddd	2009-10-30	gvl	Duel Decks: Garruk vs. Liliana	Duel Decks: Garruk vs. Liliana
 dde	2010-03-19	pvc	Duel Decks: Phyrexia vs. The Coalition	Duel Decks: Phyrexia vs. The Coalition
 ddf	2010-09-03	ddf	Duel Decks: Elspeth vs. Tezzeret	Duel Decks: Elspeth vs. Tezzeret
-ddg	2011-04-01	ddg	Duel Decks: Knights vs. Dragons	Duel Decks: Knights vs. Dragons
+ddg	2011-04-01	ddg	Duel Decks: Knights vs. Dragons	-
 ddh	2011-09-02	ddh	Duel Decks: Ajani vs. Nicol Bolas	Duel Decks: Ajani vs. Nicol Bolas
 #ddi	2012-03-30	ddi	Duel Decks: Venser vs. Koth	Duel Decks: Venser vs. Koth
 

@@ -118,8 +118,7 @@ class Interface(uiloader.Interface):
 				= downloadlist[set_num]
 			
 			# Update gui
-			self.progressbar1.set_fraction(float(set_num)
-				/ len(downloadlist))
+			self.progressbar1.set_fraction(float(set_num) / len(downloadlist))
 			self.progressbar1.set_text(setname)
 			self.progressbar2.set_fraction(0)
 			self.progressbar2.set_text(" ")
