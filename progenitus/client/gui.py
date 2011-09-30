@@ -23,6 +23,7 @@ class Interface(uiloader.Interface):
 	_deck_load_async_handle = None
 	_browser_cardlist = None
 	_last_untapped = []
+	_entrybar_task = "" # current task for the entry bar
 	my_player = None # this client's player
 	network_manager = None # the network manager instance
 	players = [] # all players
@@ -349,11 +350,18 @@ class Interface(uiloader.Interface):
 			async.start(decks.load(filename, progresscallback, finish_deckload))
 	
 	
-	# Interface callbacks
+	# Entry bar
+	
+	def reset_entrybar(self):
+		self.spinbutton_life.hide()
+		self.spinbutton_num.hide()
+		self.entry.hide()
+		self.label_entrybar2.hide()
+		self.combobox_tokens.hide()
 	
 	def create_token(self, widget):
-		self.spinbutton_life.hide()
-		self.entry.hide()
+		self.reset_entrybar()
+		self._entrybar_task = "token"
 		self.combobox_tokens.show()
 		self.label_entrybar.set_text(_("Choose a token:"))
 		self.hbox_entrybar.show()
@@ -369,20 +377,55 @@ class Interface(uiloader.Interface):
 			item.istoken = True
 	
 	def set_life(self, widget):
+		self.reset_entrybar()
 		self.spinbutton_life.set_value(self.my_player.life)
 		self.spinbutton_life.show()
-		self.entry.hide()
-		self.combobox_tokens.hide()
 		self.label_entrybar.set_text(_("Set your life total to:"))
 		self.hbox_entrybar.show()
 		self.spinbutton_life.grab_focus()
 	
+	def card_set_counter(self, widget):
+		self.reset_entrybar()
+		self.spinbutton_num.show()
+		self.spinbutton_num.set_value(1)
+		self.entry.show()
+		self.label_entrybar.set_text(_("Set"))
+		self.label_entrybar2.set_text(_("counter."))
+		self.label_entrybar2.show()
+		if self._popup.default_counter is not None:
+			counter = self._popup.default_counter
+			self.entry.set_text(counter)
+			if counter in self._popup.counters:
+				self.spinbutton_num.set_value(self._popup.counters[counter])
+		elif len(self._popup.counters.keys()) > 0:
+			counter, num = self._popup.counters.items()[0]
+			self.entry.set_text(counter)
+			self.spinbutton_num.set_value(num)
+		else:
+			self.entry.set_text("")
+		self._entrybar_task = "counter"
+		self.hbox_entrybar.show()
+		self.entry.grab_focus()
+	
 	def entrybar_unfocused(self, widget, event):
-		if self.hbox_entrybar.get_visible():
+		if not self.hbox_entrybar.get_visible():
+			return # entrybar wasn't shown
+		self.hbox_entrybar.hide()
+		if self._entrybar_task == "life":
 			life = int(self.spinbutton_life.get_value())
 			if life != self.my_player.life:
 				self.my_player.set_life(life)
-			self.hbox_entrybar.hide()
+		elif self._entrybar_task == "counter" and self.entry.get_text() != "":
+			counter = self.entry.get_text()
+			num = self.spinbutton_num.get_value()
+			if num != 0:
+				self._popup.counters[counter] = num
+			else:
+				del self._popup.counters[counter]
+		self._entrybar_task = ""
+	
+	
+	# Interface callbacks
 	
 	def zoom_in(self, widget):
 		self.cd.zoom *= 1.2
@@ -482,9 +525,6 @@ class Interface(uiloader.Interface):
 	
 	def card_set_no_untap(self, widget):
 		self._popup.does_not_untap = self.menuitem_does_not_untap.get_active()
-	
-	def card_set_counter(self, widget):
-		pass # TODO
 	
 	def card_give_to(self, widget):
 		pass # TODO

@@ -11,6 +11,7 @@ import gtk
 from progenitus import config
 from progenitus.db import cards
 from progenitus.db import pics
+from progenitus.db import semantics
 
 
 #
@@ -672,16 +673,18 @@ class CardItem(Item):
 	w = 2.5 # Card width in inches
 	h = 3.5 # Card height in inches
 	
-	tapped = False
-	flipped = False
-	faceup = True # True is face up
-	does_not_untap = False
-	
 	card = None
 	token = None
 	cardid = None
 	istoken = False # Is this card only a token / copy?
-		# Tokens cannot go to the library/graveyard/hand etc.
+	# Tokens cannot go to the library/graveyard/hand etc.
+	
+	tapped = False
+	flipped = False
+	faceup = True # True is face up
+	does_not_untap = False
+	creates_tokens = None
+	default_counter = None
 	
 	border_color = None
 	dragable = True
@@ -697,11 +700,11 @@ class CardItem(Item):
 		self.owner = owner
 		self.controller = owner
 		self.mine = mine
+		self.counters = dict()
 		
-		# Check if the card does not untap by default
+		# Parse card semantics
 		if self.card is not None:
-			if self.card.text.find("doesn't untap during your untap step.") >= 0:
-				self.does_not_untap = True
+			semantics.init_carditem(self)
 	
 	def paint(self, desktop, cr):
 		# check for special "transform" cards that have two sides
@@ -741,6 +744,10 @@ class CardItem(Item):
 			text = self.token.get_description()
 		if not self.mine:
 			text = _("{0}'s {1}").format(self.controller.name, text)
+		
+		# Add counter information
+		for counter, num in self.counters.items():
+			text += ", %d %s counter" % (num, counter)
 		return text
 	
 	def double_click(self, event):

@@ -1,2 +1,2 @@
 
-__all__ = ["cards", "pics"]
+__all__ = ["cards", "pics", "semantics"]
