@@ -40,7 +40,8 @@ commands = {
 	"move":     "[Move] %x to (%d,%d)", # move a card on the battlefield
 	"tap":      "[Tap] %x", # tap a card
 	"flip":     "[Flip] %x", # flip a card
-	"face":     "[Face] %x" # face a card up or down
+	"face":     "[Face] %x", # face a card up or down
+	"counter":  "[Counter] %d \"%s\" counter on %x" # put counters on a card
 }
 
 # Regular expressions corresponding to the commands
@@ -52,11 +53,12 @@ logger_msgs = {
 	"tray":     _("{0} joined the game."),
 	"shuffle":  _("{0} shuffles their deck."),
 	"setlife":  _("{0} has {1} life points."),
-	"mulligan": _("{0} takes a mulligan.")
+	"mulligan": _("{0} takes a mulligan."),
 #	"reset": _("{0} resets their deck.")
 #	"tap":      _("{0} taps {1}."),
-#	"flip":     _("{0} flips {1}."),
-#	"face":     _("{0} turns {1} over.")
+	"flip":     _("{0} flips a card."),
+	"face":     _("{0} turns a card over."),
+	"counter":	_("{0} puts {1} {2} counter on a card.")
 }
 
 

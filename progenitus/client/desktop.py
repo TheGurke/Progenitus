@@ -6,6 +6,7 @@ import random
 
 from gettext import gettext as _
 import cairo
+import glib
 import gtk
 
 from progenitus import config
@@ -704,7 +705,7 @@ class CardItem(Item):
 		
 		# Parse card semantics
 		if self.card is not None:
-			semantics.init_carditem(self)
+			glib.idle_add(semantics.init_carditem, self)
 	
 	def paint(self, desktop, cr):
 		# check for special "transform" cards that have two sides

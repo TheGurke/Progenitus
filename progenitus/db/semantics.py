@@ -10,7 +10,7 @@ _text_num = {"one":1, "two":2, "three":3, "four":4, "five":5, "six":6,
 _re_num = re.compile(r'[\d]+')
 _re_token = re.compile(r'[pP]ut an? (.*?) creature token onto the battlefield')
 _counter1 = '%s enters the battlefield with ([\S]*?) (.*?) counters on it.'
-_counter2 = '[pP]ut an? (.*?) counter on %s'
+_counter2 = '[pP]ut an? (.*?) counter on (?:%s|this permanent)'
 
 
 def init_carditem(item):
@@ -18,14 +18,15 @@ def init_carditem(item):
 	card = item.card
 	assert(card is not None) # Can only understand cards, not tokens
 	
-	# Untap by default?
+	# Untaps by default?
 	if card.name + " doesn't untap during your untap step." in card.text:
 		item.does_not_untap = True
 	
-	# Produce tokens?
+	# Produces tokens?
 	match = _re_token.findall(card.text)
 	if match is not None:
 		item.creates_tokens = match
+		print match
 	
 	# Has counters?
 	match = re.search(_counter1 % card.name, card.text)
@@ -35,7 +36,9 @@ def init_carditem(item):
 			num = _text_num[num]
 		elif _re_num.match(num) is not None:
 			num = int(num)
-		item.counters[counter] = num
+		else:
+			num = 0
+		item.controller.set_counter(item, num, counter)
 	
 	# Default counters
 	match = re.search(_counter2 % card.name, card.text)

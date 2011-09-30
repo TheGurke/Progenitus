@@ -78,9 +78,9 @@ class Player(object):
 		self.tray = self.new_tray(self)
 		if itemid is None:
 			itemid = self._get_new_itemid(self.tray)
+			self.tray.itemid = itemid
 		else:
 			self._set_itemid(itemid, self.tray)
-		self.tray.itemid = itemid
 		if color is not None:
 			self.tray.bg_color = color
 		self.send_network_cmd("tray", itemid, self.tray.x, self.tray.y)
@@ -296,14 +296,22 @@ class Player(object):
 	
 	# Battlefield
 	
+	def set_counter(self, item, num, counter):
+		"""Put counters on a card"""
+		if num != 0:
+			item.counters[counter] = num
+		elif counter in item.counters:
+			del item.counters[counter]
+		self.send_network_cmd("counter", num, counter, item.itemid)
+	
 	def create_carditem(self, cardid, cardname, itemid=None, x=0, y=0):
 		item = self.new_item(cardid, self, x, y)
 		# FIXME: check for card id
 		if itemid is None:
 			itemid = self._get_new_itemid(item)
+			item.itemid = itemid
 		else:
 			self._set_itemid(itemid, item)
-		item.itemid = itemid
 		self.send_network_cmd("enter", cardid, cardname, itemid, item.x, item.y)
 		self.battlefield.append(item)
 		return item
@@ -421,6 +429,13 @@ class Player(object):
 		elif cmd == "face":
 			item = self._get_item_by_id(args[0])
 			item.turn_over()
+		elif cmd == "counter":
+			item = self._get_item_by_id(args[2])
+			num, counter = args[0], args[1]
+			if num != 0:
+				item.counters[counter] = num
+			elif counter in item.counters:
+				del item.counters[counter]
 	
 	def handle_network_cmds(self, user, cmdlist):
 		"""Handle an incoming network command"""
@@ -467,6 +482,7 @@ class Player(object):
 			raise RuntimeError("%s has already registered a card %x." %
 				(self.name, itemid))
 		self._items[itemid] = item
+		item.itemid = itemid
 
 
 

@@ -401,6 +401,8 @@ class Interface(uiloader.Interface):
 			counter, num = self._popup.counters.items()[0]
 			self.entry.set_text(counter)
 			self.spinbutton_num.set_value(num)
+		elif "Creature" in self._popup.card.cardtype:
+			self.entry.set_text("+1/+1")
 		else:
 			self.entry.set_text("")
 		self._entrybar_task = "counter"
@@ -418,10 +420,7 @@ class Interface(uiloader.Interface):
 		elif self._entrybar_task == "counter" and self.entry.get_text() != "":
 			counter = self.entry.get_text()
 			num = self.spinbutton_num.get_value()
-			if num != 0:
-				self._popup.counters[counter] = num
-			else:
-				del self._popup.counters[counter]
+			self.my_player.set_counter(self._popup, num, counter)
 		self._entrybar_task = ""
 	
 	
