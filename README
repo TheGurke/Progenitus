@@ -39,6 +39,9 @@ $HOME/.progenitus.cfg
 This is a small program for downloading and updating the magic set data and
 card pictures. Please read the disclaimer carefully before using it.
 
+Known issues:
+- The loyalty of plainswalkers is missing sometimes
+
 Planned features:
 - More backends: e.g. gatherer.wizards.com
 - Fetch items on the fly
@@ -64,6 +67,7 @@ sideboard.
 'f11' toggles fullscreen
 
 Known issues:
+- Cannot see other sides of transform cards
 - "No results" in the extended search is not visible enough
 - Moving the center bar to the right while in extended search causes graphic
   bugs
@@ -107,6 +111,7 @@ The client has 3 (hidden) commands:
 'f11' toggles fullscreen
 
 Known issues:
+- cannot add counter on tokens
 - tray layout is kinda broken
 - mouse is not exactly on the card when dragging a card to play
 - Enlarged card flicker when the mouse is near the center of the screen

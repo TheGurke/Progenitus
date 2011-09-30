@@ -416,7 +416,6 @@ class Interface(uiloader.Interface):
 		self.hbox_entrybar.hide()
 		if self._entrybar_task == "life":
 			life = int(self.spinbutton_life.get_value())
-			print life
 			if life != self.my_player.life:
 				self.my_player.set_life(life)
 		elif self._entrybar_task == "counter" and self.entry.get_text() != "":

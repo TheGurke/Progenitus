@@ -30,6 +30,7 @@ GTKBUILDER_UPDATER = "updater.glade"
 CARD_PICS_PATH = lambda cid: ("cards/%s/%s.jpg" % (cid.split(".")[0], cid))
 TOKEN_PICS_PATH = lambda tid: ("tokens/%s.jpg" % tid)
 DECKMASTER_PATH = "media/deckmaster.png"
+DEFAULT_DECKS_PATH = "default decks"
 
 # Network options
 JOIN_DELAY = 1000 # time to wait for tray creation

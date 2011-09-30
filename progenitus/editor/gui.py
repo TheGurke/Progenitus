@@ -18,6 +18,7 @@ import decks
 class Interface(uiloader.Interface):
 	
 	isfullscreen = False
+	_enlarged_card = None
 	
 	def __init__(self):
 		super(self.__class__, self).__init__()
@@ -55,6 +56,8 @@ class Interface(uiloader.Interface):
 		# Create deck directory if it doesn't exist
 		if not os.path.exists(settings.deck_dir):
 			os.mkdir(settings.deck_dir)
+			os.symlink(config.DEFAULT_DECKS_PATH,
+				os.path.join(settings.deck_dir, _("default decks")))
 	
 	
 	#
@@ -226,13 +229,25 @@ class Interface(uiloader.Interface):
 	
 	def show_card(self, cardid):
 		"""Show a card picture and information"""
+		self.hbuttonbox_transform.hide()
 		if cardid is not None:
 			try:
 				self.cardpic.set_from_pixbuf(pics.get(cardid))
 			except RuntimeError:
 				pass # If there is not picture, continue anyways
 			card = cards.get(cardid)
+			self._enlarged_card = card
 			self.carddetails.set_markup(card.markup())
+			if cardid[-1] in ("a", "b"):
+				self.hbuttonbox_transform.show()
+		else:
+			self.cardpic.set_from_pixbuf(pics.get("deckmaster"))
+	
+	def transform_card(self, widget):
+		"""View the respective transformed card"""
+		card = self._enlarged_card
+		if card is not None and card.id[-1] in ("a", "b"):
+			self.show_card(card.id[:-1] + ("b" if card.id[-1] == "a" else "a"))
 	
 	def get_selected_result(self):
 		model, it = self.resultview.get_selection().get_selected()

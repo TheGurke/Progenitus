@@ -325,7 +325,6 @@
         <property name="can_focus">False</property>
         <child>
           <object class="GtkToolbar" id="toolbar">
-            <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="toolbar_style">icons</property>
             <child>

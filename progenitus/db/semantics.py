@@ -42,8 +42,16 @@ def init_carditem(item):
 		item.controller.set_counter(item, num, counter)
 	
 	# Default counters
-	match = re.search(_counter2 % card.name, card.text)
-	if match is not None:
-		item.default_counter = match.groups()[0]
+	if "Planeswalker" in card.cardtype:
+		item.default_counter = "loyalty"
+		if card.toughness != "":
+			item.controller.set_counter(item, int(card.toughness), "loyalty")
+	elif "LEVEL" in card.text:
+		item.default_counter = "level"
+		item.controller.set_counter(item, 0, "level")
+	else:
+		match = re.search(_counter2 % card.name, card.text)
+		if match is not None:
+			item.default_counter = match.groups()[0]
 
 
