@@ -72,6 +72,7 @@ class Interface(uiloader.Interface):
 			# Set default login entries
 			self.entry_username.set_text(settings.username)
 			self.entry_pwd.set_text(settings.userpwd)
+			self.checkbutton_save_pwd.set_active(settings.userpwd != "")
 			self.entry_server.set_text(settings.server)
 			self.entry_gamename.set_text(settings.gamename)
 			self.entry_gamepwd.set_text(settings.gamepwd)
