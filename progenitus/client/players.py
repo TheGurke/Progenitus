@@ -302,6 +302,7 @@ class Player(object):
 			item.counters[counter] = num
 		elif counter in item.counters:
 			del item.counters[counter]
+		print num, counter, item.itemid
 		self.send_network_cmd("counter", num, counter, item.itemid)
 	
 	def create_carditem(self, cardid, cardname, itemid=None, x=0, y=0):

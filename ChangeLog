@@ -33,6 +33,7 @@ Client:
 - Handles card pictures of mixed sizes
 - Introduced a solitaire mode that doesn't require a network connection
 - Setting the life total now has a gui interface
+- Save login details
 - Player list now displays a version tooltip
 - FIXED: Card play glitch, where the played card would be copied
 - FIXED: Bugs with cloned cards

@@ -71,6 +71,7 @@ class Interface(uiloader.Interface):
 			
 			# Set default login entries
 			self.entry_username.set_text(settings.username)
+			self.entry_pwd.set_text(settings.userpwd)
 			self.entry_server.set_text(settings.server)
 			self.entry_gamename.set_text(settings.gamename)
 			self.entry_gamepwd.set_text(settings.gamepwd)
@@ -211,6 +212,16 @@ class Interface(uiloader.Interface):
 		self.label_gamename.set_text("%s@%s" %
 			(self.entry_gamename.get_text(), self.entry_server.get_text()))
 		gamepwd = self.entry_gamepwd.get_text()
+		
+		# Save login details to settings
+		settings.username = username
+		settings.userpwd = pwd if self.checkbutton_save_pwd.get_active() else ""
+		settings.server = self.entry_server.get_text()
+		settings.gamename = self.entry_gamename.get_text()
+		settings.gamepwd = gamepwd
+		settings.save()
+		
+		# Connect
 		self.network_manager.connect(username, pwd, gamename, username, gamepwd)
 		# FIXME: async!
 		glib.timeout_add(100, self.check_login_status)

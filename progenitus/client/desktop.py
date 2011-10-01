@@ -698,6 +698,7 @@ class CardItem(Item):
 		else:
 			assert(False)
 		self.cardid = cardortoken.id
+		assert(self.cardid is not None)
 		self.owner = owner
 		self.controller = owner
 		self.mine = mine

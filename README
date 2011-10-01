@@ -67,7 +67,6 @@ sideboard.
 'f11' toggles fullscreen
 
 Known issues:
-- Cannot see other sides of transform cards
 - "No results" in the extended search is not visible enough
 - Moving the center bar to the right while in extended search causes graphic
   bugs
@@ -120,11 +119,9 @@ Known issues:
 - the log does not always scroll down
 - When the client recieves an illegal card id, it should search for the card by
   name
-- no counters on tokens
 
 Desired features:
 - roll dice and flip coins
-- save login details
 - multiplayer lobby
 - move cards from/to the graveyard by drag and drop
 - play cards face down

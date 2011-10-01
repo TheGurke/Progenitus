@@ -21,6 +21,8 @@ zones = ["L", "G", "H", "B", "E", "V"]
 
 assert(' ' not in config.VERSION)
 
+# FIXME: coordinates are float!
+
 # All network commands
 commands = {
 	"hello":    "[Hello] %s", # handshake initialization

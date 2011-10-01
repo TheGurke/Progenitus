@@ -18,6 +18,7 @@ def init_carditem(item):
 	"""Initialize a card item by setting some basic properties"""
 	card = item.card
 	assert(card is not None) # Can only understand cards, not tokens
+	assert(item.cardid is not None)
 	
 	# Untaps by default?
 	if card.name + " doesn't untap during your untap step." in card.text:

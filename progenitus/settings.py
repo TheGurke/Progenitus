@@ -32,7 +32,8 @@ _settings = [
 	("Editor", "decksave_timeout", "int", 10000,
 		"The deck is saved automatically in this interval (milliseconds)"),
 	("Editor", "decklist_refreshtime", "int", 60000, "The decklist is " + 		"refreshed automatically in this interval (milliseconds)"),
-	("Client", "username", "str", "", "Login Jabber user name"),
+	("Client", "username", "str", "", "Jabber login username"),
+	("Client", "userpwd", "str", "", "Jabber login password"),
 	("Client", "server", "str", "", "Jabber server"),
 	("Client", "gamename", "str", "", "Last joined game's name"),
 	("Client", "gamepwd", "str", "", "Last game's password")
@@ -79,9 +80,10 @@ def save():
 		if section != "DEFAULT" and not cparser.has_section(section):
 			cparser.add_section(section)
 		if hasattr(sys.modules[__name__], var):
-			cparser.set(section, var, str(getattr(sys.modules[__name__], var)))
-		else:
-			cparser.set(section, var, str(default))
+			value = getattr(sys.modules[__name__], var)
+			if value != default: # only save non-default values
+				cparser.set(section, var, str(value))
+	
 	# save to disk
 	with open(os.path.expandvars(config.SETTINGS_FILE), 'wt') as f:
 		cparser.write(f)
