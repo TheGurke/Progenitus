@@ -76,8 +76,12 @@ class Interface(uiloader.Interface):
 			self.entry_server.set_text(settings.server)
 			self.entry_gamename.set_text(settings.gamename)
 			self.entry_gamepwd.set_text(settings.gamepwd)
-			if settings.username != "":
+			if settings.userpwd != "":
+				glib.idle_add(self.button_login.grab_focus)
+			elif settings.username != "":
 				glib.idle_add(self.entry_pwd.grab_focus)
+			else:
+				glib.idle_add(self.entry_username.grab_focus)
 		
 		# Initialize tokens
 		glib.idle_add(self.init_token_autocomplete)
