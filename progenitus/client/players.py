@@ -67,6 +67,10 @@ class Player(object):
 		self.updated_life()
 		self.send_network_cmd("setlife", life)
 	
+	def entered_play(self):
+		"""Whether this player has started playing"""
+		return (self.hand != [] or self.battlefield != []
+			or self.graveyard != [] or self.exile != [])
 	
 	# Tray and Deck
 	

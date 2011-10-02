@@ -51,6 +51,8 @@ class Interface(uiloader.Interface):
 		if solitaire:
 			self.main_win.set_sensitive(True)
 			self.label_gamename.set_text(_("Solitaire game"))
+			self.hpaned1.set_position(0)
+			self.hpaned1.set_property("position-set", True)
 			
 			# Use a fake user class
 			class FakeUser(object):
@@ -371,7 +373,9 @@ class Interface(uiloader.Interface):
 	def reset_entrybar(self):
 		self.spinbutton_life.hide()
 		self.spinbutton_num.hide()
+		self.spinbutton_num.set_value(1)
 		self.entry.hide()
+		self.button_accept.hide()
 		self.label_entrybar2.hide()
 		self.combobox_tokens.hide()
 	
@@ -401,10 +405,17 @@ class Interface(uiloader.Interface):
 		self.hbox_entrybar.show()
 		self.spinbutton_life.grab_focus()
 	
+	def ask_for_reset(self):
+		self.reset_entrybar()
+		self.button_accept.show()
+		self._entrybar_task = "reset"
+		self.hbox_entrybar.show()
+		self.button_accept.grab_focus()
+		self.label_entrybar.set_text(_("Reset all cards and life?"))
+	
 	def card_set_counter(self, widget):
 		self.reset_entrybar()
 		self.spinbutton_num.show()
-		self.spinbutton_num.set_value(1)
 		self.entry.show()
 		self.label_entrybar.set_text(_("Set"))
 		self.label_entrybar2.set_text(_("counter."))
@@ -426,7 +437,7 @@ class Interface(uiloader.Interface):
 		self.hbox_entrybar.show()
 		self.entry.grab_focus()
 	
-	def entrybar_unfocused(self, widget, event):
+	def entrybar_unfocus(self, widget=None, event=None):
 		if not self.hbox_entrybar.get_visible():
 			return # entrybar wasn't shown
 		self.hbox_entrybar.hide()
@@ -436,8 +447,18 @@ class Interface(uiloader.Interface):
 				self.my_player.set_life(life)
 		elif self._entrybar_task == "counter" and self.entry.get_text() != "":
 			counter = self.entry.get_text()
-			num = self.spinbutton_num.get_value()
+			num = int(self.spinbutton_num.get_value())
 			self.my_player.set_counter(self._popup, num, counter)
+		self._entrybar_task = ""
+	
+	def entrybar_accept(self, widget):
+		if not self.hbox_entrybar.get_visible():
+			return # entrybar wasn't shown
+		self.hbox_entrybar.hide()
+		if self._entrybar_task in ("reset", "spectate"):
+			self.my_player.reset()
+			if self._entrybar_task == "spectate":
+				self.my_player.remove_tray()
 		self._entrybar_task = ""
 	
 	
@@ -452,11 +473,17 @@ class Interface(uiloader.Interface):
 		self.cd.queue_draw()
 	
 	def reset_game(self, widget):
-		self.my_player.reset()
+		if self.my_player.entered_play():
+			self.ask_for_reset()
+		else:
+			self.my_player.reset()
 	
 	def spectate(self, widget):
-		self.my_player.reset()
-		self.my_player.remove_tray()
+		if self.my_player.entered_play():
+			self.ask_for_reset()
+			self._entrybar_task = "spectate"
+		else:
+			self.my_player.remove_tray()
 	
 	def shuffle_library(self, widget):
 		self.my_player.shuffle_library()
