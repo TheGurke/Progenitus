@@ -56,7 +56,7 @@ class Interface(uiloader.Interface):
 		# Create deck directory if it doesn't exist
 		if not os.path.exists(settings.deck_dir):
 			os.mkdir(settings.deck_dir)
-			os.symlink(config.DEFAULT_DECKS_PATH,
+			os.symlink(os.path.abspath(config.DEFAULT_DECKS_PATH),
 				os.path.join(settings.deck_dir, _("default decks")))
 	
 	

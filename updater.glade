@@ -337,7 +337,7 @@ It will be resumed next time this program starts.</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="show_text">True</property>
-                    <property name="text" translatable="yes"> </property>
+                    <property name="text" translatable="yes">Connecting...</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -350,7 +350,6 @@ It will be resumed next time this program starts.</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="show_text">True</property>
-                    <property name="text" translatable="yes"> </property>
                   </object>
                   <packing>
                     <property name="expand">True</property>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk+" version="2.24"/>
+  <requires lib="gtk+" version="2.18"/>
   <!-- interface-naming-policy project-wide -->
   <object class="GtkAdjustment" id="adjustment_life">
     <property name="lower">-1000000</property>
@@ -700,7 +700,6 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="model">liststore_tokens</property>
-                        <property name="entry_text_column">1</property>
                         <signal name="changed" handler="selected_token" swapped="no"/>
                         <child>
                           <object class="GtkCellRendererText" id="cellrenderertext5"/>
@@ -854,7 +853,6 @@
   <object class="GtkMenu" id="menu_card">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="ubuntu_local">True</property>
     <child>
       <object class="GtkMenuItem" id="menuitem_to_hand">
         <property name="visible">True</property>
@@ -1024,7 +1022,6 @@
   <object class="GtkMenu" id="menu_desktop">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="ubuntu_local">True</property>
     <child>
       <object class="GtkMenuItem" id="menuitem_untap_all">
         <property name="visible">True</property>
@@ -1068,7 +1065,6 @@
   <object class="GtkMenu" id="menu_graveyard">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="ubuntu_local">True</property>
     <child>
       <object class="GtkMenuItem" id="menuitem_graveyard_to_hand">
         <property name="visible">True</property>
@@ -1113,7 +1109,6 @@
   <object class="GtkMenu" id="menu_hand">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="ubuntu_local">True</property>
     <child>
       <object class="GtkMenuItem" id="menuitem34">
         <property name="visible">True</property>
@@ -1215,7 +1210,6 @@
   <object class="GtkMenu" id="menu_library">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="ubuntu_local">True</property>
     <child>
       <object class="GtkMenuItem" id="menuitem_draw_from_lib">
         <property name="visible">True</property>

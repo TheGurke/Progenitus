@@ -7,7 +7,7 @@ APP_NAME_EDITOR = APP_NAME + " Editor"
 APP_NAME_CLIENT = APP_NAME + " Client"
 
 # Program version
-VERSION = "0.30-beta"
+VERSION = "0.30"
 
 # Program website
 APP_WEBSITE = "http://progenitus.org/"
@@ -23,7 +23,7 @@ GETTEXT_DOMAIN = APP_NAME
 
 # Path to the GTKBuilder files
 GTKBUILDER_CLIENT = "client.glade"
-GTKBUILDER_DECKEDITOR = "deckeditor.glade"
+GTKBUILDER_DECKEDITOR = "editor.glade"
 GTKBUILDER_UPDATER = "updater.glade"
 
 # Path structure in the picture directory

@@ -1,5 +1,5 @@
 
-Version 0.30-beta:
+Version 0.30:
 ``````````````````
 This version introduces a new card id pattern and database format. The database
 as well as the card pictures of the old version are incompatible and have to be
