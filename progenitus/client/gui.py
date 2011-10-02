@@ -287,6 +287,19 @@ class Interface(uiloader.Interface):
 			match = re.match(r'/nick\s+(.+)', text)
 			if match is not None and self.network_manager is not None:
 				self.network_manager.change_nick(match.groups()[0])
+			if text[:5] == "/flip":
+				# Flip a coin
+				result = (_("heads"), _("tails"))[random.randint(0, 1)]
+				msg = _("The coin came up %s.") % result
+				self.network_manager.send_chat(msg)
+				self.add_log_line(msg)
+			if text[:5] == "/roll":
+				# Roll a die
+				result = random.randint(1, 6)
+				msg = _("Rolled a %d.") % result
+				self.network_manager.send_chat(msg)
+				self.add_log_line(msg)
+		
 		else:
 			if self.network_manager is not None:
 				self.network_manager.send_chat(text)

@@ -102,10 +102,12 @@ for example http://www.jabber.org/.
 Unlike most other programs of this kind there is no limit how many player can
 join in one game.
 
-The client has 3 (hidden) commands:
+The client has 5 (hidden) commands:
 /life	set the life points
 /nick	change one's nick
 /draw	draw a number of cards
+/flip	flip a coin
+/roll	roll a die
 
 'f11' toggles fullscreen
 
@@ -121,7 +123,6 @@ Known issues:
   name
 
 Desired features:
-- roll dice and flip coins
 - multiplayer lobby
 - move cards from/to the graveyard by drag and drop
 - play cards face down
