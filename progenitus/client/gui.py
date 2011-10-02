@@ -711,7 +711,10 @@ class Interface(uiloader.Interface):
 		self.liststore_browse.clear()
 		for i in range(len(self._browser_cardlist)):
 			card = self._browser_cardlist[i]
-			self.liststore_browse.append((i, card.name, card.manacost))
+			self.liststore_browse.append((i, card.name, card.manacost,
+				card.get_composed_type(), card.power, card.toughness,
+				card.text)
+			)
 	
 	def hide_cardbrowser(self, widget=None, stuff=None):
 		"""Hide the card browser"""
