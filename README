@@ -112,7 +112,6 @@ The client has 5 (hidden) commands:
 'f11' toggles fullscreen
 
 Known issues:
-- cannot add counter on tokens
 - tray layout is kinda broken
 - mouse is not exactly on the card when dragging a card to play
 - Enlarged card flicker when the mouse is near the center of the screen
@@ -123,6 +122,9 @@ Known issues:
   name
 
 Desired features:
+- display comprehensive card details (+ download card rulings)
+- easy way to focus on the chat entry
+- turn symbol (showing who's turn it is)
 - multiplayer lobby
 - move cards from/to the graveyard by drag and drop
 - play cards face down
@@ -135,5 +137,7 @@ Desired features:
 - optimize ram usage (+ ram saving mode)
 - Save games
 - Replay games
+- Support for draft, block constructed
+- plugins?
 
 

@@ -28,11 +28,12 @@ Client:
 - Changed network protocol; Now broadcasting client version and sending
   card names in addition to ids.
 - Token creation is now supported
-- Counters on cards
+- Counters support
 - New 'spectating' mode
 - Ask before resetting a game
 - Handles card pictures of mixed sizes
 - Introduced a solitaire mode that doesn't require a network connection
+  (run with ./client.sh --solitaire)
 - Setting the life total now has a gui interface
 - Save login details
 - Roll dice / flip coins (use '/flip' and '/roll')

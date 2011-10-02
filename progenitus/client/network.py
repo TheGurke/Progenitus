@@ -28,10 +28,10 @@ commands = {
 	"hello":    "[Hello] %s", # handshake initialization
 	"welcome":  "[Welcome] %s", # handshake response
 	"reset":    "[Reset]", # reset deck
-	"tray":     "[CreateTray] as %x at (%d, %d)", # Tray item
+	"tray":     "[CreateTray] as %x at (%.2f, %.2f)", # Tray item
 	"update":   "[Update] %d %d", # update tray: library count, hand card count
 	"setlife":  "[Setlife] %d", # set life points
-	"enter":    "[Enter] %s \"%s\" as %x at (%d,%d)", # enter the battlefield
+	"enter":    "[Enter] %s \"%s\" as %x at (%.2f,%.2f)", # onto the battlefield
 	"exit":     "[Exit] %x", # exit the battlefield
 	"bury":     "[Bury] %s", # add a card to the graveyard
 	"unbury":   "[Unbury] %d", # remove a card from the graveyard by index
@@ -39,7 +39,7 @@ commands = {
 	"unexile":  "[Unexile] %d", # remove a card from the exile by index
 	"mulligan": "[Mulligan]", # take a mulligan
 	"shuffle":  "[Shuffle]", # shuffle the library
-	"move":     "[Move] %x to (%d,%d)", # move a card on the battlefield
+	"move":     "[Move] %x to (%.2f,%.2f)", # move a card on the battlefield
 	"tap":      "[Tap] %x", # tap a card
 	"flip":     "[Flip] %x", # flip a card
 	"face":     "[Face] %x", # face a card up or down
@@ -74,6 +74,7 @@ def create_res():
 		r = r.replace("(", '\(').replace(")", '\)')
 		r = r.replace("[", '\[').replace("]", '\]')
 		r = r.replace("%d", '\s*(-?\d+)\s*')
+		r = r.replace("%.2f", '\s*(-?\d+.\d\d)\s*')
 		r = r.replace("%x", '\s*([0-9abcdef]+)\s*')
 		r = r.replace("\"%s\"", '\"([^"]*)\"')
 		r = r.replace("%s", '([^\s]+)')
@@ -204,6 +205,8 @@ class NetworkManager(object):
 					args[i] = int(args[i], 16)
 				elif l[i][0] == "d":
 					args[i] = int(args[i])
+				elif l[i][:3] == ".2f":
+					args[i] = float(args[i])
 			cmdlist_.append((cmd, tuple(args)))
 		
 		self.logger.log_commands(user, cmdlist_)

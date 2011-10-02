@@ -11,6 +11,7 @@ from gettext import gettext as _
 
 from progenitus import *
 from progenitus.db import cards
+from progenitus.db import semantics
 from progenitus.editor import decks
 import network
 import players
@@ -405,8 +406,7 @@ class Interface(uiloader.Interface):
 		if 0 <= i < len(cards.tokens):
 			self.hbox_entrybar.hide()
 			token = cards.tokens[i]
-			item = self.my_player.create_carditem(token.id,
-				token.get_description())
+			item = self.my_player.create_carditem(token.id, str(token))
 			item.istoken = True
 	
 	def set_life(self, widget):
@@ -442,8 +442,6 @@ class Interface(uiloader.Interface):
 			counter, num = self._popup.counters.items()[0]
 			self.entry.set_text(counter)
 			self.spinbutton_num.set_value(num)
-		elif "Creature" in self._popup.card.cardtype:
-			self.entry.set_text("+1/+1")
 		else:
 			self.entry.set_text("")
 		self._entrybar_task = "counter"
@@ -566,7 +564,9 @@ class Interface(uiloader.Interface):
 	def clone_card(self, widget):
 		pl = self.my_player
 		item = self._popup
-		item2 = pl.create_carditem(item.cardid, None, item.x + 1, item.y + 1)
+		name = str(item.token) if item.card is None else item.card.name
+		x, y = item.x + 1, item.y + 1
+		item2 = pl.create_carditem(item.cardid, name, None, x, y)
 		item2.istoken = True
 		item2.card = item.card
 		item2.token = item.token
@@ -678,12 +678,16 @@ class Interface(uiloader.Interface):
 	
 	# Player callbacks
 	
-	def new_item(self, cardid, player, x, y):
+	def new_item(self, cardortoken, player, x, y):
 		"""Create a new item from a cardid"""
+		assert(cardortoken is not None)
+		assert(player is not None)
 		mine = player is self.my_player
-		item = desktop.CardItem(cards.get(cardid), player, mine)
+		item = desktop.CardItem(cardortoken, player, mine)
 		item.x = x
 		item.y = y
+		glib.idle_add(semantics.init_carditem, item) # Parse card semantics
+		
 		self.cd.add_item(item)
 		item.clamp_coords()
 		item.repaint()

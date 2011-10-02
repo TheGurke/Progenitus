@@ -12,7 +12,6 @@ import gtk
 from progenitus import config
 from progenitus.db import cards
 from progenitus.db import pics
-from progenitus.db import semantics
 
 
 #
@@ -703,10 +702,6 @@ class CardItem(Item):
 		self.controller = owner
 		self.mine = mine
 		self.counters = dict()
-		
-		# Parse card semantics
-		if self.card is not None:
-			glib.idle_add(semantics.init_carditem, self)
 	
 	def paint(self, desktop, cr):
 		# check for special "transform" cards that have two sides
@@ -743,7 +738,7 @@ class CardItem(Item):
 			if self.istoken:
 				text += " (clone)"
 		else:
-			text = self.token.get_description()
+			text = _("%s token") % str(self.token)
 		if not self.mine:
 			text = _("{0}'s {1}").format(self.controller.name, text)
 		

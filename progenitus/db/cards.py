@@ -63,7 +63,7 @@ class Card(object):
 		return self.id == other.id
 	
 	def __str__(self):
-		return "%s (%s)" % (self.name, self.cardset)
+		return self.name
 	
 	def derive_id(self):
 		"""Derive the card id based on collectors id and setid"""
@@ -152,8 +152,8 @@ class Token(object):
 	
 	def __str__(self):
 		if self.power != "" and self.toughness != "":
-			return "%s/%s %s" % (self.power, self.toughnes, self.name)
-		return "%s" % (self.name)
+			return "%s/%s %s" % (self.power, self.toughness, self.subtype)
+		return self.subtype
 	
 	def derive_id(self):
 		"""Derive the card id based on collectors id and setid"""

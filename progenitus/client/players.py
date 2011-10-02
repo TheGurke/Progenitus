@@ -306,12 +306,20 @@ class Player(object):
 			item.counters[counter] = num
 		elif counter in item.counters:
 			del item.counters[counter]
-		print num, counter, item.itemid
 		self.send_network_cmd("counter", num, counter, item.itemid)
 	
 	def create_carditem(self, cardid, cardname, itemid=None, x=0, y=0):
-		item = self.new_item(cardid, self, x, y)
-		# FIXME: check for card id
+		# Check for card id
+		card = cards.get(cardid)
+		if card is None:
+			l = cards.search('"name" = ?', (cardname,), 1)
+			if l == []:
+				raise RuntimeError(_("'%s' not found in database. Update?")
+					% cardname)
+			else:
+				card = l[0]
+		
+		item = self.new_item(card, self, x, y)
 		if itemid is None:
 			itemid = self._get_new_itemid(item)
 			item.itemid = itemid

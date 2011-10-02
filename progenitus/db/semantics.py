@@ -16,8 +16,12 @@ _counter2 = '[pP]ut an? (.*?) counter on (?:%s|this permanent)'
 
 def init_carditem(item):
 	"""Initialize a card item by setting some basic properties"""
+	if not hasattr(item, "card") or item.card is None:
+		if item.token is not None:
+			if "Creature" in item.token.cardtype:
+				item.default_counter = "+1/+1"
+		return
 	card = item.card
-	assert(card is not None) # Can only understand cards, not tokens
 	assert(item.cardid is not None)
 	
 	# Untaps by default?
@@ -50,9 +54,10 @@ def init_carditem(item):
 	elif "LEVEL" in card.text:
 		item.default_counter = "level"
 		item.controller.set_counter(item, 0, "level")
-	else:
+	elif re.search(_counter2 % card.name, card.text) is not None:
 		match = re.search(_counter2 % card.name, card.text)
-		if match is not None:
-			item.default_counter = match.groups()[0]
+		item.default_counter = match.groups()[0]
+	elif "Creature" in card.cardtype:
+		item.default_counter = "+1/+1"
 
 
