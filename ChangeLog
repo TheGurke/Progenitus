@@ -49,11 +49,11 @@ Client:
 - Save login details
 - Roll dice / flip coins (use '/flip' and '/roll')
 - Player list now displays a version tooltip
-- FIXED: Card play glitch, where the played card would be copied
-- FIXED: Bugs with cloned cards
-- FIXED: User list was not updated
-- FIXED: library/graveyard/exile browsing bugs
-- FIXED: the enlarged picture is flipped iff the card is
+- Fixed: Card play glitch, where the played card would be copied
+- Fixed: Bugs with cloned cards
+- Fixed: User list was not updated
+- Fixed: library/graveyard/exile browsing bugs
+- Fixed: the enlarged picture is flipped iff the card is
 
 
 Version 0.29:
