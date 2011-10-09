@@ -1,6 +1,11 @@
 # Written by TheGurke 2011
 """Contains various program parameters that will not be changed by the user"""
 
+
+
+import os
+
+
 # Program name
 APP_NAME = "Progenitus"
 APP_NAME_EDITOR = APP_NAME + " Editor"
@@ -13,7 +18,10 @@ VERSION = "0.31-beta"
 APP_WEBSITE = "http://progenitus.org/"
 
 # Path to the settings file
-SETTINGS_FILE = "$HOME/.progenitus.cfg"
+if os.name == 'posix':
+	SETTINGS_FILE = "$HOME/.progenitus.cfg"
+else:
+	SETTINGS_FILE = "settings.ini"
 
 # Path to the translation directory
 TRANSLATIONS_PATH = "po"

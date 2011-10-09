@@ -123,6 +123,7 @@ Known issues:
 - there is not graphics for the counters
 
 Desired features:
+- move away from pyxmpp towards telepathy; -> windows binaries
 - display comprehensive card details (+ download card rulings)
 - easy way to focus on the chat entry
 - turn symbol (showing who's turn it is)
@@ -132,7 +133,7 @@ Desired features:
 - set nick
 - search for cards automatically (basic lands...)
 - pretty card browser
-- comprehensive match logger with colored output
+- comprehensive logger with colored output
 - console commands
 - undo untap all
 - optimize ram usage (+ ram saving mode)

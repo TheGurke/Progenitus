@@ -1,12 +1,6 @@
 # Written by TheGurke 2011
 """Setup script for the py2exe windows compilation"""
 
-#
-# Do not run!
-#
-# On windows, invoke:
-# python win32compile.py py2exe
-#
 
 
 from distutils.core import setup
@@ -22,6 +16,14 @@ from progenitus import config
 # - make sure you don't have conflicting versions of gtk installed
 # - do not copy the redistributable to C:\windows\system32 as instructed
 #   on some webpages!
+# - install mingw
+# - install swig
+# - make sure %PATH% contains the mingw and python /bin path (reboot!)
+# - install dnspython, M2Crypto, pyxmpp as instructed in the packages.
+#   This should be as easy as "python setup.py build" "python setup.py install"
+#   or similarily.
+# Now you can invoke the compilation script:
+# python win32compile.py py2exe
 #
 
 

@@ -8,7 +8,12 @@ import os
 import optparse
 from gettext import gettext as _
 
-from progenitus import *
+# Import everything explicitly
+from progenitus import async, config, lang, settings, uiloader
+from progenitus.client import desktop, muc, network, players
+from progenitus.db import cards, pics, semantics
+from progenitus.editor import decks
+from progenitus.miner import magiccardsinfo, miner, tcgplayercom
 from progenitus.client import gui as clientgui
 from progenitus.editor import gui as editorgui
 from progenitus.updater import gui as updatergui

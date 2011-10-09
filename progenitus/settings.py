@@ -3,7 +3,7 @@
 
 import ConfigParser
 import sys
-import os.path
+import os
 
 import config
 
@@ -21,7 +21,8 @@ _settings = [
 	# section, variable name, type, default value, description
 	("DEFAULT", "cards_db", "file", "mtg.sqlite", "Path to card database"),
 	("DEFAULT", "cache_path", "dir", "cache/", "Path to picture cache folder"),
-	("DEFAULT", "deck_dir", "dir", "$HOME/Progenitus decks",
+	("DEFAULT", "deck_dir", "dir",
+		"$HOME/Progenitus decks" if os.name == 'posix' else "decks",
 		"Path to deck folder"),
 	("Updater", "disclaimer_agreed", "bool", False,
 		"The user has agreed to the disclaimer"),
