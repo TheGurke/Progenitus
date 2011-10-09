@@ -405,7 +405,7 @@ class Interface(uiloader.Interface):
 		self.entry.hide()
 		self.button_accept.hide()
 		self.label_entrybar2.hide()
-		self.entry_tokens.hide()
+		self.combobox_tokens.hide()
 	
 	def entrybar_size_allocation(self, widget, rect):
 		self.cd.y_offset = rect.height
@@ -413,10 +413,15 @@ class Interface(uiloader.Interface):
 	def create_token(self, widget):
 		self.reset_entrybar()
 		self._entrybar_task = "token"
-		self.entry_tokens.show()
+		self.combobox_tokens.show()
 		self.label_entrybar.set_text(_("Choose a token:"))
 		self.hbox_entrybar.show()
 		self.entry_tokens.grab_focus()
+	
+	def token_pick(self, widget):
+		i = self.combobox_tokens.get_active()
+		if 0 <= i < len(cards.tokens):
+			self.selected_token(cards.tokens[i].id)
 	
 	def token_autocomplete_pick(self, widget, model, it):
 		"""Picked a token from the autocompletion"""
