@@ -696,17 +696,16 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkComboBox" id="combobox_tokens">
+                      <object class="GtkEntry" id="entry_tokens">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="model">liststore_tokens</property>
-                        <signal name="changed" handler="selected_token" swapped="no"/>
-                        <child>
-                          <object class="GtkCellRendererText" id="cellrenderertext5"/>
-                          <attributes>
-                            <attribute name="text">1</attribute>
-                          </attributes>
-                        </child>
+                        <property name="can_focus">True</property>
+                        <property name="invisible_char">•</property>
+                        <property name="width_chars">30</property>
+                        <property name="primary_icon_activatable">False</property>
+                        <property name="secondary_icon_activatable">False</property>
+                        <property name="primary_icon_sensitive">True</property>
+                        <property name="secondary_icon_sensitive">True</property>
+                        <signal name="activate" handler="tokens_activate" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>

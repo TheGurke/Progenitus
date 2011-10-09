@@ -105,8 +105,22 @@ class Interface(uiloader.Interface):
 		"""Load the tokens into the autocompleting combobox"""
 		cards.load_tokens()
 		for token in cards.tokens:
-			self.liststore_tokens.append((token.id, token.get_description(),
-				token.setname, token.releasedate))
+			if token.power != "":
+				desc = "%s %s/%s (%s)" % (token.subtype, token.power,
+					token.toughness, token.setname)
+			else:
+				desc = "%s (%s)" % (token.subtype, token.setname)
+			self.liststore_tokens.append((token.id, desc, token.setname,
+				token.releasedate))
+		
+		# Complete the entry_tokens widget
+		completion = gtk.EntryCompletion()
+		completion.set_model(self.liststore_tokens)
+		completion.set_text_column(1)
+		completion.set_inline_completion(True)
+		completion.set_minimum_key_length(2)
+		completion.connect("match-selected", self.token_autocomplete_pick)
+		self.entry_tokens.set_completion(completion)
 	
 	
 	# Network methods
@@ -391,23 +405,31 @@ class Interface(uiloader.Interface):
 		self.entry.hide()
 		self.button_accept.hide()
 		self.label_entrybar2.hide()
-		self.combobox_tokens.hide()
+		self.entry_tokens.hide()
 	
 	def create_token(self, widget):
 		self.reset_entrybar()
 		self._entrybar_task = "token"
-		self.combobox_tokens.show()
+		self.entry_tokens.show()
 		self.label_entrybar.set_text(_("Choose a token:"))
 		self.hbox_entrybar.show()
-		self.combobox_tokens.grab_focus()
+		self.entry_tokens.grab_focus()
 	
-	def selected_token(self, widget):
-		i = self.combobox_tokens.get_active()
-		if 0 <= i < len(cards.tokens):
-			self.hbox_entrybar.hide()
-			token = cards.tokens[i]
-			item = self.my_player.create_carditem(token.id, str(token))
-			item.istoken = True
+	def token_autocomplete_pick(self, widget, model, it):
+		"""Picked a token from the autocompletion"""
+		self.selected_token(model[it][0])
+	
+	def tokens_activate(self, widget):
+		text = self.entry_tokens.get_text()
+		for row in self.liststore_tokens:
+			if text == row[1]:
+				self.selected_token(row[0])
+	
+	def selected_token(self, tokenid):
+		self.hbox_entrybar.hide()
+		token = cards.get(tokenid)
+		item = self.my_player.create_carditem(token.id, str(token))
+		item.istoken = True
 	
 	def set_life(self, widget):
 		self.reset_entrybar()
