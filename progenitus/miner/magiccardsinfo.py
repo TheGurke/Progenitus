@@ -40,7 +40,7 @@ re_token2 = re.compile(r'<tr[^>]*>\s*'
 	'<td>\s*<a\s+href="([^"]*)">(.*?)' # link and name
 	'(?:\s+([\d\*X]+)/([\d\*X]+)|)</a>\s*</td>\s*' # power and toughness
 	'<td>Token</td>\s*' # token description
-	'<td>(?:([\d\*X]+)/[\d\*X]+|-)</td>\s*' # number
+	'<td>(?:([\d\*X]+[a-z]?)/[\d\*X]+|-)</td>\s*' # number
 	'<td>([^<]*)</td>\s*' # artist
 	'</tr>'
 )

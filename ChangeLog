@@ -1,6 +1,10 @@
 
 Version 0.31-beta:
 ``````````````````
+
+Updater:
+- Downloads Eldrazi Spawn tokens
+
 Client:
 - New token selection widget usign autocompletion
 - No more screen flicker when the entrybar is shown
