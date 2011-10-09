@@ -120,6 +120,7 @@ Known issues:
 - the log does not always scroll down
 - When the client recieves an illegal card id, it should search for the card by
   name
+- there is not graphics for the counters
 
 Desired features:
 - display comprehensive card details (+ download card rulings)

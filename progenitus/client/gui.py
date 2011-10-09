@@ -496,11 +496,11 @@ class Interface(uiloader.Interface):
 	def entrybar_accept(self, widget):
 		if not self.hbox_entrybar.get_visible():
 			return # entrybar wasn't shown
-		self.entrybar_unfocus()
 		if self._entrybar_task in ("reset", "spectate"):
 			self.my_player.reset()
 			if self._entrybar_task == "spectate":
 				self.my_player.remove_tray()
+		self.entrybar_unfocus()
 	
 	
 	# Interface callbacks
