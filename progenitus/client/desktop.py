@@ -745,7 +745,10 @@ class CardItem(Item):
 		
 		# Add counter information
 		for counter, num in self.counters.items():
-			text += ", %d %s counter" % (num, counter)
+			if num == 1:
+				text += ", one %s counter" % counter
+			else:
+				text += ", %d %s counters" % (num, counter)
 		return text
 	
 	def double_click(self, event):

@@ -989,13 +989,13 @@
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="menuitem_set_counter">
+      <object class="GtkMenuItem" id="menuitem_set_counters">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="use_action_appearance">False</property>
-        <property name="label" translatable="yes">set counter...</property>
+        <property name="label" translatable="yes">set counters...</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="card_set_counter" swapped="no"/>
+        <signal name="activate" handler="card_set_counters" swapped="no"/>
       </object>
     </child>
     <child>

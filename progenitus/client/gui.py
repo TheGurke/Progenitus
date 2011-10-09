@@ -456,12 +456,12 @@ class Interface(uiloader.Interface):
 		self.button_accept.grab_focus()
 		self.label_entrybar.set_text(_("Reset all cards and life?"))
 	
-	def card_set_counter(self, widget):
+	def card_set_counters(self, widget):
 		self.reset_entrybar()
 		self.spinbutton_num.show()
 		self.entry.show()
 		self.label_entrybar.set_text(_("Set"))
-		self.label_entrybar2.set_text(_("counter."))
+		self.label_entrybar2.set_text(_("counters."))
 		self.label_entrybar2.show()
 		if self._popup.default_counter is not None:
 			counter = self._popup.default_counter
@@ -474,7 +474,7 @@ class Interface(uiloader.Interface):
 			self.spinbutton_num.set_value(num)
 		else:
 			self.entry.set_text("")
-		self._entrybar_task = "counter"
+		self._entrybar_task = "counters"
 		self.hbox_entrybar.show()
 		self.entry.grab_focus()
 	
@@ -487,7 +487,7 @@ class Interface(uiloader.Interface):
 			life = int(self.spinbutton_life.get_value())
 			if life != self.my_player.life:
 				self.my_player.set_life(life)
-		elif self._entrybar_task == "counter" and self.entry.get_text() != "":
+		elif self._entrybar_task == "counters" and self.entry.get_text() != "":
 			counter = self.entry.get_text()
 			num = int(self.spinbutton_num.get_value())
 			self.my_player.set_counter(self._popup, num, counter)
@@ -679,7 +679,7 @@ class Interface(uiloader.Interface):
 			self.menuitem_does_not_untap.set_active(item.does_not_untap)
 			for widgetname in ("to_hand", "to_lib", "to_graveyard", "exile",
 				"attack", "block", "use_effect", "cardsep2", "does_not_untap",
-				"set_counter", "give_to"):
+				"set_counters", "give_to"):
 				getattr(self, "menuitem_" + widgetname).set_visible(item.mine)
 			for widgetname in ("flipped", "faceup"):
 				getattr(self, "menuitem_" + widgetname).set_sensitive(item.mine)

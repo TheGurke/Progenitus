@@ -10,7 +10,8 @@ _text_num = {"one":1, "two":2, "three":3, "four":4, "five":5, "six":6,
 _re_num = re.compile(r'[\d]+')
 _re_token = re.compile(r'[pP]ut [\S]+ (.*?) creature tokens? (?:with .*?|)'
 	'onto the battlefield')
-_counter1 = '%s enters the battlefield with ([\S]*?) (.*?) counters on it.'
+_counter1 = '(?:%s|[tT]his [\S]+) enters the battlefield with ' \
+	'([\S]*?) (.*?) counters on it.'
 _counter2 = '[pP]ut an? (.*?) counter on (?:%s|this permanent)'
 
 
