@@ -407,6 +407,9 @@ class Interface(uiloader.Interface):
 		self.label_entrybar2.hide()
 		self.entry_tokens.hide()
 	
+	def entrybar_size_allocation(self, widget, rect):
+		self.cd.y_offset = rect.height
+	
 	def create_token(self, widget):
 		self.reset_entrybar()
 		self._entrybar_task = "token"
@@ -426,7 +429,7 @@ class Interface(uiloader.Interface):
 				self.selected_token(row[0])
 	
 	def selected_token(self, tokenid):
-		self.hbox_entrybar.hide()
+		self.entrybar_unfocus()
 		token = cards.get(tokenid)
 		item = self.my_player.create_carditem(token.id, str(token))
 		item.istoken = True
@@ -474,6 +477,7 @@ class Interface(uiloader.Interface):
 		if not self.hbox_entrybar.get_visible():
 			return # entrybar wasn't shown
 		self.hbox_entrybar.hide()
+		self.cd.y_offset = 0
 		if self._entrybar_task == "life":
 			life = int(self.spinbutton_life.get_value())
 			if life != self.my_player.life:
@@ -487,12 +491,11 @@ class Interface(uiloader.Interface):
 	def entrybar_accept(self, widget):
 		if not self.hbox_entrybar.get_visible():
 			return # entrybar wasn't shown
-		self.hbox_entrybar.hide()
+		self.entrybar_unfocus()
 		if self._entrybar_task in ("reset", "spectate"):
 			self.my_player.reset()
 			if self._entrybar_task == "spectate":
 				self.my_player.remove_tray()
-		self._entrybar_task = ""
 	
 	
 	# Interface callbacks

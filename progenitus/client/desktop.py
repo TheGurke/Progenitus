@@ -68,6 +68,7 @@ class CairoDesktop(gtk.DrawingArea):
 	bg_color = 1, 1, 1
 	zoom = 12. # current zoom factor; the larger means zooming in; type is float
 	# position is always centered around (0,0)
+	y_offset = 0 # number of on-screen pixels that are covered on the bottom
 	flip_y = False
 	
 	_items = [] # Cards and other stuff
@@ -122,7 +123,7 @@ class CairoDesktop(gtk.DrawingArea):
 	def get_hand_height(self):
 		"""Get the height of the bottom area reserved for the cards in hand """
 		"""in on-screen coordinates"""
-		return int(math.ceil(1.2 * 3.5 * self.zoom))
+		return int(math.ceil(1.2 * 3.5 * self.zoom)) - self.y_offset
 	
 	# Item container
 	
@@ -248,7 +249,7 @@ class CairoDesktop(gtk.DrawingArea):
 		card_height = int(math.ceil(3.5 * self.zoom))
 		spacing = int(math.ceil(2.5 * self.zoom * 0.1))
 		x = width / 2 - ((card_width + spacing) * len(hand) - spacing) / 2
-		y = height - card_height - spacing
+		y = height - card_height - spacing + self.y_offset
 		
 		# Divider line
 		cr.save()

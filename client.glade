@@ -618,6 +618,7 @@
                   <object class="GtkHBox" id="hbox_entrybar">
                     <property name="can_focus">False</property>
                     <property name="spacing">15</property>
+                    <signal name="size-allocate" handler="entrybar_size_allocation" swapped="no"/>
                     <child>
                       <object class="GtkLabel" id="label_entrybar">
                         <property name="visible">True</property>
