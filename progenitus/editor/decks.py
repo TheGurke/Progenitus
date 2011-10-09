@@ -155,7 +155,7 @@ def _parse_file(filename):
 			if match:
 				num, name, setname = match.group(1, 2, 3)
 				num = int(num) if num is not None else 1
-				cardlist.append((num, name, setname, atsideboard))
+				cardlist.append((num, name.strip(), setname, atsideboard))
 	
 	deck.description = deck.description[:-1] # remove the last newline
 	return deck, cardlist
@@ -194,9 +194,10 @@ def load(filename, progresscallback=None, returncallback=None):
 				print("Card \"" + name[2:-2] + "\" not found.")
 				continue
 		assert(0 <= num < 1000)
+		card = random.choice(l)
 		for j in range(num):
 			targetlist = deck.sideboard if sb else deck.decklist
-			targetlist.append(copy.copy(random.choice(l)))
+			targetlist.append(copy.copy(card))
 		if progresscallback is not None:
 			progresscallback(float(i) / len(cardlist))
 	if returncallback is not None:

@@ -92,17 +92,17 @@ class Card(object):
 			text = "<b>%s  (%s)</b>\n" % (esc(self.name), self.manacost)
 		else:
 			text = "<b>%s</b>\n" % esc(self.name)
+		text += "<small>%s #%s" % (self.setname, self.collectorsid)
+		if self.price >= 0:
+			text += "  $%.2f</small>\n" % (float(self.price) / 100,)
+		else:
+			text += "</small>\n"
 		text += "%s - %s" % (esc(self.cardtype), esc(self.subtype)) if \
 			self.subtype != "" else esc(self.cardtype)
 		if self.text != "":
 			text += "\n\n%s" % esc(self.text)
 		if self.flavor != "":
 			text += "\n\n<i>%s</i>" % esc(self.flavor)
-		text += "\n\n\n<small>%s #%s" % (self.setname, self.collectorsid)
-		if self.price >= 0:
-			text += "    $%.2f</small>" % (float(self.price) / 100,)
-		else:
-			text += "</small>"
 		return text
 	
 	def get_price(self):
@@ -169,7 +169,7 @@ class Token(object):
 	def markup(self):
 		"""Return the card details as a gtk markup text"""
 		esc = glib.markup_escape_text # escape function
-		text += "%s - %s" % (esc(self.cardtype), esc(self.subtype)) if \
+		text = "%s - %s" % (esc(self.cardtype), esc(self.subtype)) if \
 			self.subtype != "" else esc(self.cardtype)
 		if self.text != "":
 			text += "\n\n%s" % esc(self.text)

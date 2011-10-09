@@ -907,8 +907,7 @@ class Interface(uiloader.Interface):
 		"""Find lands matching a deck's colors"""
 		if self.deck is None:
 			return
-		query = '"type" LIKE "%Land%" AND NOT "type" = "Basic Land" AND ' + \
-			'NOT "type" = "Basic Snow Land" AND '
+		query = '"type" LIKE "%Land%" AND '
 		mana = {"white":"W", "blue":"U", "black":"B", "red":"R", "green":"G"}
 		basic = {"white":"Plains", "blue":"Island", "black":"Swamp",
 			"red":"Mountain", "green":"Forest"}
