@@ -173,15 +173,9 @@ def load(filename, progresscallback=None, returncallback=None):
 	# lookup in the db
 	for i in range(len(cardlist)):
 		num, name, setname, sb = cardlist[i]
-		if setname is not None:
-			l = yield cards.search('"setname" = ? AND "name" = ?'
-				' ORDER BY "releasedate" DESC', (setname, name))
-		if setname is None or l == []:
-			l = yield cards.search('"name" = ? ORDER BY "releasedate" DESC',
-				(name,))
-#			if l != []:
-#				print _("Card '%s' found, but not in '%s'.") % (name, setname)
-		if l == []:
+		try:
+			l = yield cards.find_by_name(name)
+		except RuntimeError:
 			# try to find card by adding parenthesis
 			name = "%(" + name + ")%"
 			if setname is not None:
@@ -191,12 +185,16 @@ def load(filename, progresscallback=None, returncallback=None):
 				l = yield cards.search('"name" LIKE ?' +
 					' ORDER BY "releasedate" DESC', (name,))
 			if l == []:
-				print("Card \"" + name[2:-2] + "\" not found.")
+				print("Card '" + name[2:-2] + "' not found.")
 				continue
-		assert(0 <= num < 1000)
+		if setname is not None:
+			ll = filter(lambda card: card.setname == setname, l)
+			if ll != []:
+				l = ll
 		card = random.choice(l)
+		assert(0 <= num < 1000)
+		targetlist = deck.sideboard if sb else deck.decklist
 		for j in range(num):
-			targetlist = deck.sideboard if sb else deck.decklist
 			targetlist.append(copy.copy(card))
 		if progresscallback is not None:
 			progresscallback(float(i) / len(cardlist))

@@ -36,8 +36,9 @@ setup(
 		'packages':'encodings',
 		"includes": ["gobject", "gio", "cairo", "pango", "pangocairo", "gtk",
 			"atk", "glib"]}},
-	data_files=["client.glade", "deckeditor.glade", "updater.glade",
-		"mtg.sqlite", "README.txt"]
+	data_files=["client.glade", "editor.glade", "updater.glade", "README",
+		"ChangeLog", "AUTHORS", "COPYING", "media/deckmaster.png",
+		"media/land.png"]
 )
 
 

@@ -67,6 +67,7 @@ sideboard.
 'f11' toggles fullscreen
 
 Known issues:
+- Deck rename is still broken
 - "No results" in the extended search is not visible enough
 - Moving the center bar to the right while in extended search causes graphic
   bugs
@@ -123,7 +124,6 @@ Known issues:
 - there is not graphics for the counters
 
 Desired features:
-- move away from pyxmpp towards telepathy; -> windows binaries
 - display comprehensive card details (+ download card rulings)
 - easy way to focus on the chat entry
 - turn symbol (showing who's turn it is)

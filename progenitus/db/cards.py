@@ -17,6 +17,9 @@ from progenitus import settings
 _cursor = None # The database cursor
 _last_search = None # The last query executed
 tokens = None # A list of all tokens
+cards = None # A list of all cards
+_by_id = None # A dict mapping id to card or token instance
+_by_name = None # A dict mapping a name to a list of card instances
 
 
 def connect():
@@ -25,6 +28,9 @@ def connect():
 	global sqlconn, _cursor
 	sqlconn = sqlite3.connect(settings.cards_db)
 	_cursor = sqlconn.cursor()
+	load_tokens()
+	load_cards()
+	build_datastructures()
 
 
 def convert_mana(manacost):
@@ -213,18 +219,18 @@ def create_db(filename):
 
 def get(cardid):
 	"""Get a card or token by id"""
-	if is_token(cardid):
-		global _cursor
-		_cursor.execute('SELECT * FROM "tokens" WHERE "id" = ?', (cardid,))
-		row = _cursor.fetchone()
-		if row is None:
-			raise RuntimeError(_("Token with id %s not found.") % cardid)
-		return Token(*row)
-	else:
-		l = search('"id" = ?', (cardid,), 1)
-		if l == []:
-			raise RuntimeError(_("Card with id %s not found.") % cardid)
-		return l[0]
+	assert(_by_id is not None) # must be initialized
+	if cardid not in _by_id:
+		raise RuntimeError(_("Card id %s not found in database.") % cardid)
+	return _by_id[cardid]
+
+
+def find_by_name(cardname):
+	"""Return a list of versions of a card by the English name"""
+	assert(_by_name is not None) # must be initialized
+	if cardname not in _by_name:
+		raise RuntimeError(_("Card '%s' not found in database.") % cardname)
+	return _by_name[cardname]
 
 
 def search(query, args=(), limit=settings.results_limit):
@@ -281,6 +287,30 @@ def load_tokens():
 	for row in _cursor:
 		token = Token(*row)
 		tokens.append(token)
+
+def load_cards():
+	"""Load all cards from the database to memory"""
+	global cards
+	_cursor.execute('SELECT * FROM "cards"')
+	cards = []
+	for row in _cursor:
+		card = Card(*row)
+		cards.append(card)
+
+
+def build_datastructures():
+	"""refresh _by_id and _by_name"""
+	global _by_id, _by_name, cards, tokens
+	_by_id = dict()
+	_by_name = dict()
+	for card in cards:
+		_by_id[card.id] = card
+		if card.name in _by_name:
+			_by_name[card.name].append(card)
+		else:
+			_by_name[card.name] = [card]
+	for token in tokens:
+		_by_id[token.id] = token
 
 
 

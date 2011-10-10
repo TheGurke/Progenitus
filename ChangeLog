@@ -5,8 +5,13 @@ Version 0.31-beta:
 Updater:
 - Downloads Eldrazi Spawn tokens
 
+Deckeditor:
+- Greatly sped up deck loading
+- Yet more theme decks
+
 Client:
-- New token selection widget usign autocompletion
+- Greatly sped up deck loading
+- New token selection widget using autocompletion
 - No more screen flicker when the entrybar is shown
 
 
