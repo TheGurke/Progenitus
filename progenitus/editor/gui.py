@@ -59,6 +59,40 @@ class Interface(uiloader.Interface):
 			if os.name == 'posix':
 				os.symlink(os.path.abspath(config.DEFAULT_DECKS_PATH),
 					os.path.join(settings.deck_dir, _("default decks")))
+		
+		glib.idle_add(self.init_qs_autocomplete)
+	
+	def init_qs_autocomplete(self):
+		"""Initialize the quicksearch entry autocompletion"""
+		completion = gtk.EntryCompletion()
+		completion.set_model(self.liststore_qs_autocomplete)
+		completion.set_text_column(0)
+		completion.set_inline_completion(False)
+		completion.set_minimum_key_length(3)
+		completion.connect("match-selected", self.qs_autocomplete_pick)
+		self.quicksearch_entry.set_completion(completion)
+		
+		# Populate quicksearch autocomplete
+		cardnames = set(card.name for card in cards.cards)
+		for cardname in cardnames:
+			card = cards.find_by_name(cardname)[0]
+			desc = card.cardtype
+			if card.subtype != "":
+				desc += " - " + card.subtype
+			if card.manacost != "":
+				desc += "(%s)" % card.manacost
+			self.liststore_qs_autocomplete.append((cardname, desc,
+				'"name" = ?', card.name))
+		for setname in cards.sets:
+			self.liststore_qs_autocomplete.append((setname, "(card set)",
+				'"setname" = ?', setname))
+		subtypes = set()
+		for card in cards.cards:
+			for subtype in card.subtype.split(" "):
+				subtypes.add(subtype)
+		for subtype in subtypes:
+			self.liststore_qs_autocomplete.append((subtype, "(creature type)",
+				'"subtype" = ?', subtype))
 	
 	
 	#
@@ -736,6 +770,11 @@ class Interface(uiloader.Interface):
 			if i >= 2:
 				query = "%" + _replace_chars(query) + "%"
 		self._show_results(l)
+	
+	def qs_autocomplete_pick(self, widget, model, it):
+		"""Picked a suggested autocompletion item"""
+		row = model[it]
+		self._execute_search(row[2], (row[3],))
 	
 	def extended_search(self, widget):
 		"""Clicked on the extended search button"""

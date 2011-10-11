@@ -7,6 +7,7 @@ Updater:
 
 Deckeditor:
 - Greatly sped up deck loading
+- Autocompletion for the quicksearch entry
 - Yet more theme decks
 
 Client:

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk+" version="2.18"/>
-  <!-- interface-naming-policy project-wide -->
   <object class="GtkListStore" id="cards">
     <columns>
       <!-- column-name id -->
@@ -73,18 +72,6 @@
     <property name="upper">16</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
-  </object>
-  <object class="GtkTreeStore" id="decks">
-    <columns>
-      <!-- column-name filename -->
-      <column type="gchararray"/>
-      <!-- column-name deckname -->
-      <column type="gchararray"/>
-      <!-- column-name isdir -->
-      <column type="gboolean"/>
-      <!-- column-name icon -->
-      <column type="GdkPixbuf"/>
-    </columns>
   </object>
   <object class="GtkListStore" id="eq1">
     <columns>
@@ -183,6 +170,18 @@
       </row>
     </data>
   </object>
+  <object class="GtkTreeStore" id="decks">
+    <columns>
+      <!-- column-name filename -->
+      <column type="gchararray"/>
+      <!-- column-name deckname -->
+      <column type="gchararray"/>
+      <!-- column-name isdir -->
+      <column type="gboolean"/>
+      <!-- column-name icon -->
+      <column type="GdkPixbuf"/>
+    </columns>
+  </object>
   <object class="GtkImage" id="image1">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -210,6 +209,18 @@
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="stock">gtk-edit</property>
+  </object>
+  <object class="GtkListStore" id="liststore_qs_autocomplete">
+    <columns>
+      <!-- column-name text -->
+      <column type="gchararray"/>
+      <!-- column-name description -->
+      <column type="gchararray"/>
+      <!-- column-name query -->
+      <column type="gchararray"/>
+      <!-- column-name arg -->
+      <column type="gchararray"/>
+    </columns>
   </object>
   <object class="GtkWindow" id="main_win">
     <property name="can_focus">False</property>
@@ -333,8 +344,6 @@
                     <property name="primary_icon_stock">gtk-find</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
-                    <property name="primary_icon_sensitive">True</property>
-                    <property name="secondary_icon_sensitive">True</property>
                     <signal name="activate" handler="quicksearch" swapped="no"/>
                     <signal name="button-release-event" handler="select_all" swapped="no"/>
                   </object>
@@ -532,8 +541,6 @@
                       <object class="GtkScrolledWindow" id="scrolledwindow3">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="hscrollbar_policy">automatic</property>
-                        <property name="vscrollbar_policy">automatic</property>
                         <child>
                           <object class="GtkTreeView" id="decklistview">
                             <property name="visible">True</property>
@@ -543,6 +550,9 @@
                             <property name="headers_clickable">False</property>
                             <property name="search_column">1</property>
                             <signal name="cursor-changed" handler="select_deck" swapped="no"/>
+                            <child internal-child="selection">
+                              <object class="GtkTreeSelection" id="treeview-selection1"/>
+                            </child>
                             <child>
                               <object class="GtkTreeViewColumn" id="treeviewcolumn9">
                                 <property name="title">Deckname</property>
@@ -652,8 +662,6 @@
                                 <property name="invisible_char">•</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="secondary_icon_activatable">False</property>
-                                <property name="primary_icon_sensitive">True</property>
-                                <property name="secondary_icon_sensitive">True</property>
                                 <signal name="changed" handler="deckname_changed" swapped="no"/>
                               </object>
                               <packing>
@@ -702,8 +710,6 @@
                           <object class="GtkScrolledWindow" id="scrolledwindow2">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="hscrollbar_policy">automatic</property>
-                            <property name="vscrollbar_policy">automatic</property>
                             <child>
                               <object class="GtkTreeView" id="cardview">
                                 <property name="width_request">320</property>
@@ -716,6 +722,9 @@
                                 <signal name="cursor-changed" handler="select_card" swapped="no"/>
                                 <signal name="key-press-event" handler="cardview_keypress" swapped="no"/>
                                 <signal name="row-activated" handler="doubleclick_card" swapped="no"/>
+                                <child internal-child="selection">
+                                  <object class="GtkTreeSelection" id="treeview-selection2"/>
+                                </child>
                                 <child>
                                   <object class="GtkTreeViewColumn" id="treeviewcolumn18">
                                     <property name="title">SB?</property>
@@ -855,8 +864,8 @@
                         <child>
                           <object class="GtkProgressBar" id="progressbar_deckload">
                             <property name="can_focus">False</property>
-                            <property name="show_text">True</property>
                             <property name="text" translatable="yes">Loading deck...</property>
+                            <property name="show_text">True</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -929,8 +938,6 @@
                           <object class="GtkScrolledWindow" id="scrolledwindow1">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="hscrollbar_policy">automatic</property>
-                            <property name="vscrollbar_policy">automatic</property>
                             <child>
                               <object class="GtkTreeView" id="resultview">
                                 <property name="visible">True</property>
@@ -943,6 +950,9 @@
                                 <signal name="cursor-changed" handler="select_result" swapped="no"/>
                                 <signal name="key-press-event" handler="searchview_keypress" swapped="no"/>
                                 <signal name="row-activated" handler="doubleclick_result" swapped="no"/>
+                                <child internal-child="selection">
+                                  <object class="GtkTreeSelection" id="treeview-selection3"/>
+                                </child>
                                 <child>
                                   <object class="GtkTreeViewColumn" id="treeviewcolumn1">
                                     <property name="sizing">autosize</property>
@@ -1127,8 +1137,6 @@
                                     <property name="invisible_char">•</property>
                                     <property name="primary_icon_activatable">False</property>
                                     <property name="secondary_icon_activatable">False</property>
-                                    <property name="primary_icon_sensitive">True</property>
-                                    <property name="secondary_icon_sensitive">True</property>
                                     <signal name="activate" handler="search" swapped="no"/>
                                   </object>
                                   <packing>
@@ -1159,8 +1167,6 @@
                                     <property name="invisible_char">•</property>
                                     <property name="primary_icon_activatable">False</property>
                                     <property name="secondary_icon_activatable">False</property>
-                                    <property name="primary_icon_sensitive">True</property>
-                                    <property name="secondary_icon_sensitive">True</property>
                                     <signal name="activate" handler="search" swapped="no"/>
                                   </object>
                                   <packing>
@@ -1408,8 +1414,6 @@
                                         <property name="invisible_char">•</property>
                                         <property name="primary_icon_activatable">False</property>
                                         <property name="secondary_icon_activatable">False</property>
-                                        <property name="primary_icon_sensitive">True</property>
-                                        <property name="secondary_icon_sensitive">True</property>
                                         <signal name="activate" handler="search" swapped="no"/>
                                       </object>
                                       <packing>
@@ -1513,8 +1517,6 @@
                                         <property name="invisible_char">•</property>
                                         <property name="primary_icon_activatable">False</property>
                                         <property name="secondary_icon_activatable">False</property>
-                                        <property name="primary_icon_sensitive">True</property>
-                                        <property name="secondary_icon_sensitive">True</property>
                                         <property name="adjustment">converted_cost_adjustment</property>
                                         <signal name="activate" handler="search" swapped="no"/>
                                       </object>
@@ -1563,8 +1565,6 @@
                                         <property name="invisible_char">•</property>
                                         <property name="primary_icon_activatable">False</property>
                                         <property name="secondary_icon_activatable">False</property>
-                                        <property name="primary_icon_sensitive">True</property>
-                                        <property name="secondary_icon_sensitive">True</property>
                                         <property name="adjustment">power_adjustment</property>
                                         <signal name="activate" handler="search" swapped="no"/>
                                       </object>
@@ -1613,8 +1613,6 @@
                                         <property name="invisible_char">•</property>
                                         <property name="primary_icon_activatable">False</property>
                                         <property name="secondary_icon_activatable">False</property>
-                                        <property name="primary_icon_sensitive">True</property>
-                                        <property name="secondary_icon_sensitive">True</property>
                                         <property name="adjustment">toughness_adjustment</property>
                                         <signal name="activate" handler="search" swapped="no"/>
                                       </object>
@@ -1653,8 +1651,6 @@
                                     <property name="invisible_char">•</property>
                                     <property name="primary_icon_activatable">False</property>
                                     <property name="secondary_icon_activatable">False</property>
-                                    <property name="primary_icon_sensitive">True</property>
-                                    <property name="secondary_icon_sensitive">True</property>
                                     <signal name="activate" handler="search" swapped="no"/>
                                   </object>
                                   <packing>
@@ -1685,8 +1681,6 @@ e.g. "counter target spell"</property>
                                     <property name="invisible_char">•</property>
                                     <property name="primary_icon_activatable">False</property>
                                     <property name="secondary_icon_activatable">False</property>
-                                    <property name="primary_icon_sensitive">True</property>
-                                    <property name="secondary_icon_sensitive">True</property>
                                     <signal name="activate" handler="search" swapped="no"/>
                                   </object>
                                   <packing>
@@ -1703,8 +1697,6 @@ e.g. "counter target spell"</property>
                                     <property name="invisible_char">•</property>
                                     <property name="primary_icon_activatable">False</property>
                                     <property name="secondary_icon_activatable">False</property>
-                                    <property name="primary_icon_sensitive">True</property>
-                                    <property name="secondary_icon_sensitive">True</property>
                                     <signal name="activate" handler="search" swapped="no"/>
                                   </object>
                                   <packing>
@@ -1749,8 +1741,6 @@ e.g. "counter target spell"</property>
                                     <property name="invisible_char">•</property>
                                     <property name="primary_icon_activatable">False</property>
                                     <property name="secondary_icon_activatable">False</property>
-                                    <property name="primary_icon_sensitive">True</property>
-                                    <property name="secondary_icon_sensitive">True</property>
                                     <signal name="activate" handler="search" swapped="no"/>
                                   </object>
                                   <packing>
@@ -1816,8 +1806,6 @@ e.g. "counter target spell"</property>
                                         <property name="invisible_char">•</property>
                                         <property name="primary_icon_activatable">False</property>
                                         <property name="secondary_icon_activatable">False</property>
-                                        <property name="primary_icon_sensitive">True</property>
-                                        <property name="secondary_icon_sensitive">True</property>
                                         <property name="adjustment">value_adjustment</property>
                                         <property name="climb_rate">1</property>
                                         <property name="digits">2</property>
@@ -1924,8 +1912,6 @@ e.g. "counter target spell"</property>
                                         <property name="invisible_char">•</property>
                                         <property name="primary_icon_activatable">False</property>
                                         <property name="secondary_icon_activatable">False</property>
-                                        <property name="primary_icon_sensitive">True</property>
-                                        <property name="secondary_icon_sensitive">True</property>
                                         <signal name="activate" handler="search" swapped="no"/>
                                       </object>
                                       <packing>
@@ -2161,8 +2147,6 @@ e.g. "counter target spell"</property>
                                 <property name="invisible_char">•</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="secondary_icon_activatable">False</property>
-                                <property name="primary_icon_sensitive">True</property>
-                                <property name="secondary_icon_sensitive">True</property>
                                 <signal name="changed" handler="author_changed" swapped="no"/>
                               </object>
                               <packing>
@@ -2196,8 +2180,6 @@ e.g. "counter target spell"</property>
                           <object class="GtkScrolledWindow" id="scrolledwindow5">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="hscrollbar_policy">automatic</property>
-                            <property name="vscrollbar_policy">automatic</property>
                             <child>
                               <object class="GtkTextView" id="textview_deckdesc">
                                 <property name="visible">True</property>
@@ -2511,7 +2493,6 @@ Legality: Legacy, Standard</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="hscrollbar_policy">never</property>
-                    <property name="vscrollbar_policy">automatic</property>
                     <child>
                       <object class="GtkViewport" id="viewport1">
                         <property name="visible">True</property>
@@ -2625,8 +2606,6 @@ Legality: Legacy, Standard</property>
                 <property name="invisible_char">•</property>
                 <property name="primary_icon_activatable">False</property>
                 <property name="secondary_icon_activatable">False</property>
-                <property name="primary_icon_sensitive">True</property>
-                <property name="secondary_icon_sensitive">True</property>
                 <signal name="activate" handler="view_set_new" swapped="no"/>
               </object>
               <packing>

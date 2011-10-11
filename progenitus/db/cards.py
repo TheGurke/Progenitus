@@ -18,6 +18,7 @@ _cursor = None # The database cursor
 _last_search = None # The last query executed
 tokens = None # A list of all tokens
 cards = None # A list of all cards
+sets = None # A list of all card sets
 _by_id = None # A dict mapping id to card or token instance
 _by_name = None # A dict mapping a name to a list of card instances
 
@@ -30,6 +31,7 @@ def connect():
 	_cursor = sqlconn.cursor()
 	load_tokens()
 	load_cards()
+	load_sets()
 	build_datastructures()
 
 
@@ -98,7 +100,8 @@ class Card(object):
 			text = "<b>%s  (%s)</b>\n" % (esc(self.name), self.manacost)
 		else:
 			text = "<b>%s</b>\n" % esc(self.name)
-		text += "<small>%s #%s" % (self.setname, self.collectorsid)
+		text += "<small>%s %s #%s" % (self.setname, self.rarity,
+			self.collectorsid)
 		if self.price >= 0:
 			text += "  $%.2f</small>\n" % (float(self.price) / 100,)
 		else:
@@ -288,6 +291,7 @@ def load_tokens():
 		token = Token(*row)
 		tokens.append(token)
 
+
 def load_cards():
 	"""Load all cards from the database to memory"""
 	global cards
@@ -296,6 +300,15 @@ def load_cards():
 	for row in _cursor:
 		card = Card(*row)
 		cards.append(card)
+
+
+def load_sets():
+	"""Load all cards from the database to memory"""
+	global sets
+	_cursor.execute('SELECT "name" FROM "sets"')
+	sets = []
+	for row in _cursor:
+		sets.append(row[0])
 
 
 def build_datastructures():
