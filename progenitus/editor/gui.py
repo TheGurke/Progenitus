@@ -69,6 +69,7 @@ class Interface(uiloader.Interface):
 		completion.set_text_column(0)
 		completion.set_inline_completion(False)
 		completion.set_minimum_key_length(3)
+		completion.set_popup_set_width(False)
 		completion.connect("match-selected", self.qs_autocomplete_pick)
 		self.quicksearch_entry.set_completion(completion)
 		
@@ -80,19 +81,19 @@ class Interface(uiloader.Interface):
 			if card.subtype != "":
 				desc += " - " + card.subtype
 			if card.manacost != "":
-				desc += "(%s)" % card.manacost
-			self.liststore_qs_autocomplete.append((cardname, desc,
+				desc += " (%s)" % card.manacost
+			self.liststore_qs_autocomplete.append((cardname + ": " + desc, desc,
 				'"name" = ?', card.name))
 		for setname in cards.sets:
-			self.liststore_qs_autocomplete.append((setname, "(card set)",
+			self.liststore_qs_autocomplete.append((setname + " (card set)", "",
 				'"setname" = ?', setname))
 		subtypes = set()
 		for card in cards.cards:
 			for subtype in card.subtype.split(" "):
 				subtypes.add(subtype)
 		for subtype in subtypes:
-			self.liststore_qs_autocomplete.append((subtype, "(creature type)",
-				'"subtype" = ?', subtype))
+			self.liststore_qs_autocomplete.append((subtype + " (creature type)",
+				"", '"subtype" = ?', subtype))
 	
 	
 	#
@@ -775,6 +776,7 @@ class Interface(uiloader.Interface):
 		"""Picked a suggested autocompletion item"""
 		row = model[it]
 		self._execute_search(row[2], (row[3],))
+		glib.idle_add(self.quicksearch_entry.set_text, row[3])
 	
 	def extended_search(self, widget):
 		"""Clicked on the extended search button"""
