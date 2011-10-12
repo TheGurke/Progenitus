@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk+" version="2.18"/>
+  <requires lib="gtk+" version="2.20"/>
   <object class="GtkAdjustment" id="adjustment_dacksave_intervall">
     <property name="upper">120</property>
     <property name="value">10</property>

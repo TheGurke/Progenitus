@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk+" version="2.18"/>
+  <requires lib="gtk+" version="2.20"/>
   <object class="GtkAdjustment" id="adjustment_life">
     <property name="lower">-1000000</property>
     <property name="upper">1000000</property>
