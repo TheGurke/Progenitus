@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk+" version="2.18"/>
+  <object class="GtkAdjustment" id="adjustment_dacksave_intervall">
+    <property name="upper">120</property>
+    <property name="value">10</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
   <object class="GtkListStore" id="cards">
     <columns>
       <!-- column-name id -->
@@ -72,6 +78,18 @@
     <property name="upper">16</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
+  </object>
+  <object class="GtkTreeStore" id="decks">
+    <columns>
+      <!-- column-name filename -->
+      <column type="gchararray"/>
+      <!-- column-name deckname -->
+      <column type="gchararray"/>
+      <!-- column-name isdir -->
+      <column type="gboolean"/>
+      <!-- column-name icon -->
+      <column type="GdkPixbuf"/>
+    </columns>
   </object>
   <object class="GtkListStore" id="eq1">
     <columns>
@@ -169,18 +187,6 @@
         <col id="0" translatable="yes">≥</col>
       </row>
     </data>
-  </object>
-  <object class="GtkTreeStore" id="decks">
-    <columns>
-      <!-- column-name filename -->
-      <column type="gchararray"/>
-      <!-- column-name deckname -->
-      <column type="gchararray"/>
-      <!-- column-name isdir -->
-      <column type="gboolean"/>
-      <!-- column-name icon -->
-      <column type="GdkPixbuf"/>
-    </columns>
   </object>
   <object class="GtkImage" id="image1">
     <property name="visible">True</property>
@@ -489,6 +495,7 @@
             </child>
             <child>
               <object class="GtkToolButton" id="toolbutton13">
+                <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="tooltip_text" translatable="yes">Change the Preferences</property>
                 <property name="use_action_appearance">False</property>
@@ -2371,31 +2378,144 @@ Legality: Legacy, Standard</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkTable" id="table2">
+                      <object class="GtkTable" id="table_proferences">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="n_rows">6</property>
                         <property name="n_columns">2</property>
+                        <property name="column_spacing">5</property>
+                        <property name="row_spacing">8</property>
                         <child>
-                          <placeholder/>
+                          <object class="GtkLabel" id="label31">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="xalign">1</property>
+                            <property name="xpad">5</property>
+                            <property name="label" translatable="yes">Cache</property>
+                          </object>
+                          <packing>
+                            <property name="x_options"></property>
+                            <property name="y_options"></property>
+                          </packing>
                         </child>
                         <child>
-                          <placeholder/>
+                          <object class="GtkLabel" id="label32">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="xalign">1</property>
+                            <property name="xpad">5</property>
+                            <property name="label" translatable="yes">Decks</property>
+                          </object>
+                          <packing>
+                            <property name="top_attach">1</property>
+                            <property name="bottom_attach">2</property>
+                            <property name="x_options"></property>
+                            <property name="y_options"></property>
+                          </packing>
                         </child>
                         <child>
-                          <placeholder/>
+                          <object class="GtkFileChooserButton" id="filechooserbutton_decks">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="action">select-folder</property>
+                            <property name="title" translatable="yes">Select the deck directory</property>
+                            <signal name="file-set" handler="save_preferences" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="right_attach">2</property>
+                            <property name="top_attach">1</property>
+                            <property name="bottom_attach">2</property>
+                            <property name="y_options"></property>
+                          </packing>
                         </child>
                         <child>
-                          <placeholder/>
+                          <object class="GtkLabel" id="label33">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="xalign">1</property>
+                            <property name="xpad">5</property>
+                            <property name="label" translatable="yes">Deck save interval</property>
+                          </object>
+                          <packing>
+                            <property name="top_attach">2</property>
+                            <property name="bottom_attach">3</property>
+                            <property name="x_options"></property>
+                            <property name="y_options"></property>
+                          </packing>
                         </child>
                         <child>
-                          <placeholder/>
+                          <object class="GtkCheckButton" id="checkbutton4">
+                            <property name="label" translatable="yes">RAM-saving mode</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">False</property>
+                            <property name="use_action_appearance">False</property>
+                            <property name="xalign">0</property>
+                            <property name="draw_indicator">True</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="right_attach">2</property>
+                            <property name="top_attach">3</property>
+                            <property name="bottom_attach">4</property>
+                            <property name="y_options"></property>
+                          </packing>
                         </child>
                         <child>
-                          <placeholder/>
+                          <object class="GtkFileChooserButton" id="filechooserbutton_cache">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="action">select-folder</property>
+                            <property name="title" translatable="yes">Select the cache directory</property>
+                            <signal name="file-set" handler="save_preferences" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="right_attach">2</property>
+                            <property name="y_options"></property>
+                          </packing>
                         </child>
                         <child>
-                          <placeholder/>
+                          <object class="GtkHBox" id="box1">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <child>
+                              <object class="GtkSpinButton" id="spinbutton_decksave_interval">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="invisible_char">●</property>
+                                <property name="invisible_char_set">True</property>
+                                <property name="adjustment">adjustment_dacksave_intervall</property>
+                                <signal name="value-changed" handler="save_preferences" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="label34">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="xalign">0</property>
+                                <property name="xpad">5</property>
+                                <property name="label" translatable="yes">seconds</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="right_attach">2</property>
+                            <property name="top_attach">2</property>
+                            <property name="bottom_attach">3</property>
+                            <property name="y_options"></property>
+                          </packing>
                         </child>
                         <child>
                           <placeholder/>

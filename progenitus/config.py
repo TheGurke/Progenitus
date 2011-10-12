@@ -37,6 +37,7 @@ GTKBUILDER_UPDATER = "updater.glade"
 # Path structure in the picture directory
 CARD_PICS_PATH = lambda cid: ("cards/%s/%s.jpg" % (cid.split(".")[0], cid))
 TOKEN_PICS_PATH = lambda tid: ("tokens/%s.jpg" % tid)
+DB_FILE = "mtg.sqlite"
 DECKMASTER_PATH = "media/deckmaster.png"
 DEFAULT_DECKS_PATH = "default decks"
 

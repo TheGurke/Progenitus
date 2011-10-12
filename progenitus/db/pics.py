@@ -25,9 +25,9 @@ def _get_path(cardid):
 	if cardid == "deckmaster":
 		return config.DECKMASTER_PATH
 	if cards.is_token(cardid):
-		return os.path.join(settings.cache_path, config.TOKEN_PICS_PATH(cardid))
+		return os.path.join(settings.cache_dir, config.TOKEN_PICS_PATH(cardid))
 	else:
-		return os.path.join(settings.cache_path, config.CARD_PICS_PATH(cardid))
+		return os.path.join(settings.cache_dir, config.CARD_PICS_PATH(cardid))
 
 
 def _load(cardid):

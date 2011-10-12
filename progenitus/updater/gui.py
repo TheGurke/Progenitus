@@ -87,20 +87,21 @@ class Interface(uiloader.Interface):
 		downloadlist = miner.parse_downloadlist(data)
 		
 		# Establish database access
-		if not os.path.isfile(settings.cards_db):
+		db_file = os.path.join(settings.cache_dir, config.DB_FILE)
+		if not os.path.isfile(db_file):
 			self.log(_("Creating a new database file..."))
-			cards.create_db(settings.cards_db)
+			cards.create_db(db_file)
 		
 		cards.connect()
-		self.sqlconn = sqlite3.connect(settings.cards_db)
+		self.sqlconn = sqlite3.connect(db_file)
 		self.cursor = self.sqlconn.cursor()
 		
 		# Create directories
-		if not os.path.exists(settings.cache_path):
-			os.mkdir(settings.cache_path)
+		if not os.path.exists(settings.cache_dir):
+			os.mkdir(settings.cache_dir)
 		if self.checkbutton_download_pics.get_active():
-			if not os.path.exists(os.path.join(settings.cache_path, "cards")):
-				os.mkdir(os.path.join(settings.cache_path, "cards"))
+			if not os.path.exists(os.path.join(settings.cache_dir, "cards")):
+				os.mkdir(os.path.join(settings.cache_dir, "cards"))
 		
 		self.log(_("Starting download."))
 		return downloadlist
@@ -185,8 +186,8 @@ class Interface(uiloader.Interface):
 			self.log(_("Downloading tokens..."))
 			
 			# Create token pic directory
-			if not os.path.exists(os.path.join(settings.cache_path, "tokens")):
-				os.mkdir(os.path.join(settings.cache_path, "tokens"))
+			if not os.path.exists(os.path.join(settings.cache_dir, "tokens")):
+				os.mkdir(os.path.join(settings.cache_dir, "tokens"))
 			
 			# Get token information
 			tokens = magiccardsinfo.mine_tokens()

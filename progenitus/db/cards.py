@@ -7,6 +7,7 @@ import glib
 import sqlite3
 from gettext import gettext as _
 
+from progenitus import config
 from progenitus import settings
 
 #
@@ -25,9 +26,10 @@ _by_name = None # A dict mapping a name to a list of card instances
 
 def connect():
 	"""Establish database connection"""
-	assert(os.path.isfile(settings.cards_db))
+	db_file = os.path.join(settings.cache_dir, config.DB_FILE)
+	assert(os.path.isfile(db_file))
 	global sqlconn, _cursor
-	sqlconn = sqlite3.connect(settings.cards_db)
+	sqlconn = sqlite3.connect(db_file)
 	_cursor = sqlconn.cursor()
 	load_tokens()
 	load_cards()

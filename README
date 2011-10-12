@@ -67,7 +67,8 @@ sideboard.
 'f11' toggles fullscreen
 
 Known issues:
-- Deck rename is still broken
+- The empty db reminder does not close
+- Deck rename is still broken (?)
 - "No results" in the extended search is not visible enough
 - Moving the center bar to the right while in extended search causes graphic
   bugs
@@ -120,8 +121,6 @@ Known issues:
 - when just missing a card that is meant to be tapped, everything gets untapped.
   This should be prevented by checking if there is an owned card around.
 - the log does not always scroll down
-- When the client recieves an illegal card id, it should search for the card by
-  name
 - there is not graphics for the counters
 
 Desired features:

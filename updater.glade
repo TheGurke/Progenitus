@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk+" version="2.18"/>
-  <!-- interface-naming-policy project-wide -->
   <object class="GtkWindow" id="disclaimer_win">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Progenitus database update</property>
@@ -336,8 +335,8 @@ It will be resumed next time this program starts.</property>
                   <object class="GtkProgressBar" id="progressbar1">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="show_text">True</property>
                     <property name="text" translatable="yes">Connecting...</property>
+                    <property name="show_text">True</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -425,7 +424,6 @@ It will be resumed next time this program starts.</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="hscrollbar_policy">never</property>
-                <property name="vscrollbar_policy">automatic</property>
                 <child>
                   <object class="GtkTextView" id="logview">
                     <property name="visible">True</property>

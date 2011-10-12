@@ -43,15 +43,18 @@ class Interface(uiloader.Interface):
 			# check periodically if the deck files on the disk have changed
 		
 		# Check if the database is accessable
-		if not os.path.exists(settings.cards_db):
+		db_file = os.path.join(settings.cache_dir, config.DB_FILE)
+		if not os.path.exists(db_file):
 			self.warn_about_empty_db()
+			return
+		
+		cards.connect()
+		num = cards.count()
+		if num == 0:
+			self.warn_about_empty_db()
+			return
 		else:
-			cards.connect()
-			num = cards.count()
-			if num == 0:
-				self.warn_about_empty_db()
-			else:
-				self.label_results.set_text("%d cards available" % num)
+			self.label_results.set_text("%d cards available" % num)
 		
 		# Create deck directory if it doesn't exist
 		if not os.path.exists(settings.deck_dir):
@@ -119,7 +122,30 @@ class Interface(uiloader.Interface):
 	
 	def show_preferences(self, widget):
 		"""Show the program's preferences"""
+		self.filechooserbutton_cache.set_filename(settings.cache_dir)
+		self.filechooserbutton_decks.set_filename(settings.deck_dir)
+		self.spinbutton_decksave_interval.set_value(settings.decksave_timeout
+			/ 1000)
 		self.notebook_search.set_current_page(5)
+	
+	def save_preferences(self, widget, nothing=None):
+		"""Save the changed settings to disk"""
+		settings.decksave_timeout = \
+			int(self.spinbutton_decksave_interval.get_value()) * 1000
+		new_cache_dir = unicode(self.filechooserbutton_cache.get_filename())
+		if new_cache_dir != "None":
+			settings.cache_dir = new_cache_dir
+		old_deck_dir = settings.deck_dir
+		new_deck_dir = unicode(self.filechooserbutton_decks.get_filename())
+		if new_deck_dir != "None" and new_deck_dir != old_deck_dir:
+			settings.deck_dir = new_deck_dir
+			self.decks.clear()
+			def refresh_once():
+				self.refresh_decklist()
+				return False
+			glib.idle_add(refresh_once)
+		settings.save()
+		print("Settings saved.")
 	
 	def select_all(self, widget, event):
 		"""Selects all text in an entry"""

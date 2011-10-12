@@ -312,7 +312,7 @@ class Player(object):
 		# Check for card id
 		card = cards.get(cardid)
 		if card is None:
-			l = cards.search('"name" = ?', (cardname,), 1)
+			l = cards.find_by_name(cardname)
 			if l == []:
 				raise RuntimeError(_("'%s' not found in database. Update?")
 					% cardname)
