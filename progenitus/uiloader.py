@@ -67,9 +67,9 @@ class Interface(object):
 		assert isinstance(self._builder, gtk.Builder)
 		try:
 			self._builder.add_from_file(filename) 
-		except:
+		except Exception as e:
 			raise RuntimeError("Failed to load interface file \"" + filename +
-				"\".")
+				"\": " + str(e))
 		
 		# Get the widgets and add them as attributes it to this instance
 		self._widgets = self._builder.get_objects()

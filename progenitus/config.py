@@ -12,7 +12,7 @@ APP_NAME_EDITOR = APP_NAME + " Editor"
 APP_NAME_CLIENT = APP_NAME + " Client"
 
 # Program version
-VERSION = "0.31-beta"
+VERSION = "0.31"
 
 # Program website
 APP_WEBSITE = "http://progenitus.org/"
@@ -30,9 +30,9 @@ TRANSLATIONS_PATH = "po"
 GETTEXT_DOMAIN = APP_NAME
 
 # Path to the GTKBuilder files
-GTKBUILDER_CLIENT = "client.glade"
-GTKBUILDER_DECKEDITOR = "editor.glade"
-GTKBUILDER_UPDATER = "updater.glade"
+GTKBUILDER_CLIENT = "client.ui"
+GTKBUILDER_DECKEDITOR = "editor.ui"
+GTKBUILDER_UPDATER = "updater.ui"
 
 # Path structure in the picture directory
 CARD_PICS_PATH = lambda cid: ("cards/%s/%s.jpg" % (cid.split(".")[0], cid))
