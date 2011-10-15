@@ -14,8 +14,9 @@ from progenitus import settings
 import cards
 
 #
-# Given a card id it returns the corresponding picture as a gdk.Pixbuf.
+# Given a card id it returns the corresponding picture as a gdk.Pixbuf
 #
+
 
 _map = dict() # data structure to hold the pics
 
@@ -40,7 +41,8 @@ def _load(cardid):
 			print(_("Picture for card %s not found.") % cardid)
 	pixbuf = gtk.gdk.pixbuf_new_from_file(filename).add_alpha(False, 0, 0, 0)
 	global _map
-	_map[cardid] = pixbuf
+	if not settings.save_ram:
+		_map[cardid] = pixbuf
 	return pixbuf
 
 
@@ -49,7 +51,7 @@ def get(cardid):
 	"""Get the pixmap for a card or token"""
 	global _map
 	if cardid not in _map:
-		_load(cardid)
+		return _load(cardid)
 	return _map[cardid]
 
 

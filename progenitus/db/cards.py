@@ -32,9 +32,10 @@ def connect():
 	sqlconn = sqlite3.connect(db_file)
 	_cursor = sqlconn.cursor()
 	load_tokens()
-	load_cards()
-	load_sets()
-	build_datastructures()
+	if not settings.save_ram:
+		load_cards()
+		load_sets()
+		build_datastructures()
 
 
 def convert_mana(manacost):
@@ -224,18 +225,33 @@ def create_db(filename):
 
 def get(cardid):
 	"""Get a card or token by id"""
-	assert(_by_id is not None) # must be initialized
-	if cardid not in _by_id:
-		raise RuntimeError(_("Card id %s not found in database.") % cardid)
-	return _by_id[cardid]
+	if not settings.save_ram:
+		assert(_by_id is not None) # must be initialized
+		if cardid not in _by_id:
+			raise RuntimeError(_("Card id %s not found in database.") % cardid)
+		return _by_id[cardid]
+	else:
+		l = search('"id" = ?', (cardid,), 1)
+		if l == []:
+			raise RuntimeError(_("Card id %s not found in database.") % cardid)
+		else:
+			return l[0]
 
 
 def find_by_name(cardname):
 	"""Return a list of versions of a card by the English name"""
-	assert(_by_name is not None) # must be initialized
-	if cardname not in _by_name:
-		raise RuntimeError(_("Card '%s' not found in database.") % cardname)
-	return _by_name[cardname]
+	if not settings.save_ram:
+		assert(_by_name is not None) # must be initialized
+		if cardname not in _by_name:
+			raise RuntimeError(_("Card '%s' not found in database.") % cardname)
+		return _by_name[cardname]
+	else:
+		l = search('"name" = ? ORDER BY "releasedate"', (cardname,), 1)
+		if l == []:
+			raise RuntimeError(_("Card '%s' not found in database.") % cardname)
+		else:
+			return l
+
 
 
 def search(query, args=(), limit=settings.results_limit):

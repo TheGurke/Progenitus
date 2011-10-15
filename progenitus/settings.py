@@ -25,6 +25,9 @@ _settings = [
 	("DEFAULT", "deck_dir", "dir",
 		"$HOME/Progenitus decks" if os.name == 'posix' else "decks",
 		"Path to deck folder"),
+	("DEFAULT", "save_ram", "bool", False,
+		"The program should reduce memory footprint even at the cost of speed "
+		"or features"),
 	("Updater", "disclaimer_agreed", "bool", False,
 		"The user has agreed to the disclaimer"),
 	("Updater", "list_url", "str",

@@ -63,7 +63,10 @@ class Interface(uiloader.Interface):
 				os.symlink(os.path.abspath(config.DEFAULT_DECKS_PATH),
 					os.path.join(settings.deck_dir, _("default decks")))
 		
-		glib.idle_add(self.init_qs_autocomplete)
+		if not settings.save_ram:
+			# Because it requires a lot of RAM, the autocomplete feature is not
+			# available in the reduced RAM mode
+			glib.idle_add(self.init_qs_autocomplete)
 	
 	def init_qs_autocomplete(self):
 		"""Initialize the quicksearch entry autocompletion"""
@@ -124,6 +127,7 @@ class Interface(uiloader.Interface):
 		"""Show the program's preferences"""
 		self.filechooserbutton_cache.set_filename(settings.cache_dir)
 		self.filechooserbutton_decks.set_filename(settings.deck_dir)
+		self.checkbutton_save_ram.set_active(settings.save_ram)
 		self.spinbutton_decksave_interval.set_value(settings.decksave_timeout
 			/ 1000)
 		self.notebook_search.set_current_page(5)
@@ -132,6 +136,7 @@ class Interface(uiloader.Interface):
 		"""Save the changed settings to disk"""
 		settings.decksave_timeout = \
 			int(self.spinbutton_decksave_interval.get_value()) * 1000
+		settings.save_ram = self.checkbutton_save_ram.get_active()
 		new_cache_dir = unicode(self.filechooserbutton_cache.get_filename())
 		if new_cache_dir != "None":
 			settings.cache_dir = new_cache_dir
@@ -566,20 +571,30 @@ class Interface(uiloader.Interface):
 			self.save_deck()
 		
 		self.unload_deck()
-		self.progressbar_deckload.show()
+		if settings.save_ram:
+			# In reduced RAM mode the loading will take much longer
+			self.progressbar_deckload.show()
 		
-		# progress callback
-		def progresscallback(fraction):
-			self.progressbar_deckload.set_fraction(fraction)
-		# return callback
-		def finish_deckload(deck):
-			self.deck = deck
-			self.enable_deck()
-			self.refresh_deck()
-			self.progressbar_deckload.hide()
+			# progress callback
+			def progresscallback(fraction):
+				self.progressbar_deckload.set_fraction(fraction)
+			# return callback
+			def finish_deckload(deck):
+				self.deck = deck
+				self.enable_deck()
+				self.refresh_deck()
+				self.progressbar_deckload.hide()
 		
-		self._deck_load_async_handle = \
-			async.start(decks.load(filename, progresscallback, finish_deckload))
+			self._deck_load_async_handle = \
+				async.start(decks.load(filename, progresscallback,
+					finish_deckload))
+		else:
+			# No need to display any progress bar here
+			def finish_deckload(deck):
+				self.deck = deck
+				self.enable_deck()
+				self.refresh_deck()
+			async.run(decks.load(filename, None, finish_deckload))
 	
 	def save_deck(self):
 		"""Save the currently edited deck to disk"""

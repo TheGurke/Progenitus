@@ -1,6 +1,19 @@
 
-Version 0.31-beta:
+Version 0.32-beta:
 ``````````````````
+All:
+- Introduced RAM-saving mode
+
+Editor:
+- Fixed deck load progressbar flicker; the progressbar is simple no longer
+  displayed because the deck load is expected to go fast enough
+
+Client:
+- Fixed the issue with the broken ui file
+
+
+Version 0.31:
+`````````````
 
 Warning: the file 'mtg.sqlite' is now expected in cache/ regardless of the
 user's settings. Remember to move it there.

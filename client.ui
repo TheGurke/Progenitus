@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk+" version="2.20"/>
+  <requires lib="gtk+" version="2.18"/>
+  <!-- interface-naming-policy project-wide -->
   <object class="GtkAdjustment" id="adjustment_life">
     <property name="lower">-1000000</property>
     <property name="upper">1000000</property>
@@ -108,6 +109,8 @@
                     <property name="invisible_char">•</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
+                    <property name="primary_icon_sensitive">True</property>
+                    <property name="secondary_icon_sensitive">True</property>
                     <signal name="activate" handler="start_connecting" swapped="no"/>
                   </object>
                   <packing>
@@ -123,6 +126,8 @@
                     <property name="invisible_char">•</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
+                    <property name="primary_icon_sensitive">True</property>
+                    <property name="secondary_icon_sensitive">True</property>
                     <signal name="activate" handler="start_connecting" swapped="no"/>
                   </object>
                   <packing>
@@ -165,6 +170,8 @@
                     <property name="invisible_char_set">True</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
+                    <property name="primary_icon_sensitive">True</property>
+                    <property name="secondary_icon_sensitive">True</property>
                     <signal name="activate" handler="start_connecting" swapped="no"/>
                   </object>
                   <packing>
@@ -182,6 +189,8 @@
                     <property name="invisible_char_set">True</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
+                    <property name="primary_icon_sensitive">True</property>
+                    <property name="secondary_icon_sensitive">True</property>
                     <signal name="activate" handler="start_connecting" swapped="no"/>
                   </object>
                   <packing>
@@ -199,6 +208,8 @@
                     <property name="invisible_char_set">True</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
+                    <property name="primary_icon_sensitive">True</property>
+                    <property name="secondary_icon_sensitive">True</property>
                     <signal name="activate" handler="start_connecting" swapped="no"/>
                   </object>
                   <packing>
@@ -518,9 +529,6 @@
                         <property name="headers_clickable">False</property>
                         <property name="search_column">1</property>
                         <property name="tooltip_column">3</property>
-                        <child internal-child="selection">
-                          <object class="GtkTreeSelection" id="treeview-selection1"/>
-                        </child>
                         <child>
                           <object class="GtkTreeViewColumn" id="treeviewcolumn4">
                             <child>
@@ -552,6 +560,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="hscrollbar_policy">never</property>
+                        <property name="vscrollbar_policy">automatic</property>
                         <child>
                           <object class="GtkTextView" id="logview">
                             <property name="visible">True</property>
@@ -584,6 +593,8 @@
                     <property name="invisible_char_set">True</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
+                    <property name="primary_icon_sensitive">True</property>
+                    <property name="secondary_icon_sensitive">True</property>
                     <signal name="activate" handler="send_chat_message" swapped="no"/>
                   </object>
                   <packing>
@@ -630,6 +641,8 @@
                         <property name="caps_lock_warning">False</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="secondary_icon_activatable">False</property>
+                        <property name="primary_icon_sensitive">True</property>
+                        <property name="secondary_icon_sensitive">True</property>
                         <property name="adjustment">adjustment_life</property>
                         <property name="snap_to_ticks">True</property>
                         <property name="numeric">True</property>
@@ -652,6 +665,8 @@
                         <property name="caps_lock_warning">False</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="secondary_icon_activatable">False</property>
+                        <property name="primary_icon_sensitive">True</property>
+                        <property name="secondary_icon_sensitive">True</property>
                         <property name="adjustment">adjustment_num</property>
                         <property name="snap_to_ticks">True</property>
                         <property name="numeric">True</property>
@@ -671,12 +686,40 @@
                         <property name="invisible_char_set">True</property>
                         <property name="primary_icon_activatable">False</property>
                         <property name="secondary_icon_activatable">False</property>
+                        <property name="primary_icon_sensitive">True</property>
+                        <property name="secondary_icon_sensitive">True</property>
                         <signal name="activate" handler="entrybar_unfocus" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
                         <property name="position">3</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkComboBoxEntry" id="combobox_tokens">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="model">liststore_tokens</property>
+                        <property name="text_column">1</property>
+                        <signal name="changed" handler="token_pick" swapped="no"/>
+                        <child internal-child="entry">
+                          <object class="GtkEntry" id="entry_tokens">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="invisible_char">•</property>
+                            <property name="width_chars">30</property>
+                            <property name="primary_icon_activatable">False</property>
+                            <property name="secondary_icon_activatable">False</property>
+                            <property name="primary_icon_sensitive">True</property>
+                            <property name="secondary_icon_sensitive">True</property>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">4</property>
                       </packing>
                     </child>
                     <child>
@@ -1304,6 +1347,8 @@
           <object class="GtkScrolledWindow" id="scrolledwindow2">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="hscrollbar_policy">automatic</property>
+            <property name="vscrollbar_policy">automatic</property>
             <child>
               <object class="GtkTreeView" id="treeview_browse">
                 <property name="visible">True</property>
@@ -1312,9 +1357,6 @@
                 <property name="headers_clickable">False</property>
                 <property name="search_column">1</property>
                 <property name="tooltip_column">6</property>
-                <child internal-child="selection">
-                  <object class="GtkTreeSelection" id="treeview-selection2"/>
-                </child>
                 <child>
                   <object class="GtkTreeViewColumn" id="treeviewcolumn5">
                     <property name="sort_column_id">0</property>
