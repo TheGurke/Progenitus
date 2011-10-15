@@ -35,11 +35,9 @@ class Interface(uiloader.Interface):
 		self.cardview.get_model().set_sort_column_id(3, gtk.SORT_ASCENDING)
 		self.resultview.get_model().set_sort_column_id(10, gtk.SORT_DESCENDING)
 		gtk.quit_add(0, self.save_deck) # one extra decksave just to be sure
-		def refresh_once():
-			self.refresh_decklist()
-			return False
-		glib.idle_add(refresh_once) # delayed decklist refresh
-		glib.timeout_add(settings.decklist_refreshtime, self.refresh_decklist)
+		async.start(self.refresh_decklist())
+		glib.timeout_add(settings.decklist_refreshtime, async.start,
+			self.refresh_decklist())
 			# check periodically if the deck files on the disk have changed
 		
 		# Check if the database is accessable
@@ -66,7 +64,7 @@ class Interface(uiloader.Interface):
 		if not settings.save_ram:
 			# Because it requires a lot of RAM, the autocomplete feature is not
 			# available in the reduced RAM mode
-			glib.idle_add(self.init_qs_autocomplete)
+			async.start(self.init_qs_autocomplete())
 	
 	def init_qs_autocomplete(self):
 		"""Initialize the quicksearch entry autocompletion"""
@@ -80,9 +78,9 @@ class Interface(uiloader.Interface):
 		self.quicksearch_entry.set_completion(completion)
 		
 		# Populate quicksearch autocomplete
-		cardnames = set(card.name for card in cards.cards)
+		cardnames = yield set(card.name for card in cards.cards)
 		for cardname in cardnames:
-			card = cards.find_by_name(cardname)[0]
+			card = yield cards.find_by_name(cardname)[0]
 			desc = card.cardtype
 			if card.subtype != "":
 				desc += " - " + card.subtype
@@ -96,7 +94,7 @@ class Interface(uiloader.Interface):
 		subtypes = set()
 		for card in cards.cards:
 			for subtype in card.subtype.split(" "):
-				subtypes.add(subtype)
+				yield subtypes.add(subtype)
 		for subtype in subtypes:
 			self.liststore_qs_autocomplete.append((subtype + " (creature type)",
 				"", '"subtype" = ?', subtype))
@@ -145,10 +143,7 @@ class Interface(uiloader.Interface):
 		if new_deck_dir != "None" and new_deck_dir != old_deck_dir:
 			settings.deck_dir = new_deck_dir
 			self.decks.clear()
-			def refresh_once():
-				self.refresh_decklist()
-				return False
-			glib.idle_add(refresh_once)
+			async_start(self.refresh_decklist())
 		settings.save()
 		print("Settings saved.")
 	
@@ -393,7 +388,7 @@ class Interface(uiloader.Interface):
 						self.decks.get_value(it, 0) == filename:
 						found[0] = True
 						return True
-				self.decks.foreach(check_for_file, found)
+				yield self.decks.foreach(check_for_file, found)
 				if not found[0]:
 					deckname = decks.Deck("").derive_name(filename)
 					self.decks.append(self._parents.get(root, None),
@@ -413,9 +408,8 @@ class Interface(uiloader.Interface):
 			else:
 				check_deep(self.decks.iter_children(it)) # check children
 				it = self.decks.iter_next(it)
-			check_deep(it) # check siblings
+			yield check_deep(it) # check siblings
 		check_deep(self.decks.get_iter_first())
-		return True
 	
 	def new_folder(self, *args):
 		"""Create a new subfolder"""
