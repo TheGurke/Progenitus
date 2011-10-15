@@ -90,7 +90,31 @@ class Interface(uiloader.Interface):
 		self.quicksearch_entry.set_completion(completion)
 		
 		# Populate quicksearch autocomplete
-		cardnames = yield set(card.name for card in cards.cards)
+		for setname in cards.sets:
+			desc1 = setname + " <span size=\"x-small\">" \
+				"(Card set - all in set)</span>"
+			desc2 = setname + " <span size=\"x-small\">" \
+				"(Card set - new in that set)</span>"
+			self.liststore_qs_autocomplete.append((setname, desc1,
+				'"setname" = ?', setname))
+			self.liststore_qs_autocomplete.append((setname, desc2,
+				_query_new_in_set, setname))
+		subtypes = dict()
+		for card in cards.cards:
+			for subtype in card.subtype.split(" "):
+				yield
+				if subtype in subtypes:
+					subtypes[subtype] += 1
+				else:
+					subtypes[subtype] = 1
+		for subtype in subtypes:
+			if subtypes[subtype] >= 3:
+				# Only use subtypes that occur more than 3 times on cards
+				desc = (subtype +
+					" <span size=\"x-small\">(Creature type)</span>")
+				self.liststore_qs_autocomplete.append((subtype, desc,
+					'"subtype" LIKE ?', "%" + subtype + "%"))
+				cardnames = yield set(card.name for card in cards.cards)
 		for cardname in cardnames:
 			card = yield cards.find_by_name(cardname)[0]
 			desc = card.name + " <span size=\"x-small\">" + card.cardtype
@@ -101,23 +125,6 @@ class Interface(uiloader.Interface):
 			desc += "</span>"
 			self.liststore_qs_autocomplete.append((cardname, desc, '"name" = ?',
 				card.name))
-		for setname in cards.sets:
-			desc1 = setname + " <span size=\"x-small\">" \
-				"(Card set - all in set)</span>"
-			desc2 = setname + " <span size=\"x-small\">" \
-				"(Card set - new in that set)</span>"
-			self.liststore_qs_autocomplete.append((setname, desc1,
-				'"setname" = ?', setname))
-			self.liststore_qs_autocomplete.append((setname, desc2,
-				_query_new_in_set, setname))
-		subtypes = set()
-		for card in cards.cards:
-			for subtype in card.subtype.split(" "):
-				yield subtypes.add(subtype)
-		for subtype in subtypes:
-			desc = subtype + " <span size=\"x-small\">(Creature type)</span>"
-			self.liststore_qs_autocomplete.append((subtype, desc,
-				'"subtype" = ?', subtype))
 	
 	
 	#
@@ -196,7 +203,6 @@ class Interface(uiloader.Interface):
 		"""Picked a suggested autocompletion item"""
 		row = model[it]
 		self._execute_search(row[2], (row[3],) * row[2].count("?"))
-		glib.idle_add(self.quicksearch_entry.set_text, row[3])
 	
 	def custom_search(self, widget):
 		"""Clicked on the custom search button"""
