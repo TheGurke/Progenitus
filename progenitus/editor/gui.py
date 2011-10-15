@@ -14,6 +14,12 @@ from progenitus.db import pics
 import decks
 
 
+_query_new_in_set = ('"setname" = ? AND "name" IN '
+	'(SELECT "name" FROM "cards" WHERE "setname" = ? EXCEPT '
+		'SELECT "name" FROM "cards" WHERE "releasedate" < '
+			'(SELECT "releasedate" FROM "cards" WHERE "setname" = ? LIMIT 1))'
+)
+
 
 class Interface(uiloader.Interface):
 	
@@ -96,9 +102,14 @@ class Interface(uiloader.Interface):
 			self.liststore_qs_autocomplete.append((cardname, desc, '"name" = ?',
 				card.name))
 		for setname in cards.sets:
-			desc = setname + " <span size=\"x-small\">(Card set)</span>"
-			self.liststore_qs_autocomplete.append((setname, desc,
+			desc1 = setname + " <span size=\"x-small\">" \
+				"(Card set - all in set)</span>"
+			desc2 = setname + " <span size=\"x-small\">" \
+				"(Card set - new in that set)</span>"
+			self.liststore_qs_autocomplete.append((setname, desc1,
 				'"setname" = ?', setname))
+			self.liststore_qs_autocomplete.append((setname, desc2,
+				_query_new_in_set, setname))
 		subtypes = set()
 		for card in cards.cards:
 			for subtype in card.subtype.split(" "):
@@ -129,32 +140,6 @@ class Interface(uiloader.Interface):
 		dialog.set_comments(_("This program is Free Software by the GPL3."))
 		dialog.run()
 		dialog.destroy()
-	
-	def show_preferences(self, widget):
-		"""Show the program's preferences"""
-		self.filechooserbutton_cache.set_filename(settings.cache_dir)
-		self.filechooserbutton_decks.set_filename(settings.deck_dir)
-		self.checkbutton_save_ram.set_active(settings.save_ram)
-		#self.spinbutton_decksave_interval.set_value(settings.decksave_timeout
-		#	/ 1000)
-		self.notebook_search.set_current_page(5)
-	
-	def save_preferences(self, widget, nothing=None):
-		"""Save the changed settings to disk"""
-		#settings.decksave_timeout = \
-		#	int(self.spinbutton_decksave_interval.get_value()) * 1000
-		settings.save_ram = self.checkbutton_save_ram.get_active()
-		new_cache_dir = unicode(self.filechooserbutton_cache.get_filename())
-		if new_cache_dir != "None":
-			settings.cache_dir = new_cache_dir
-		old_deck_dir = settings.deck_dir
-		new_deck_dir = unicode(self.filechooserbutton_decks.get_filename())
-		if new_deck_dir != "None" and new_deck_dir != old_deck_dir:
-			settings.deck_dir = new_deck_dir
-			self.decks.clear()
-			async_start(self.refresh_decklist())
-		settings.save()
-		print("Settings saved.")
 	
 	def select_all(self, widget, event):
 		"""Selects all text in an entry"""
@@ -207,6 +192,27 @@ class Interface(uiloader.Interface):
 			self.main_win.fullscreen()
 		self.isfullscreen = not self.isfullscreen
 	
+	def qs_autocomplete_pick(self, widget, model, it):
+		"""Picked a suggested autocompletion item"""
+		row = model[it]
+		self._execute_search(row[2], (row[3],) * row[2].count("?"))
+		glib.idle_add(self.quicksearch_entry.set_text, row[3])
+	
+	def custom_search(self, widget):
+		"""Clicked on the custom search button"""
+		self.notebook_search.set_current_page(2)
+	
+	def more_results(self, widget):
+		"""Get more results to the previously executed search query"""
+		self._show_results(cards.more_results())
+	
+	def sqlquery_keypress(self, widget, event):
+		"""Keypress on the textview_sqlquery"""
+		if event.type == gtk.gdk.KEY_PRESS and event.keyval == 65293 and \
+				event.state & gtk.gdk.SHIFT_MASK: # shift + enter
+			self.execute_custom_search(self.textview_sqlquery)
+			return True
+	
 	
 	#
 	# Sort functions
@@ -247,6 +253,37 @@ class Interface(uiloader.Interface):
 		if c1 == c2:
 			return cmp(v1[::-1], v2[::-1])
 		return cmp(c1, c2)
+	
+	
+	#
+	# Preferences
+	#
+	
+	def show_preferences(self, widget):
+		"""Show the program's preferences"""
+		self.filechooserbutton_cache.set_filename(settings.cache_dir)
+		self.filechooserbutton_decks.set_filename(settings.deck_dir)
+		self.checkbutton_save_ram.set_active(settings.save_ram)
+		#self.spinbutton_decksave_interval.set_value(settings.decksave_timeout
+		#	/ 1000)
+		self.notebook_search.set_current_page(5)
+	
+	def save_preferences(self, widget, nothing=None):
+		"""Save the changed settings to disk"""
+		#settings.decksave_timeout = \
+		#	int(self.spinbutton_decksave_interval.get_value()) * 1000
+		settings.save_ram = self.checkbutton_save_ram.get_active()
+		new_cache_dir = unicode(self.filechooserbutton_cache.get_filename())
+		if new_cache_dir != "None":
+			settings.cache_dir = new_cache_dir
+		old_deck_dir = settings.deck_dir
+		new_deck_dir = unicode(self.filechooserbutton_decks.get_filename())
+		if new_deck_dir != "None" and new_deck_dir != old_deck_dir:
+			settings.deck_dir = new_deck_dir
+			self.decks.clear()
+			async_start(self.refresh_decklist())
+		settings.save()
+		print("Settings saved.")
 	
 	
 	#
@@ -816,12 +853,6 @@ class Interface(uiloader.Interface):
 				query = "%" + _replace_chars(query) + "%"
 		self._show_results(l)
 	
-	def qs_autocomplete_pick(self, widget, model, it):
-		"""Picked a suggested autocompletion item"""
-		row = model[it]
-		self._execute_search(row[2], (row[3],))
-		glib.idle_add(self.quicksearch_entry.set_text, row[3])
-	
 	def extended_search(self, widget):
 		"""Clicked on the extended search button"""
 		self.notebook_search.set_current_page(1)
@@ -968,21 +999,6 @@ class Interface(uiloader.Interface):
 		else:
 			self.no_results.show()
 	
-	def custom_search(self, widget):
-		"""Clicked on the custom search button"""
-		self.notebook_search.set_current_page(2)
-	
-	def more_results(self, widget):
-		"""Get more results to the previously executed search query"""
-		self._show_results(cards.more_results())
-	
-	def sqlquery_keypress(self, widget, event):
-		"""Keypress on the textview_sqlquery"""
-		if event.type == gtk.gdk.KEY_PRESS and event.keyval == 65293 and \
-				event.state & gtk.gdk.SHIFT_MASK: # shift + enter
-			self.execute_custom_search(self.textview_sqlquery)
-			return True
-	
 	def execute_custom_search(self, widget):
 		"""Execute the custom search"""
 		bfr = self.textview_sqlquery.get_buffer()
@@ -1017,24 +1033,6 @@ class Interface(uiloader.Interface):
 		self.win_set_query.show()
 		self.entry_set_query.set_text("")
 		self.entry_set_query.grab_focus()
-	
-	def view_set_new(self, widget):
-		"""Sent search query for the set view"""
-		self.win_set_query.hide()
-		self.view_new_cards(self.entry_set_query.get_text())
-	
-	def view_new_cards(self, setname):
-		"""View all cards that where introduced in a particular set"""
-		query = ('"setname" LIKE ? AND "name" IN '
-			'(SELECT "name" FROM "cards" WHERE "setname" LIKE ? EXCEPT '
-			'SELECT "name" FROM "cards" WHERE "releasedate" < '
-			'(SELECT "releasedate" FROM "cards" WHERE "setname" LIKE ? '
-			'LIMIT 1))'
-		)
-		al = cards.search('"setname" LIKE ?', (setname,))
-		l = self._execute_search(query, (setname,) * 3)
-		text = _("showing %d of %d cards") % (len(l), len(al))
-		self.label_results.set_text(text)
 	
 	
 	#
