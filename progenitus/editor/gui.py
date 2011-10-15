@@ -70,34 +70,43 @@ class Interface(uiloader.Interface):
 		"""Initialize the quicksearch entry autocompletion"""
 		completion = gtk.EntryCompletion()
 		completion.set_model(self.liststore_qs_autocomplete)
-		completion.set_text_column(0)
+		completion.set_property("text-column", 0)
 		completion.set_inline_completion(False)
 		completion.set_minimum_key_length(3)
 		completion.set_popup_set_width(False)
 		completion.connect("match-selected", self.qs_autocomplete_pick)
+		renderer = gtk.CellRendererText()
+		completion.pack_start(renderer, True)
+		completion.set_attributes(renderer, markup=1)
+		
+		descrenderer = gtk.CellRendererText()
+		completion.pack_end(descrenderer)
 		self.quicksearch_entry.set_completion(completion)
 		
 		# Populate quicksearch autocomplete
 		cardnames = yield set(card.name for card in cards.cards)
 		for cardname in cardnames:
 			card = yield cards.find_by_name(cardname)[0]
-			desc = card.cardtype
+			desc = card.name + " <span size=\"x-small\">" + card.cardtype
 			if card.subtype != "":
 				desc += " - " + card.subtype
 			if card.manacost != "":
 				desc += " (%s)" % card.manacost
-			self.liststore_qs_autocomplete.append((cardname + ": " + desc, desc,
-				'"name" = ?', card.name))
+			desc += "</span>"
+			self.liststore_qs_autocomplete.append((cardname, desc, '"name" = ?',
+				card.name))
 		for setname in cards.sets:
-			self.liststore_qs_autocomplete.append((setname + " (card set)", "",
+			desc = setname + " <span size=\"x-small\">(Card set)</span>"
+			self.liststore_qs_autocomplete.append((setname, desc,
 				'"setname" = ?', setname))
 		subtypes = set()
 		for card in cards.cards:
 			for subtype in card.subtype.split(" "):
 				yield subtypes.add(subtype)
 		for subtype in subtypes:
-			self.liststore_qs_autocomplete.append((subtype + " (creature type)",
-				"", '"subtype" = ?', subtype))
+			desc = subtype + " <span size=\"x-small\">(Creature type)</span>"
+			self.liststore_qs_autocomplete.append((subtype, desc,
+				'"subtype" = ?', subtype))
 	
 	
 	#

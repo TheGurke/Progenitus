@@ -1,10 +1,13 @@
 
-Version 0.32-beta:
-``````````````````
+Version 0.32:
+`````````````
 All:
 - Introduced RAM-saving mode
 
 Editor:
+- Startup works more smoothly now
+- Removed setting for the deck save interval; the default should be very
+  reasonable
 - Fixed deck load progressbar flicker; the progressbar is simple no longer
   displayed because the deck load is expected to go fast enough
 
