@@ -126,14 +126,14 @@ class Interface(uiloader.Interface):
 		self.filechooserbutton_cache.set_filename(settings.cache_dir)
 		self.filechooserbutton_decks.set_filename(settings.deck_dir)
 		self.checkbutton_save_ram.set_active(settings.save_ram)
-		self.spinbutton_decksave_interval.set_value(settings.decksave_timeout
-			/ 1000)
+		#self.spinbutton_decksave_interval.set_value(settings.decksave_timeout
+		#	/ 1000)
 		self.notebook_search.set_current_page(5)
 	
 	def save_preferences(self, widget, nothing=None):
 		"""Save the changed settings to disk"""
-		settings.decksave_timeout = \
-			int(self.spinbutton_decksave_interval.get_value()) * 1000
+		#settings.decksave_timeout = \
+		#	int(self.spinbutton_decksave_interval.get_value()) * 1000
 		settings.save_ram = self.checkbutton_save_ram.get_active()
 		new_cache_dir = unicode(self.filechooserbutton_cache.get_filename())
 		if new_cache_dir != "None":
