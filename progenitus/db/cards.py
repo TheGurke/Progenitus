@@ -32,9 +32,9 @@ def connect():
 	sqlconn = sqlite3.connect(db_file)
 	_cursor = sqlconn.cursor()
 	load_tokens()
+	load_sets()
 	if not settings.save_ram:
 		load_cards()
-		load_sets()
 		build_datastructures()
 
 
@@ -53,7 +53,6 @@ def convert_mana(manacost):
 def is_token(cardid):
 	"""Determine if something is a token by its card id"""
 	return cardid.find('.T.') >= 0
-
 
 
 class Card(object):

@@ -6,10 +6,13 @@ All:
 
 Editor:
 - Startup works more smoothly now
+- Autocompletion is now more pretty
+- New cards in set feature was moved to the autocompletion
 - Removed setting for the deck save interval; the default should be very
   reasonable
 - Fixed deck load progressbar flicker; the progressbar is simple no longer
   displayed because the deck load is expected to go fast enough
+- Fixed: deck copy would not update the deckname entry
 
 Client:
 - Fixed the issue with the broken ui file

@@ -67,10 +67,7 @@ class Interface(uiloader.Interface):
 				os.symlink(os.path.abspath(config.DEFAULT_DECKS_PATH),
 					os.path.join(settings.deck_dir, _("default decks")))
 		
-		if not settings.save_ram:
-			# Because it requires a lot of RAM, the autocomplete feature is not
-			# available in the reduced RAM mode
-			async.start(self.init_qs_autocomplete())
+		async.start(self.init_qs_autocomplete())
 	
 	def init_qs_autocomplete(self):
 		"""Initialize the quicksearch entry autocompletion"""
@@ -99,32 +96,35 @@ class Interface(uiloader.Interface):
 				'"setname" = ?', setname))
 			self.liststore_qs_autocomplete.append((setname, desc2,
 				_query_new_in_set, setname))
-		subtypes = dict()
-		for card in cards.cards:
-			for subtype in card.subtype.split(" "):
-				yield
-				if subtype in subtypes:
-					subtypes[subtype] += 1
-				else:
-					subtypes[subtype] = 1
-		for subtype in subtypes:
-			if subtypes[subtype] >= 3:
-				# Only use subtypes that occur more than 3 times on cards
-				desc = (subtype +
-					" <span size=\"x-small\">(Creature type)</span>")
-				self.liststore_qs_autocomplete.append((subtype, desc,
-					'"subtype" LIKE ?', "%" + subtype + "%"))
-				cardnames = yield set(card.name for card in cards.cards)
-		for cardname in cardnames:
-			card = yield cards.find_by_name(cardname)[0]
-			desc = card.name + " <span size=\"x-small\">" + card.cardtype
-			if card.subtype != "":
-				desc += " - " + card.subtype
-			if card.manacost != "":
-				desc += " (%s)" % card.manacost
-			desc += "</span>"
-			self.liststore_qs_autocomplete.append((cardname, desc, '"name" = ?',
-				card.name))
+		if not settings.save_ram:
+			# Because it requires a lot of RAM, the card and card type
+			# autocomplete feature is not available in the reduced RAM mode
+			subtypes = dict()
+			for card in cards.cards:
+				for subtype in card.subtype.split(" "):
+					yield
+					if subtype in subtypes:
+						subtypes[subtype] += 1
+					else:
+						subtypes[subtype] = 1
+			for subtype in subtypes:
+				if subtypes[subtype] >= 3:
+					# Only use subtypes that occur more than 3 times on cards
+					desc = (subtype +
+						" <span size=\"x-small\">(Creature type)</span>")
+					self.liststore_qs_autocomplete.append((subtype, desc,
+						'"subtype" LIKE ?', "%" + subtype + "%"))
+					cardnames = yield set(card.name for card in cards.cards)
+			for cardname in cardnames:
+				card = yield cards.find_by_name(cardname)[0]
+				desc = card.name + " <span size=\"x-small\">" + card.cardtype
+				if card.subtype != "":
+					desc += " - " + card.subtype
+				if card.manacost != "":
+					desc += " (%s)" % card.manacost
+				desc += "</span>"
+				self.liststore_qs_autocomplete.append((cardname, desc,
+					'"name" = ?', card.name))
 	
 	
 	#
@@ -586,6 +586,7 @@ class Interface(uiloader.Interface):
 				(self.deck.filename, self.deck.name, False, icon))
 			self.decklistview.get_selection().select_iter(it)
 			self._waiting_for_decksave = True
+			self.deckname_entry.set_text(new_name)
 			self.save_deck() # save deck instantly
 	
 	def delete_deck(self, *args):

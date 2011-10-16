@@ -364,7 +364,7 @@
               <object class="GtkToolButton" id="toolbutton5">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="tooltip_text" translatable="yes">Show the extended search (Ctrl+f)</property>
+                <property name="tooltip_text" translatable="yes">Show the extended search (Ctrl+q)</property>
                 <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">Extended search</property>
                 <property name="use_underline">True</property>
@@ -2436,7 +2436,7 @@ Legality: Legacy, Standard</property>
                             <property name="ypad">1</property>
                             <property name="label" translatable="yes">To improve performance, Progenitus stores a lot of data in the system memory. This means that the memory footprint of the program is larger than 120MB , depending on how long the program is running.
 
-The following setting reduces the memory usage to about 35MB. However, it disables the deck editor's autocomplete feature and requires a program restart.</property>
+The following setting reduces the memory usage to about 35MB. However, it disables the deck editor's card autocomplete feature and requires a program restart.</property>
                             <property name="wrap">True</property>
                           </object>
                           <packing>
@@ -2446,24 +2446,6 @@ The following setting reduces the memory usage to about 35MB. However, it disabl
                             <property name="bottom_attach">3</property>
                             <property name="y_options"></property>
                           </packing>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
                         </child>
                         <child>
                           <object class="GtkCheckButton" id="checkbutton_save_ram">
@@ -2483,6 +2465,24 @@ The following setting reduces the memory usage to about 35MB. However, it disabl
                             <property name="bottom_attach">4</property>
                             <property name="y_options"></property>
                           </packing>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
                         </child>
                       </object>
                       <packing>
