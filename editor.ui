@@ -2429,15 +2429,44 @@ Legality: Legacy, Standard</property>
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkLabel" id="label35">
+                          <object class="GtkVBox" id="box1">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="xalign">0</property>
-                            <property name="ypad">1</property>
-                            <property name="label" translatable="yes">To improve performance, Progenitus stores a lot of data in the system memory. This means that the memory footprint of the program is larger than 120MB , depending on how long the program is running.
+                            <property name="orientation">vertical</property>
+                            <child>
+                              <object class="GtkLabel" id="label35">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="xalign">0</property>
+                                <property name="ypad">1</property>
+                                <property name="label" translatable="yes">To improve performance, Progenitus stores a lot of data in the system memory. This means that the memory footprint of the program is larger than 120MB, increasing over time.
 
 The following setting reduces the memory usage to about 35MB. However, it disables the deck editor's card autocomplete feature and requires a program restart.</property>
-                            <property name="wrap">True</property>
+                                <property name="wrap">True</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="checkbutton_save_ram">
+                                <property name="label" translatable="yes">reduce RAM usage</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="use_action_appearance">False</property>
+                                <property name="xalign">0</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="save_preferences" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
                           </object>
                           <packing>
                             <property name="left_attach">1</property>
@@ -2448,23 +2477,7 @@ The following setting reduces the memory usage to about 35MB. However, it disabl
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkCheckButton" id="checkbutton_save_ram">
-                            <property name="label" translatable="yes">reduce RAM usage</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="use_action_appearance">False</property>
-                            <property name="xalign">0</property>
-                            <property name="draw_indicator">True</property>
-                            <signal name="toggled" handler="save_preferences" swapped="no"/>
-                          </object>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="right_attach">2</property>
-                            <property name="top_attach">3</property>
-                            <property name="bottom_attach">4</property>
-                            <property name="y_options"></property>
-                          </packing>
+                          <placeholder/>
                         </child>
                         <child>
                           <placeholder/>
