@@ -1,10 +1,11 @@
 # Written by TheGurke 2011
-
+"""Export a visual spoiler list as pdf for printing"""
 
 import cairo
 
 from progenitus.db import pics
 
+# one inch = 72 pixels (defined by cairo)
 A4 = 595, 842
 USLetter = 612, 792
 _cardsize = 180, 252

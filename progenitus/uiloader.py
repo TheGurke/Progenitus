@@ -1,9 +1,10 @@
 # Written TheGurke 2010
 """Python interface loader using GTKBuilder"""
 
-
 import os.path
 import warnings
+import logging
+
 
 # Import gtk
 
@@ -14,9 +15,9 @@ try:
 except:
 	import sys
 	import os
-	os.system("zenity --error --text=\"GTK not found. " +
-		"Check your python installation.\"")
-	print("Fatal error: GTK not availible.")
+	os.system("zenity --error --text=\"%s\"" %
+		_("GTK not found. Check your python installation."))
+	logging.critical(_("GTK not availible"))
 	sys.exit(1)
 
 
@@ -83,7 +84,7 @@ class Interface(object):
 			missing = self._builder.connect_signals(self)
 		if missing is not None:
 			for name in set(missing):
-				print("Missing handler: '%s'" % name)
+				logging.warning("Missing handler: '%s'", name)
 	
 	def show_dialog(self, parent_window, text, dialog_type="info"):
 		"""Show a dialog popup window"""

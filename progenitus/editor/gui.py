@@ -2,8 +2,10 @@
 """GUI for the deck editor"""
 
 import os
+
 import sqlite3
 from gettext import gettext as _
+import logging
 
 import glib
 import gtk
@@ -289,7 +291,7 @@ class Interface(uiloader.Interface):
 			self.decks.clear()
 			async_start(self.refresh_decklist())
 		settings.save()
-		print("Settings saved.")
+		logging.info(_("Settings saved."))
 	
 	
 	#
@@ -639,6 +641,7 @@ class Interface(uiloader.Interface):
 			# No need to display any progress bar here
 			def finish_deckload(deck):
 				self.deck = deck
+				logging.info(_("Deck loaded: %s"), deck.filename)
 				self.enable_deck()
 				self.refresh_deck()
 			async.run(decks.load(filename, None, finish_deckload))
@@ -655,7 +658,7 @@ class Interface(uiloader.Interface):
 				old_filename = self.deck.filename
 				self.deck.filename = new_filename
 		self.except_safe(self.deck.save)
-		print(_("Deck saved: %s") % self.deck.filename)
+		logging.info(_("Deck saved: %s"), self.deck.filename)
 		if old_filename is not None and os.path.exists(old_filename):
 			os.remove(old_filename)
 	
@@ -674,7 +677,7 @@ class Interface(uiloader.Interface):
 			old_filename = self.deck.filename
 			self.deck.filename = dialog.get_filename()
 			self.except_safe(self.deck.save)
-			print(_("Deck exported as: %s") % self.deck.filename)
+			logging.info(_("Deck exported as: %s"), self.deck.filename)
 			self.deck.filename = old_filename
 		dialog.destroy()
 	

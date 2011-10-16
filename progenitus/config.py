@@ -23,6 +23,9 @@ if os.name == 'posix':
 else:
 	SETTINGS_FILE = "settings.ini"
 
+# Path to the log file
+LOG_FILE = None
+
 # Path to the translation directory
 TRANSLATIONS_PATH = "po"
 

@@ -3,6 +3,7 @@ Version 0.32:
 `````````````
 All:
 - Introduced RAM-saving mode
+- Introduced logging support (use the command line switches)
 
 Editor:
 - Startup works more smoothly now

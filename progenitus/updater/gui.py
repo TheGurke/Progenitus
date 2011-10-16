@@ -5,6 +5,7 @@ import os
 import datetime
 
 from gettext import gettext as _
+import logging
 import sqlite3
 import glib
 import gtk
@@ -153,7 +154,8 @@ class Interface(uiloader.Interface):
 				self.progressbar2.set_text(_("Fetching pricing information..."))
 				pricelist = yield tcgplayercom.mine_pricelist(tcgplayersetname)
 				if pricelist == []:
-					print(_("No pricing information for '%s'.") % setname)
+					logging.warning(_("No pricing information for '%s'."),
+						setname)
 				for i in range(len(pricelist)):
 					name, price = pricelist[i]
 					self.progressbar2.set_fraction(float(i) / len(pricelist))

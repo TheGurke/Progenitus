@@ -4,8 +4,9 @@
 import math
 import os.path
 import datetime
-
 from gettext import gettext as _
+import logging
+
 import gtk.gdk
 import cairo
 
@@ -36,9 +37,9 @@ def _load(cardid):
 	filename = _get_path(cardid)
 	if not os.path.isfile(filename):
 		if cards.is_token(cardid):
-			print(_("Picture for token %s not found.") % cardid)
+			logging.error(_("Picture for token %s not found."), cardid)
 		else:
-			print(_("Picture for card %s not found.") % cardid)
+			logging.error(_("Picture for card %s not found."), cardid)
 	pixbuf = gtk.gdk.pixbuf_new_from_file(filename).add_alpha(False, 0, 0, 0)
 	global _map
 	if not settings.save_ram:

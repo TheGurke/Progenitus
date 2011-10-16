@@ -6,6 +6,7 @@ import os
 import glib
 import sqlite3
 from gettext import gettext as _
+import logging
 
 from progenitus import config
 from progenitus import settings

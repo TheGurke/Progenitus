@@ -7,6 +7,7 @@ trading card game"""
 import os
 import optparse
 from gettext import gettext as _
+import logging
 
 # Import everything explicitly
 from progenitus import async, config, lang, settings, uiloader
@@ -47,12 +48,34 @@ optparser.add_option("--solitaire", action="store_true", dest="solitaire",
 		"(requires --client)"))
 optparser.add_option("--updater", action="store_const", const="updater",
 	dest="run", help=_("run the database updater"))
+optparser.add_option("--log", action="store", dest="log_level",
+	default="WARNING",
+	help=_("Set the logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)"))
+optparser.add_option("--logfile", action="store", dest="logfile",
+	default=config.LOG_FILE, help=_("External file to write the log to"))
 optparser.set_defaults(run="editor") # by default run the editor
 
 
 # Parse arguments
 options, args = optparser.parse_args()
 
+# Initialize the logger
+level = getattr(logging, options.log_level.upper(), None)
+warn_about_invalid_level = False
+if not isinstance(level, int):
+	level = logging.DEBUG
+	warn_about_invalid_level = True
+logging.basicConfig(
+	filename=options.logfile,
+	level=level,
+	format="%(asctime)s %(levelname)s: %(message)s",
+	datefmt='%Y-%m-%d %H:%M:%S'
+)
+logging.captureWarnings(True)
+if warn_about_invalid_level:
+	logging.warning("'%s' is not a valid logging level.", options.log_level)
+
+# Run the program
 if options.run == "editor":
 	iface = editorgui.Interface()
 	iface.main_win.show()
@@ -73,5 +96,10 @@ elif options.run == "updater":
 	iface.main()
 else:
 	assert(False) # Should specify either editor, client or updater to run
+
+
+# Disable the logger
+logging.shutdown()
+
 
 

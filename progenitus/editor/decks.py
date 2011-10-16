@@ -8,6 +8,7 @@ import re
 import os
 
 from gettext import gettext as _
+import logging
 
 from progenitus import settings
 from progenitus.db import cards
@@ -185,7 +186,7 @@ def load(filename, progresscallback=None, returncallback=None):
 				l = yield cards.search('"name" LIKE ?' +
 					' ORDER BY "releasedate" DESC', (name,))
 			if l == []:
-				print("Card '" + name[2:-2] + "' not found.")
+				logging.error("Card '%s' not found.", name[2:-2])
 				continue
 		if setname is not None:
 			ll = filter(lambda card: card.setname == setname, l)

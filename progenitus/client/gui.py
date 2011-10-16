@@ -5,9 +5,11 @@ import random
 import math
 import os
 import re
+from gettext import gettext as _
+import logging
+
 import gtk
 import glib
-from gettext import gettext as _
 
 from progenitus import *
 from progenitus.db import cards
@@ -382,7 +384,7 @@ class Interface(uiloader.Interface):
 	
 	def _load_deck(self, filename):
 		"""Load a deck by filename"""
-		print(_("loading %s...") % filename)
+		logging.info(_("loading %s..."), filename)
 		if self._deck_load_async_handle is not None:
 			# Cancel the current loading process
 			self._deck_load_async_handle.cancel()

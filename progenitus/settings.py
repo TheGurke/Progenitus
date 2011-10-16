@@ -1,11 +1,14 @@
 # Written by TheGurke 2011
 """Provides access to the user changed program parameters"""
 
-import ConfigParser
 import sys
 import os
+from gettext import gettext as _
+import logging
+import ConfigParser
 
 import config
+
 
 #
 # The _settings list defines all settings. These are loaded from/saved to a file
@@ -71,10 +74,10 @@ def load():
 		# Check for path existance
 		if t == "file":
 			if not os.path.exists(value) or not os.path.isfile(value):
-				print("File not found: %s" % value)
+				logging.warning(_("File not found: %s"), value)
 		elif t == "dir":
 			if not os.path.exists(value) or not os.path.isdir(value):
-				print("Directory not found: %s" % value)
+				logging.warning(_("Directory not found: %s"), value)
 		setattr(sys.modules[__name__], var, value)
 
 
