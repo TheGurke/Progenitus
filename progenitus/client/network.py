@@ -21,8 +21,6 @@ zones = ["L", "G", "H", "B", "E", "V"]
 
 assert(' ' not in config.VERSION)
 
-# FIXME: coordinates are float!
-
 # All network commands
 commands = {
 	"hello":    "[Hello] %s", # handshake initialization
@@ -44,6 +42,7 @@ commands = {
 	"flip":     "[Flip] %x", # flip a card
 	"face":     "[Face] %x", # face a card up or down
 	"counter":  "[Counter] %d \"%s\" counter on %x" # put counters on a card
+		# FIXME: counters
 }
 
 # Regular expressions corresponding to the commands

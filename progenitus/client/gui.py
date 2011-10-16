@@ -764,7 +764,8 @@ class Interface(uiloader.Interface):
 		item = desktop.CardItem(cardortoken, player, mine)
 		item.x = x
 		item.y = y
-		glib.idle_add(semantics.init_carditem, item) # Parse card semantics
+		if player == self.my_player:
+			glib.idle_add(semantics.init_carditem, item) # Parse card semantics
 		
 		self.cd.add_item(item)
 		item.clamp_coords()

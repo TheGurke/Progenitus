@@ -376,7 +376,7 @@ class CairoDesktop(gtk.DrawingArea):
 			if event.button == 1:
 				# Create new card item
 				width, height = self.window.get_size()
-				item = CardItem(handcard, self.interface.my_player, True)
+				item = CardItem(handcard, None, True)
 				item.x = (event.x - width / 2) / self.zoom - 2.5 / 2
 				item.y = (event.y - height / 2) / self.zoom
 				item.visible = False
@@ -742,7 +742,8 @@ class CardItem(Item):
 		else:
 			text = _("%s token") % str(self.token)
 		if not self.mine:
-			text = _("{0}'s {1}").format(self.controller.name, text)
+			if self.controller is not None:
+				text = _("{0}'s {1}").format(self.controller.name, text)
 		
 		# Add counter information
 		for counter, num in self.counters.items():
@@ -766,7 +767,8 @@ class CardItem(Item):
 			self.w, self.h = self.h, self.w
 			self.repaint()
 			self.tapped = tapped
-			self.controller.send_network_cmd("tap", self.itemid)
+			if self.controller is not None:
+				self.controller.send_network_cmd("tap", self.itemid)
 	
 	def toggle_flipped(self):
 		self.set_flipped(not self.flipped)
@@ -777,7 +779,8 @@ class CardItem(Item):
 		if self.flipped != flipped:
 			self.repaint()
 			self.flipped = flipped
-			self.controller.send_network_cmd("flip", self.itemid)
+			if self.controller is not None:
+				self.controller.send_network_cmd("flip", self.itemid)
 		
 	def turn_over(self):
 		self.set_faceup(not self.faceup)
@@ -788,7 +791,8 @@ class CardItem(Item):
 		if self.faceup != faceup:
 			self.repaint()
 			self.faceup = faceup
-			self.controller.send_network_cmd("face", self.itemid)
+			if self.controller is not None:
+				self.controller.send_network_cmd("face", self.itemid)
 
 
 #

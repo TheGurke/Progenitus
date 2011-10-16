@@ -151,6 +151,7 @@ class Interface(uiloader.Interface):
 			
 			# Download pricing information
 			if self.checkbutton_download_prices.get_active():
+				self.progressbar2.set_fraction(0)
 				self.progressbar2.set_text(_("Fetching pricing information..."))
 				pricelist = yield tcgplayercom.mine_pricelist(tcgplayersetname)
 				if pricelist == []:
@@ -167,6 +168,7 @@ class Interface(uiloader.Interface):
 			
 			# Download card pictures
 			if self.checkbutton_download_pics.get_active():
+				self.progressbar2.set_fraction(0)
 				self.progressbar2.set_text(_("Fetching card pictures..."))
 				# Create picture directory
 				pic_dir = os.path.dirname(pics._get_path(setcode + "." + "000"))
@@ -185,6 +187,8 @@ class Interface(uiloader.Interface):
 		# Download tokens
 		if self.checkbutton_download_tokens.get_active():
 			self.progressbar1.set_text(_("Tokens"))
+			self.progressbar2.set_fraction(0)
+			self.progressbar2.set_text(_("Fetching token information..."))
 			self.log(_("Downloading tokens..."))
 			
 			# Create token pic directory
