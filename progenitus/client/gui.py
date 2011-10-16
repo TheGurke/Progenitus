@@ -130,7 +130,8 @@ class Interface(uiloader.Interface):
 		completion.set_model(self.liststore_counters)
 		completion.set_text_column(0)
 		completion.set_inline_completion(False)
-		self.entry_counters.set_completion(completion)
+		completion.connect("match-selected", self.update_counter_num)
+		self.entry_counter.set_completion(completion)
 	
 	
 	# Network methods
@@ -443,6 +444,9 @@ class Interface(uiloader.Interface):
 		for row in self.liststore_tokens:
 			if text == row[1]:
 				self.selected_token(row[0])
+				break
+		else:
+			logging.info(_("Token '%s' is invalid."), text)
 	
 	def selected_token(self, tokenid):
 		self.entrybar_unfocus()
@@ -468,6 +472,7 @@ class Interface(uiloader.Interface):
 		self.label_entrybar.set_text(_("Reset all cards and life?"))
 	
 	def card_set_counters(self, widget):
+		item = self._popup
 		self.reset_entrybar()
 		self.spinbutton_num.show()
 		self.combobox_counters.show()
@@ -475,21 +480,21 @@ class Interface(uiloader.Interface):
 		self.label_entrybar2.set_text(_("counters."))
 		self.label_entrybar2.show()
 		# Set default entry
-		if len(self._popup.counters.keys()) > 0:
-			counter, num = self._popup.counters.items()[0]
-			self.entry_counters.set_text(counter)
+		if len(item.counters) > 0:
+			counter, num = item.counters.items()[0]
+			self.entry_counter.set_text(counter)
 			self.spinbutton_num.set_value(num)
-		elif self._popup.default_counters != []:
-			counter = self._popup.default_counters[0]
-			self.entry_counters.set_text(counter)
-			if counter in self._popup.counters:
-				self.spinbutton_num.set_value(self._popup.counters[counter])
+		elif item.default_counters != []:
+			counter = item.default_counters[0]
+			self.entry_counter.set_text(counter)
+			if counter in item.counters:
+				self.spinbutton_num.set_value(item.counters[counter])
 		else:
-			self.entry_counters.set_text("")
+			self.entry_counter.set_text("")
 		self.liststore_counters.clear()
-		for counter in self._popup.default_counters:
+		for counter in item.default_counters:
 			self.liststore_counters.append((counter,))
-		for counter in self._popup.counters:
+		for counter in item.counters:
 			for row in self.liststore_counters:
 				if row[0] == counter:
 					break
@@ -497,7 +502,28 @@ class Interface(uiloader.Interface):
 				self.liststore_counters.append((counter,))
 		self._entrybar_task = "counters"
 		self.hbox_entrybar.show()
-		self.entry_counters.grab_focus()
+		if len(item.counters) == 0:
+			self.spinbutton_num.set_value(1)
+			self.entry_counter.grab_focus()
+		else:
+			self.spinbutton_num.grab_focus()
+	
+	def counter_pick(self, widget):
+		update_counter_num()
+	
+	def counter_autocomplete_pick(self, widget, model, it):
+		update_counter_num()
+	
+	def counter_entry_change(self, widget):
+		pass
+	
+	def update_counter_num(self, widget=None, model=None, it=None):
+		counter = self.entry_counter.get_text()
+		item = self._popup
+		if counter in item.counters:
+			self.spinbutton_num.set_value(item.counters[counter])
+		else:
+			self.spinbutton_num.set_value(1)
 	
 	def entrybar_unfocus(self, widget=None, event=None):
 		if not self.hbox_entrybar.get_visible():
@@ -509,8 +535,8 @@ class Interface(uiloader.Interface):
 			if life != self.my_player.life:
 				self.my_player.set_life(life)
 		elif self._entrybar_task == "counters":
-			if self.entry_counters.get_text() != "":
-				counter = self.entry_counters.get_text()
+			if self.entry_counter.get_text() != "":
+				counter = self.entry_counter.get_text()
 				num = int(self.spinbutton_num.get_value())
 				self.my_player.set_counter(self._popup, num, counter)
 		self._entrybar_task = ""

@@ -303,8 +303,25 @@ class Player(object):
 	def set_counter(self, item, num, counter):
 		"""Put counters on a card"""
 		if num != 0:
+			if counter in item.counters and num == item.counters[counter]:
+				return # nothing to be done
+			# +1/+1 and -1/-1 counters cancel each other out
+			if counter in ("+1/+1", "-1/-1"):
+				other = "+1/+1" if counter == "-1/-1" else "-1/-1"
+				if other in item.counters:
+					num_other = item.counters[other]
+					if num_other >= num:
+						item.counters[other] -= num
+						self.send_network_cmd("counter", item.counters[other],
+							other, item.itemid)
+						return
+					num -= num_other
+					del item.counters[other]
+					self.send_network_cmd("counter", 0, other, item.itemid)
 			item.counters[counter] = num
 		elif counter in item.counters:
+			if counter not in item.counters:
+				return # nothing to be done
 			del item.counters[counter]
 		self.send_network_cmd("counter", num, counter, item.itemid)
 	

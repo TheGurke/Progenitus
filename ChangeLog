@@ -8,24 +8,28 @@ All:
 Editor:
 - Startup works more smoothly now
 - Autocompletion is now more pretty
+- Can now create new decks in subfolders
 - New cards in set feature was moved to the autocompletion
 - Removed setting for the deck save interval; the default should be very
   reasonable
 - Fixed deck load progressbar flicker; the progressbar is simple no longer
   displayed because the deck load is expected to go fast enough
 - Fixed: deck copy would not update the deckname entry
+- Fixed: can now search for compound types like 'legendary cat'
 
 Client:
 - Fixed the issue with the broken ui file
-- improved counter entry
-- improved counter semantics (fade, time counter)
-- semantics for entering the battlefield tapped
+- Fixed token entry issues
+- Improved counter entry
+- Improved counter semantics (fade, time counter)
+- Semantics for entering the battlefield tapped
+- +1/+1 and -1/-1 tokens now cancel each other out
 
 
 Version 0.31:
 `````````````
 
-Warning: the file 'mtg.sqlite' is now expected in cache/ regardless of the
+Warning: the file 'mtg.sqlite' is now expected in cache regardless of the
 user's settings. Remember to move it there.
 The 'cache_path' setting is now called 'cache_dir'.
 

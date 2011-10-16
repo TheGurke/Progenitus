@@ -2,8 +2,8 @@
 """GUI for the deck editor"""
 
 import os
-
 import sqlite3
+import re
 from gettext import gettext as _
 import logging
 
@@ -166,14 +166,27 @@ class Interface(uiloader.Interface):
 	def cardview_keypress(self, widget, event):
 		"""A key has been pressed on the cardview"""
 		if event.type == gtk.gdk.KEY_PRESS:
+			cardid, sb, removed = self.get_selected_card()
 			if event.keyval == 65535: # delete
-				cardid, sb, removed = self.get_selected_card()
 				if cardid is not None and not removed:
 					self.remove_from_deck(cardid, sb)
 			if event.keyval == 65379: # insert, shift for sideboard
-				cardid = self.get_selected_card()[0]
 				if cardid is not None:
 					self.add_to_deck(cardid, event.state & gtk.gdk.SHIFT_MASK)
+#			if event.keyval == ord('c') and event.state & gtk.gdk.CONTROL_MASK:
+#				c = gtk.Clipboard()
+#				card = cards.get(cardid)
+#				c.set_text("%s (%s)" % (card.name, card.setname))
+#			if event.keyval == ord('v') and event.state & gtk.gdk.CONTROL_MASK:
+#				c = gtk.Clipboard()
+#				text = c.wait_for_text()
+#				match = re.match(r'(.+?) \(([^)]+)\)', text)
+#				if match is not None:
+#					cardname, setname = match.groups()
+#					l = cards.find_by_name(cardname, setname)
+#					if l != []:
+#						card = l[0]
+#						self.add_to_deck(card.id, False)
 	
 	def keypress(self, widget, event):
 		"""Global keypress handler"""
@@ -548,18 +561,27 @@ class Interface(uiloader.Interface):
 		"""Create a new empty deck"""
 		self.unload_deck()
 		model, it = self.decklistview.get_selection().get_selected()
-		# TODO: model.iter_parent(it)
+		if it is not None:
+			if self.decks[model.get_path(it)][2]:
+				it_parent = it
+			else:
+				it_parent = model.iter_parent(it)
+			parent_dir = self.decks[model.get_path(it_parent)][0]
+		else:
+			it_parent = None
+			parent_dir = settings.deck_dir
 		newname = _("new")
-		icon = self.main_win.render_icon(gtk.STOCK_FILE,
-			gtk.ICON_SIZE_MENU, None)
-		filename = os.path.join(settings.deck_dir, newname + ".deck")
+		icon = self.main_win.render_icon(gtk.STOCK_FILE, gtk.ICON_SIZE_MENU,
+			None)
+		filename = os.path.join(parent_dir, newname + ".deck")
 		i = 2
 		while os.path.exists(filename):
 			newname = _("new (%d)") % i
-			filename = os.path.join(settings.deck_dir, newname + ".deck")
+			filename = os.path.join(parent_dir, newname + ".deck")
 			i += 1
-		it = self.decks.append(None, (filename, newname, False, icon))
-		self.decklistview.get_selection().select_iter(it)
+		it = self.decks.append(it_parent, (filename, newname, False, icon))
+		self.decklistview.expand_to_path(model.get_path(it))
+		self.decklistview.set_cursor(model.get_path(it))
 		self.deck = decks.Deck(filename)
 		self.enable_deck()
 		with open(filename, 'w') as f:
@@ -583,10 +605,12 @@ class Interface(uiloader.Interface):
 			self.deck.name = new_name
 			self.deck.filename = filename
 			it = self.decklistview.get_selection().get_selected()[1]
+			if it is None:
+				return # no deck selected
 			parent = self.decks.iter_parent(it)
 			it = self.decks.insert_after(parent, it,
 				(self.deck.filename, self.deck.name, False, icon))
-			self.decklistview.get_selection().select_iter(it)
+			self.decklistview.set_cursor(self.decks.get_path(it))
 			self._waiting_for_decksave = True
 			self.deckname_entry.set_text(new_name)
 			self.save_deck() # save deck instantly
@@ -791,7 +815,7 @@ class Interface(uiloader.Interface):
 				card.get_composed_type(), card.power, card.toughness,
 				card.rarity, card.setname, sideboard, False, card.price,
 				_price_to_text(card.price), card.releasedate))
-			self.cardview.get_selection().select_iter(it)
+			self.cardview.set_cursor(self.cards.get_path(it))
 			self.cardview.scroll_to_cell(self.cardview.get_model().get_path(it))
 		self.delayed_decksave()
 		self.update_cardcount()
@@ -813,7 +837,7 @@ class Interface(uiloader.Interface):
 			# select next card
 			it = model.iter_next(it)
 			if it is not None:
-				self.cardview.get_selection().select_iter(it)
+				self.cardview.set_cursor(model.get_path(it))
 				self.cardview.scroll_to_cell(model.get_path(it))
 			
 			self.delayed_decksave()
@@ -910,8 +934,10 @@ class Interface(uiloader.Interface):
 			args.append("%" + _replace_chars(text) + "%")
 		cardtypes = self.entry_types.get_text()
 		if cardtypes != "":
-			query += ' ("type" LIKE ? OR "subtype" LIKE ?) AND'
-			args.extend(2 * ["%" + _replace_chars(cardtypes) + "%"])
+			words = _replace_chars(cardtypes).split("%")
+			for word in words:
+				query += ' ("type" LIKE ? OR "subtype" LIKE ?) AND'
+				args.extend(2 * ["%" + word + "%"])
 		artist = self.entry_artist.get_text()
 		if artist != "":
 			query += ' "artist" LIKE ? AND'
@@ -1112,7 +1138,7 @@ class Interface(uiloader.Interface):
 		if len(cardlist) > 0:
 			self.notebook_search.set_current_page(0)
 			it = self.results.get_iter_first()
-			self.resultview.get_selection().select_iter(it)
+			self.resultview.set_cursor(self.results.get_path(it))
 			self.resultview.grab_focus()
 			self.select_result(None)
 			# If there is only one card result, expand the versions

@@ -708,8 +708,9 @@
                         <property name="can_focus">False</property>
                         <property name="model">liststore_counters</property>
                         <property name="text_column">0</property>
+                        <signal name="changed" handler="update_counter_num" swapped="no"/>
                         <child internal-child="entry">
-                          <object class="GtkEntry" id="entry_counters">
+                          <object class="GtkEntry" id="entry_counter">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="invisible_char">•</property>
@@ -718,6 +719,7 @@
                             <property name="secondary_icon_activatable">False</property>
                             <property name="primary_icon_sensitive">True</property>
                             <property name="secondary_icon_sensitive">True</property>
+                            <signal name="changed" handler="update_counter_num" swapped="no"/>
                             <signal name="activate" handler="entrybar_unfocus" swapped="no"/>
                           </object>
                         </child>
@@ -745,6 +747,7 @@
                             <property name="secondary_icon_activatable">False</property>
                             <property name="primary_icon_sensitive">True</property>
                             <property name="secondary_icon_sensitive">True</property>
+                            <signal name="activate" handler="tokens_activate" swapped="no"/>
                           </object>
                         </child>
                       </object>

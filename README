@@ -41,6 +41,7 @@ card pictures. Please read the disclaimer carefully before using it.
 
 Known issues:
 - The loyalty of plainswalkers is missing sometimes
+- Multiple instances of the program can be run
 
 Planned features:
 - More backends: e.g. gatherer.wizards.com
@@ -52,7 +53,7 @@ Planned features:
 [Deckeditor]
 ------------
 
-The deck editor is used to construct your own magic decks.
+The deck editor is used to construct your magic decks.
 
 Press 'insert' to insert a card to the deck, 'shift + insert' inserts into the
 sideboard.
@@ -68,7 +69,6 @@ sideboard.
 
 Known issues:
 - The empty db reminder does not close
-- Deck rename is still broken (?)
 - "No results" in the extended search is not visible enough
 - Moving the center bar to the right while in extended search causes graphic
   bugs
@@ -78,7 +78,6 @@ Planned features:
 - Move decks between folders via drag and drop
 - Copy and paste for card lists
 - List deck price
-- force only one instance
 - export as pdf (visual spoilers)
 - export as html (pretty decklist)
 - card legality
