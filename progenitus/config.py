@@ -12,7 +12,7 @@ APP_NAME_EDITOR = APP_NAME + " Editor"
 APP_NAME_CLIENT = APP_NAME + " Client"
 
 # Program version
-VERSION = "0.32-beta"
+VERSION = "0.32"
 
 # Program website
 APP_WEBSITE = "http://progenitus.org/"

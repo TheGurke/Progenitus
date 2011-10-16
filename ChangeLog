@@ -5,6 +5,9 @@ All:
 - Introduced RAM-saving mode
 - Introduced logging support (use the command line switches)
 
+Updater:
+- Fixed some minor progressbar issues
+
 Editor:
 - Startup works more smoothly now
 - Autocompletion is now more pretty

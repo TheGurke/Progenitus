@@ -71,7 +71,8 @@ logging.basicConfig(
 	format="%(asctime)s %(levelname)s: %(message)s",
 	datefmt='%Y-%m-%d %H:%M:%S'
 )
-logging.captureWarnings(True)
+if hasattr(logging, "captureWarnings"):
+	logging.captureWarnings(True)
 if warn_about_invalid_level:
 	logging.warning("'%s' is not a valid logging level.", options.log_level)
 
