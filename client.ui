@@ -50,6 +50,12 @@
       <column type="guint"/>
     </columns>
   </object>
+  <object class="GtkListStore" id="liststore_counters">
+    <columns>
+      <!-- column-name name -->
+      <column type="gchararray"/>
+    </columns>
+  </object>
   <object class="GtkListStore" id="liststore_users">
     <columns>
       <!-- column-name userid -->
@@ -697,6 +703,32 @@
                       </packing>
                     </child>
                     <child>
+                      <object class="GtkComboBoxEntry" id="combobox_counters">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="model">liststore_counters</property>
+                        <property name="text_column">0</property>
+                        <child internal-child="entry">
+                          <object class="GtkEntry" id="entry_counters">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="invisible_char">•</property>
+                            <property name="width_chars">30</property>
+                            <property name="primary_icon_activatable">False</property>
+                            <property name="secondary_icon_activatable">False</property>
+                            <property name="primary_icon_sensitive">True</property>
+                            <property name="secondary_icon_sensitive">True</property>
+                            <signal name="activate" handler="entrybar_unfocus" swapped="no"/>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">4</property>
+                      </packing>
+                    </child>
+                    <child>
                       <object class="GtkComboBoxEntry" id="combobox_tokens">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
@@ -719,7 +751,7 @@
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
-                        <property name="position">4</property>
+                        <property name="position">5</property>
                       </packing>
                     </child>
                     <child>
@@ -733,7 +765,7 @@
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
-                        <property name="position">5</property>
+                        <property name="position">6</property>
                       </packing>
                     </child>
                     <child>
@@ -745,7 +777,7 @@
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
-                        <property name="position">6</property>
+                        <property name="position">7</property>
                       </packing>
                     </child>
                   </object>

@@ -16,6 +16,9 @@ Editor:
 
 Client:
 - Fixed the issue with the broken ui file
+- improved counter entry
+- improved counter semantics (fade, time counter)
+- semantics for entering the battlefield tapped
 
 
 Version 0.31:

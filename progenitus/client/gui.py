@@ -87,6 +87,7 @@ class Interface(uiloader.Interface):
 				glib.idle_add(self.entry_username.grab_focus)
 		
 		# Initialize tokens
+		self.init_counter_autocomplete()
 		glib.idle_add(self.init_token_autocomplete)
 	
 	
@@ -121,6 +122,13 @@ class Interface(uiloader.Interface):
 		completion.set_minimum_key_length(2)
 		completion.connect("match-selected", self.token_autocomplete_pick)
 		self.entry_tokens.set_completion(completion)
+	
+	def init_counter_autocomplete(self):
+		completion = gtk.EntryCompletion()
+		completion.set_model(self.liststore_counters)
+		completion.set_text_column(0)
+		completion.set_inline_completion(False)
+		self.entry_counters.set_completion(completion)
 	
 	
 	# Network methods
@@ -401,10 +409,11 @@ class Interface(uiloader.Interface):
 	def reset_entrybar(self):
 		self.spinbutton_life.hide()
 		self.spinbutton_num.hide()
-		self.spinbutton_num.set_value(1)
+		self.spinbutton_num.set_value(0)
 		self.entry.hide()
 		self.button_accept.hide()
 		self.label_entrybar2.hide()
+		self.combobox_counters.hide()
 		self.combobox_tokens.hide()
 	
 	def entrybar_size_allocation(self, widget, rect):
@@ -459,24 +468,34 @@ class Interface(uiloader.Interface):
 	def card_set_counters(self, widget):
 		self.reset_entrybar()
 		self.spinbutton_num.show()
-		self.entry.show()
+		self.combobox_counters.show()
 		self.label_entrybar.set_text(_("Set"))
 		self.label_entrybar2.set_text(_("counters."))
 		self.label_entrybar2.show()
-		if self._popup.default_counter is not None:
-			counter = self._popup.default_counter
-			self.entry.set_text(counter)
+		# Set default entry
+		if len(self._popup.counters.keys()) > 0:
+			counter, num = self._popup.counters.items()[0]
+			self.entry_counters.set_text(counter)
+			self.spinbutton_num.set_value(num)
+		elif self._popup.default_counters != []:
+			counter = self._popup.default_counters[0]
+			self.entry_counters.set_text(counter)
 			if counter in self._popup.counters:
 				self.spinbutton_num.set_value(self._popup.counters[counter])
-		elif len(self._popup.counters.keys()) > 0:
-			counter, num = self._popup.counters.items()[0]
-			self.entry.set_text(counter)
-			self.spinbutton_num.set_value(num)
 		else:
-			self.entry.set_text("")
+			self.entry_counters.set_text("")
+		self.liststore_counters.clear()
+		for counter in self._popup.default_counters:
+			self.liststore_counters.append((counter,))
+		for counter in self._popup.counters:
+			for row in self.liststore_counters:
+				if row[0] == counter:
+					break
+			else:
+				self.liststore_counters.append((counter,))
 		self._entrybar_task = "counters"
 		self.hbox_entrybar.show()
-		self.entry.grab_focus()
+		self.entry_counters.grab_focus()
 	
 	def entrybar_unfocus(self, widget=None, event=None):
 		if not self.hbox_entrybar.get_visible():
@@ -487,10 +506,11 @@ class Interface(uiloader.Interface):
 			life = int(self.spinbutton_life.get_value())
 			if life != self.my_player.life:
 				self.my_player.set_life(life)
-		elif self._entrybar_task == "counters" and self.entry.get_text() != "":
-			counter = self.entry.get_text()
-			num = int(self.spinbutton_num.get_value())
-			self.my_player.set_counter(self._popup, num, counter)
+		elif self._entrybar_task == "counters":
+			if self.entry_counters.get_text() != "":
+				counter = self.entry_counters.get_text()
+				num = int(self.spinbutton_num.get_value())
+				self.my_player.set_counter(self._popup, num, counter)
 		self._entrybar_task = ""
 	
 	def entrybar_accept(self, widget):

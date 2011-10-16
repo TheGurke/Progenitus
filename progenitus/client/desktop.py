@@ -685,7 +685,7 @@ class CardItem(Item):
 	faceup = True # True is face up
 	does_not_untap = False
 	creates_tokens = None
-	default_counter = None
+	default_counters = None
 	
 	border_color = None
 	dragable = True
@@ -703,6 +703,7 @@ class CardItem(Item):
 		self.controller = owner
 		self.mine = mine
 		self.counters = dict()
+		self.default_counters = []
 	
 	def paint(self, desktop, cr):
 		# check for special "transform" cards that have two sides
