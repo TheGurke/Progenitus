@@ -10,6 +10,7 @@ import os
 from gettext import gettext as _
 import logging
 
+from progenitus import config
 from progenitus import settings
 from progenitus.db import cards
 
@@ -31,16 +32,6 @@ _re3 = re.compile(r'\s*(?:#|%)\s*@author:\s*([^\r\n]+)')
 _re4 = re.compile(r'\s*\n') # empty line
 
 
-def get_decklist():
-	"""Get a list of all available decks"""
-	decklist = []
-	# find all files in settings.deck_dir with suffix ".deck"
-	for root, dirs, files in os.walk(settings.deck_dir):
-		files = filter(lambda s: os.path.isfile(os.path.join(root, s)) \
-			and s[-5:] == ".deck", files)
-		decklist.extend(map(lambda s: os.path.join(root, s), files))
-	return decklist
-
 
 class Deck(object):
 	def __init__(self, filename):
@@ -58,16 +49,16 @@ class Deck(object):
 		if filename is None:
 			filename = self.filename
 		name = os.path.basename(filename)
-		if name[-5:] == u".deck":
-			name = name[:-5]
+		if name[-len(config.DECKFILE_SUFFIX):] == config.DECKFILE_SUFFIX:
+			name = name[:-len(config.DECKFILE_SUFFIX)]
 		return name
 	
 	def derive_filename(self, deckname=None):
 		"""Suggest a path based on the decks name and previous location"""
 		if deckname is None:
 			deckname = self.name
-		filename = os.path.join(os.path.dirname(self.filename), deckname +
-			u".deck")
+		filename = os.path.join(os.path.dirname(self.filename),
+			deckname + config.DECKFILE_SUFFIX)
 		return filename
 	
 	def derive_color(self):

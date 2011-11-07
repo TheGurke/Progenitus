@@ -40,13 +40,18 @@ class Interface(uiloader.Interface):
 		self.resultview.get_model().set_sort_func(3, self.sort_by_type, 3)
 		self.cardview.get_model().set_sort_func(2, self.sort_by_cost, 2)
 		self.resultview.get_model().set_sort_func(2, self.sort_by_cost, 2)
+		self.treestore_files.set_sort_func(2, self.sort_files)
+		self.treestore_files.set_sort_column_id(2, gtk.SORT_ASCENDING)
 		self.cardview.get_model().set_sort_column_id(3, gtk.SORT_ASCENDING)
 		self.resultview.get_model().set_sort_column_id(10, gtk.SORT_DESCENDING)
 		gtk.quit_add(0, self.save_deck) # one extra decksave just to be sure
-		async.start(self.refresh_decklist())
-		glib.timeout_add(settings.decklist_refreshtime, async.start,
-			self.refresh_decklist())
-			# check periodically if the deck files on the disk have changed
+		async.start(self.refresh_files())
+		
+		# Check periodically if the deck files on the disk have changed	
+		def _refresh_files():
+			async.start(self.refresh_files())
+			return True
+		glib.timeout_add(settings.decklist_refreshtime, _refresh_files)
 		
 		# Check if the database is accessable
 		db_file = os.path.join(settings.cache_dir, config.DB_FILE)
@@ -69,6 +74,7 @@ class Interface(uiloader.Interface):
 				os.symlink(os.path.abspath(config.DEFAULT_DECKS_PATH),
 					os.path.join(settings.deck_dir, _("default decks")))
 		
+		# Initialize the quicksearch autocompletion
 		async.start(self.init_qs_autocomplete())
 	
 	def init_qs_autocomplete(self):
@@ -239,6 +245,15 @@ class Interface(uiloader.Interface):
 	# Sort functions
 	#
 	
+	def sort_files(self, model, it1, it2):
+		"""Sort the files first by type (folder or file) and then by name"""
+		isdir1, name1 = model.get(it1, 0, 2)
+		isdir2, name2 = model.get(it2, 0, 2)
+		if isdir1 == isdir2:
+			return cmp(name1, name2)
+		else:
+			return -cmp(isdir1, isdir2)
+	
 	def sort_by_type(self, model, it1, it2, column):
 		"""Sort function for the resultview/cardview"""
 		types = ["Plainswalker", "Creature", "Enchantment", "Artifact",
@@ -301,17 +316,417 @@ class Interface(uiloader.Interface):
 		new_deck_dir = unicode(self.filechooserbutton_decks.get_filename())
 		if new_deck_dir != "None" and new_deck_dir != old_deck_dir:
 			settings.deck_dir = new_deck_dir
-			self.decks.clear()
-			async_start(self.refresh_decklist())
+			self.treestore_files.clear()
+			async.start(self.refresh_files())
 		settings.save()
 		logging.info(_("Settings saved."))
+	
+	
+	#
+	# Deck files and folders
+	#
+	
+	_it_by_path = dict()
+	
+	def _expand_dirs(self, path):
+		"""Extract a list of folders from a path"""
+		l = []
+		while path != "":
+			l.append(path)
+			path, name = os.path.split(path)
+		l.reverse()
+		return l
+	
+	def _get_path(self, it):
+		"""Derive the file path from the tree structure"""
+		assert(it is not None)
+		isdir, path, name = self.treestore_files.get(it, 0, 1, 2)
+		path = name + ("" if isdir else config.DECKFILE_SUFFIX)
+		while it is not None:
+			it = self.treestore_files.iter_parent(it)
+			if it is not None:
+				os.path.join(self.treestore_files.get_value(it, 2), path)
+		path = os.path.join(settings.deck_dir, path)
+		return path
+	
+	def _check_for_removed_rec(self, it):
+		"""Recursively check for removed files/folders"""
+		if it is None:
+			return # abort recursion
+		
+		isdir, path = self.treestore_files.get(it, 0, 1)
+		if not os.path.exists(path) or os.path.isfile(path) == isdir:
+			logging.info(_("Updated the file tree: '%s' has been deleted on the"
+				" file system."), path)
+			it_is_valid = self.treestore_files.remove(it)
+			if not it_is_valid:
+				it = None
+		else:
+			# Check the children
+			it_child = self.treestore_files.iter_children(it)
+			async.start(self._check_for_removed_rec(it_child))
+			it = self.treestore_files.iter_next(it)
+		
+		# Check the siblings
+		yield async.run(self._check_for_removed_rec(it))
+	
+	def refresh_files(self):
+		"""Refresh the file tree"""
+		logging.debug(_("Refreshing the file tree"))
+		
+		folder_icon = self.main_win.render_icon(gtk.STOCK_DIRECTORY,
+			gtk.ICON_SIZE_MENU, None)
+		deck_icon = self.main_win.render_icon(gtk.STOCK_FILE,
+			gtk.ICON_SIZE_MENU, None)
+		
+		# Find new files/folders
+		for root, dirs, files in os.walk(settings.deck_dir, followlinks=True):
+			assert(root == settings.deck_dir or root in self._it_by_path)
+			yield
+			
+			# Create subfolders
+			for subdir in dirs:
+				path = os.path.join(root, subdir)
+				if path not in self._it_by_path:
+					self._it_by_path[path] = self.treestore_files.append(
+						self._it_by_path.get(root, None),
+							(True, path, subdir, folder_icon))
+			
+			# Add all files that have the deckfile suffix
+			for filename in files:
+				suffix = config.DECKFILE_SUFFIX
+				if filename[-len(suffix):] != suffix:
+					continue
+				path = os.path.join(root, filename)
+				
+				# File already in the tree?
+				it = self._it_by_path.get(os.path.dirname(path), None)
+				it = self.treestore_files.iter_children(it)
+				while it is not None:
+					if self.treestore_files.get_value(it, 1) == path:
+						break # entry found
+					it = self.treestore_files.iter_next(it)
+				else:
+					name = decks.Deck("").derive_name(path)
+					it = self._it_by_path.get(root, None)
+					self.treestore_files.append(it,
+						(False, path, name, deck_icon))
+		
+		# Any files/folders removed since the last check?
+		it_first = self.treestore_files.get_iter_first()
+		async.start(self._check_for_removed_rec(it_first))
+	
+	def move_deckorfolder(self, model, path, it):
+		"""Moved a deck or folder in the decklistview using drag and drop"""
+		# This is also triggered by the insertions from refresh_files()
+		assert(model is self.treestore_files)
+		
+		# Check if row is fully populated
+		isdir, path, name = model.get(it, 0, 1, 2)
+		if name is None:
+			return
+		
+		# Calculate the new path
+		it_parent = model.iter_parent(it)
+		while it_parent is not None and not model.get_value(it_parent, 0):
+			it_parent = model.iter_parent(it_parent)
+		if it_parent is None:
+			new_dirname = settings.deck_dir
+		else:
+			new_dirname = self._get_path(it_parent)
+		new_path = os.path.join(new_dirname, name +
+			("" if isdir else config.DECKFILE_SUFFIX))
+		
+		# Check if file/folder needs to be moved
+		if new_path != path:
+			# File/folder has been moved
+			try:
+				os.rename(path, new_path)
+				model.set(it, 1, new_path)
+			except:
+				# TODO: undo move in the treemodel
+				raise
+	
+	def new_folder(self, *args):
+		"""Create a new subfolder"""
+		pass # TODO
+	
+	
+	#
+	# Deck save/load and display
+	#
+	
+	deck = None
+	_deck_load_async_handle = None
+	_is_loading = False
+	_waiting_for_decksave = False
+	
+	def enable_deck(self):
+		"""Make all deck-related widgets sensitive"""
+		# Opposite: unload_deck
+		self.cards.clear()
+		self._is_loading = True
+		self.deckname_entry.set_text(self.deck.name)
+		if self.deck.author != "":
+			self.deckname_entry.set_tooltip_text(_("Author: %s") 
+				% self.deck.author)
+		else:
+			self.deckname_entry.set_tooltip_text("")
+		self.entry_author.set_text(self.deck.author)
+		self.textview_deckdesc.get_buffer().set_text(self.deck.description)
+		self.cardview.set_sensitive(True)
+		self.deckname_entry.set_sensitive(True)
+		self.entry_author.set_sensitive(True)
+		self.textview_deckdesc.set_sensitive(True)
+		self.button_deckedit.set_sensitive(True)
+		self.toolbutton_copy_deck.set_sensitive(True)
+		self.toolbutton_delete_deck.set_sensitive(True)
+		self.toolbutton_export_deck.set_sensitive(True)
+		self.toolbutton_deckedit.set_sensitive(True)
+		self.toolbutton_stats.set_sensitive(True)
+		self.toolbutton_search_lands.set_sensitive(True)
+		self._is_loading = False
+		self.cardview.grab_focus()
+	
+	def unload_deck(self):
+		"""Unload the current deck"""
+		# Opposite: enable_deck
+		if self._deck_load_async_handle is not None:
+			# Currently loading a deck
+			self._deck_load_async_handle.cancel()
+			self._deck_load_async_handle = None
+		if self._waiting_for_decksave:
+			self.save_deck()
+		self.deck = None
+		self.cardview.set_sensitive(False)
+		self.cards.clear()
+		self.deckname_entry.set_sensitive(False)
+		self.deckname_entry.set_text("")
+		self.entry_author.set_text("")
+		self.textview_deckdesc.get_buffer().set_text("")
+		self.button_deckedit.set_sensitive(False)
+		self.toolbutton_copy_deck.set_sensitive(False)
+		self.toolbutton_delete_deck.set_sensitive(False)
+		self.toolbutton_export_deck.set_sensitive(False)
+		self.toolbutton_deckedit.set_sensitive(False)
+		self.toolbutton_stats.set_sensitive(False)
+		self.toolbutton_search_lands.set_sensitive(False)
+		self.entry_author.set_sensitive(False)
+		self.textview_deckdesc.set_sensitive(False)
+		for c in ["white", "blue", "black", "red", "green"]:
+			getattr(self, "mana_" + c).hide()
+		self.update_cardcount()
+	
+	def refresh_deck(self):
+		"""Refresh the deck card list"""
+		if self.deck is None:
+			return
+		self.cards.clear()
+		for sb in [True, False]:
+			l = self.deck.sideboard if sb else self.deck.decklist
+			for card in l:
+				self.cards.append((card.id, card.name, card.manacost,
+					card.get_composed_type(), card.power, card.toughness,
+					card.rarity[0], card.setname, sb, False, card.price,
+					_price_to_text(card.price), card.releasedate))
+		self.update_cardcount()
+	
+	def new_deck(self, *args):
+		"""Create a new empty deck"""
+		self.unload_deck()
+		
+		# Find the parent directory
+		model, it = self.treeview_files.get_selection().get_selected()
+		while it is not None and not self.treestore_files.get_value(it, 0):
+			it = model.iter_parent(it)
+		
+		if it is None:
+			parent_dir = settings.deck_dir
+		else:
+			parent_dir = self.treestore_files.get_value(it, 1)
+		
+		# Find the new file name
+		name = _("new")
+		path = os.path.join(parent_dir, name + config.DECKFILE_SUFFIX)
+		i = 2
+		while os.path.exists(path):
+			name = _("new (%d)") % i
+			path = os.path.join(parent_dir, name + config.DECKFILE_SUFFIX)
+			i += 1
+		
+		# Enter the deck to the decks treestore
+		icon = self.main_win.render_icon(gtk.STOCK_FILE, gtk.ICON_SIZE_MENU,
+			None)
+		it = self.treestore_files.append(it, (False, path, name, icon))
+		self.treeview_files.expand_to_path(model.get_path(it))
+		self.treeview_files.set_cursor(model.get_path(it))
+		
+		# Initialize deck
+		self.deck = decks.Deck(path)
+		self.enable_deck()
+		with open(path, 'w') as f:
+			pass # touch file
+		self.deckname_entry.grab_focus()
+	
+	def copy_deck(self, *args):
+		"""Copy the currently selected deck"""
+		if self.deck is not None:
+			icon = self.main_win.render_icon(gtk.STOCK_FILE,
+				gtk.ICON_SIZE_MENU, None)
+			new_name = self.deck.name + _(" (copy)")
+			filename = os.path.join(os.path.dirname(self.deck.filename),
+				new_name + config.DECKFILE_SUFFIX)
+			i = 2
+			while os.path.exists(filename):
+				new_name = self.deck.name + (_(" (copy %d)") % i)
+				filename = os.path.join(os.path.dirname(self.deck.filename),
+					new_name + config.DECKFILE_SUFFIX)
+				i += 1
+			self.deck.name = new_name
+			self.deck.filename = filename
+			it = self.treeview_files.get_selection().get_selected()[1]
+			if it is None:
+				return # no deck selected
+			parent = self.treestore_files.iter_parent(it)
+			it = self.treestore_files.insert_after(parent, it,
+				(self.deck.filename, self.deck.name, False, icon))
+			self.treeview_files.set_cursor(self.treestore_files.get_path(it))
+			self._waiting_for_decksave = True
+			self.deckname_entry.set_text(new_name)
+			self.save_deck() # save deck instantly
+	
+	def delete_deck(self, *args):
+		"""Delete the currently selected deck"""
+		if self.deck is not None:
+			modified = (len(self.deck.decklist) > 0 or
+				len(self.deck.sideboard) > 0 or self.deck.description != "")
+			if (modified):
+				deckname = self.deckname_entry.get_text()
+				text = (_("Are you sure you want to delete the deck '%s'?\n" +
+					"(This cannot be undone.)")) % deckname
+				md = gtk.MessageDialog(self.main_win,
+					gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_WARNING,
+					gtk.BUTTONS_YES_NO, text)
+				md.set_default_response(gtk.RESPONSE_NO)
+				result = md.run()
+				md.destroy()
+			if not modified or result == gtk.RESPONSE_YES:
+				filename = self.deck.filename
+				it = self.treeview_files.get_selection().get_selected()[1]
+				self.treestore_files.remove(it)
+				self.unload_deck()
+				os.remove(filename)
+	
+	def load_deck(self, filename):
+		"""Load a deck from a file"""
+		# Save old deck before proceeding
+		if self._waiting_for_decksave:
+			self.save_deck()
+		
+		self.unload_deck()
+		if settings.save_ram:
+			# In reduced RAM mode the loading will take much longer
+			self.progressbar_deckload.show()
+		
+			# progress callback
+			def progresscallback(fraction):
+				self.progressbar_deckload.set_fraction(fraction)
+			# return callback
+			def finish_deckload(deck):
+				self.deck = deck
+				self.enable_deck()
+				self.refresh_deck()
+				self.progressbar_deckload.hide()
+		
+			self._deck_load_async_handle = \
+				async.start(decks.load(filename, progresscallback,
+					finish_deckload))
+		else:
+			# No need to display any progress bar here
+			def finish_deckload(deck):
+				self.deck = deck
+				logging.info(_("Deck loaded: %s"), deck.filename)
+				self.enable_deck()
+				self.refresh_deck()
+			async.run(decks.load(filename, None, finish_deckload))
+	
+	def save_deck(self):
+		"""Save the currently edited deck to disk"""
+		if not self._waiting_for_decksave:
+			return # deck has been saved in the meantime
+		self._waiting_for_decksave = False
+		old_filename = None
+		if self.deck.name != self.deck.derive_name():
+			new_filename = self.deck.derive_filename()
+			if not os.path.exists(new_filename):
+				old_filename = self.deck.filename
+				self.deck.filename = new_filename
+		self.except_safe(self.deck.save)
+		logging.info(_("Deck saved: %s"), self.deck.filename)
+		if old_filename is not None and os.path.exists(old_filename):
+			os.remove(old_filename)
+	
+	def export_deck(self, *args):
+		"""Export a deck to a file"""
+		dialog = gtk.FileChooserDialog(_("Export deck..."), self.main_win,
+			gtk.FILE_CHOOSER_ACTION_SAVE, (gtk.STOCK_CANCEL,
+				gtk.RESPONSE_CANCEL, gtk.STOCK_SAVE, gtk.RESPONSE_ACCEPT))
+		dialog.set_default_response(gtk.RESPONSE_CANCEL)
+		dialog.set_do_overwrite_confirmation(True)
+		dialog.set_current_folder(settings.deck_dir)
+		dialog.set_current_name(self.deck.name + config.DECKFILE_SUFFIX)
+		
+		response = dialog.run()
+		if response == gtk.RESPONSE_ACCEPT:
+			old_filename = self.deck.filename
+			self.deck.filename = dialog.get_filename()
+			self.except_safe(self.deck.save)
+			logging.info(_("Deck exported as: %s"), self.deck.filename)
+			self.deck.filename = old_filename
+		dialog.destroy()
+	
+	def edit_deck(self, *args):
+		"""Edit the deck description and author"""
+		if self.deck is not None:
+			self.notebook_search.set_current_page(3)
+			self.textview_deckdesc.grab_focus()
+	
+	def show_deckstats(self, widget):
+		"""Show statistics about the deck"""
+		if self.deck is not None:
+			self.notebook_search.set_current_page(4)
+	
+	def delayed_decksave(self):
+		if not self._waiting_for_decksave:
+			self._waiting_for_decksave = True
+			glib.timeout_add(settings.decksave_timeout, self.save_deck)
+	
+	def update_cardcount(self):
+		"""Update the decklist and sideboard card count display"""
+		if self.deck is not None:
+			lands = 0
+			for c in self.deck.decklist:
+				if c.cardtype.find("Land") >= 0:
+					lands += 1
+			self.decksummary.set_text(_("Deck: %d (Lands: %d), Sideboard: %d") %
+				(len(self.deck.decklist), lands, len(self.deck.sideboard)))
+			self.deck.derive_color()
+			for c in ["white", "blue", "black", "red", "green"]:
+				if c in self.deck.color:
+					getattr(self, "mana_" + c).show()
+				else:
+					getattr(self, "mana_" + c).hide()
+		else:
+			self.decksummary.set_text("")
+			for c in ["white", "blue", "black", "red", "green"]:
+				getattr(self, "mana_" + c).hide()
 	
 	
 	#
 	# Select a card / deck
 	#
 	
-	def select_deck(self, widfget):
+	def select_deck(self, widget):
 		"""Click on a deck"""
 		filename = self.get_selected_deck()
 		if filename is not None and os.path.isfile(filename):
@@ -397,349 +812,11 @@ class Interface(uiloader.Interface):
 	
 	def get_selected_deck(self):
 		"""Get the currently selected deck"""
-		model, it = self.decklistview.get_selection().get_selected()
+		model, it = self.treeview_files.get_selection().get_selected()
 		if it is None:
 			return None
-		filename = model.get_value(it, 0)
+		filename = model.get_value(it, 1)
 		return filename
-	
-	
-	#
-	# Deck files and folders
-	#
-	
-	deck = None
-	_deck_load_async_handle = None
-	_is_loading = False
-	_waiting_for_decksave = False
-	_parents = {}
-	
-	def _expand_dirs(self, path):
-		l = []
-		while path != "":
-			l.append(path)
-			path, name = os.path.split(path)
-		l.reverse()
-		return l
-	
-	def refresh_decklist(self):
-		"""Refresh the list of decks"""
-		
-		folder_icon = self.main_win.render_icon(gtk.STOCK_DIRECTORY,
-			gtk.ICON_SIZE_MENU, None)
-		deck_icon = self.main_win.render_icon(gtk.STOCK_FILE,
-			gtk.ICON_SIZE_MENU, None)
-		
-		for root, dirs, files in os.walk(settings.deck_dir, followlinks=True):
-			# sort by name
-			for l in [dirs, files]:
-				if l is not None:
-					l.sort()
-			
-			# create subfolders
-			for subdir in dirs:
-				path = os.path.join(root, subdir)
-				if path not in self._parents:
-					self._parents[path] = self.decks.append(
-						self._parents.get(root, None),
-							(path, subdir, True, folder_icon))
-			
-			# add ".deck"-files
-			files = filter(lambda s: s[-5:] == ".deck", files)
-			for filename in files:
-				filename = os.path.join(root, filename)
-				# File already in the list?
-				found = [False]
-				def check_for_file(model, path, it, found):
-					if not self.decks.get_value(it, 2) and \
-						self.decks.get_value(it, 0) == filename:
-						found[0] = True
-						return True
-				yield self.decks.foreach(check_for_file, found)
-				if not found[0]:
-					deckname = decks.Deck("").derive_name(filename)
-					self.decks.append(self._parents.get(root, None),
-						(filename, deckname, False, deck_icon))
-		
-		# Any files/folders removed since the last check?
-		def check_deep(it):
-			if it is None:
-				return # recursion stopreturn True
-			
-			filename = self.decks.get_value(it, 0)
-			isdir = self.decks.get_value(it, 2)
-			if not os.path.exists(filename) or \
-				os.path.isfile(filename) == isdir:
-				if not self.decks.remove(it):
-					it = None
-			else:
-				check_deep(self.decks.iter_children(it)) # check children
-				it = self.decks.iter_next(it)
-			yield check_deep(it) # check siblings
-		check_deep(self.decks.get_iter_first())
-	
-	def new_folder(self, *args):
-		"""Create a new subfolder"""
-		pass # TODO
-	
-	
-	#
-	# Deck save/load and display
-	#
-	
-	def enable_deck(self):
-		"""Make all deck-related widgets sensitive"""
-		# Opposite: unload_deck
-		self.cards.clear()
-		self._is_loading = True
-		self.deckname_entry.set_text(self.deck.name)
-		if self.deck.author != "":
-			self.deckname_entry.set_tooltip_text(_("Author: %s") 
-				% self.deck.author)
-		else:
-			self.deckname_entry.set_tooltip_text("")
-		self.entry_author.set_text(self.deck.author)
-		self.textview_deckdesc.get_buffer().set_text(self.deck.description)
-		self.cardview.set_sensitive(True)
-		self.deckname_entry.set_sensitive(True)
-		self.entry_author.set_sensitive(True)
-		self.textview_deckdesc.set_sensitive(True)
-		self.button_deckedit.set_sensitive(True)
-		self.toolbutton_copy_deck.set_sensitive(True)
-		self.toolbutton_delete_deck.set_sensitive(True)
-		self.toolbutton_export_deck.set_sensitive(True)
-		self.toolbutton_deckedit.set_sensitive(True)
-		self.toolbutton_stats.set_sensitive(True)
-		self.toolbutton_search_lands.set_sensitive(True)
-		self._is_loading = False
-		self.cardview.grab_focus()
-	
-	def unload_deck(self):
-		"""Unload the current deck"""
-		# Opposite: enable_deck
-		if self._deck_load_async_handle is not None:
-			# Currently loading a deck
-			self._deck_load_async_handle.cancel()
-			self._deck_load_async_handle = None
-		if self._waiting_for_decksave:
-			self.save_deck()
-		self.deck = None
-		self.cardview.set_sensitive(False)
-		self.cards.clear()
-		self.deckname_entry.set_sensitive(False)
-		self.deckname_entry.set_text("")
-		self.entry_author.set_text("")
-		self.textview_deckdesc.get_buffer().set_text("")
-		self.button_deckedit.set_sensitive(False)
-		self.toolbutton_copy_deck.set_sensitive(False)
-		self.toolbutton_delete_deck.set_sensitive(False)
-		self.toolbutton_export_deck.set_sensitive(False)
-		self.toolbutton_deckedit.set_sensitive(False)
-		self.toolbutton_stats.set_sensitive(False)
-		self.toolbutton_search_lands.set_sensitive(False)
-		self.entry_author.set_sensitive(False)
-		self.textview_deckdesc.set_sensitive(False)
-		for c in ["white", "blue", "black", "red", "green"]:
-			getattr(self, "mana_" + c).hide()
-		self.update_cardcount()
-	
-	def refresh_deck(self):
-		"""Refresh the deck card list"""
-		if self.deck is None:
-			return
-		self.cards.clear()
-		for sb in [True, False]:
-			l = self.deck.sideboard if sb else self.deck.decklist
-			for card in l:
-				self.cards.append((card.id, card.name, card.manacost,
-					card.get_composed_type(), card.power, card.toughness,
-					card.rarity[0], card.setname, sb, False, card.price,
-					_price_to_text(card.price), card.releasedate))
-		self.update_cardcount()
-	
-	def new_deck(self, *args):
-		"""Create a new empty deck"""
-		self.unload_deck()
-		model, it = self.decklistview.get_selection().get_selected()
-		if it is not None:
-			if self.decks[model.get_path(it)][2]:
-				it_parent = it
-			else:
-				it_parent = model.iter_parent(it)
-			parent_dir = self.decks[model.get_path(it_parent)][0]
-		else:
-			it_parent = None
-			parent_dir = settings.deck_dir
-		newname = _("new")
-		icon = self.main_win.render_icon(gtk.STOCK_FILE, gtk.ICON_SIZE_MENU,
-			None)
-		filename = os.path.join(parent_dir, newname + ".deck")
-		i = 2
-		while os.path.exists(filename):
-			newname = _("new (%d)") % i
-			filename = os.path.join(parent_dir, newname + ".deck")
-			i += 1
-		it = self.decks.append(it_parent, (filename, newname, False, icon))
-		self.decklistview.expand_to_path(model.get_path(it))
-		self.decklistview.set_cursor(model.get_path(it))
-		self.deck = decks.Deck(filename)
-		self.enable_deck()
-		with open(filename, 'w') as f:
-			pass # create file
-		self.deckname_entry.grab_focus()
-	
-	def copy_deck(self, *args):
-		"""Copy the currently selected deck"""
-		if self.deck is not None:
-			icon = self.main_win.render_icon(gtk.STOCK_FILE,
-				gtk.ICON_SIZE_MENU, None)
-			new_name = self.deck.name + _(" (copy)")
-			filename = os.path.join(os.path.dirname(self.deck.filename),
-				new_name + ".deck")
-			i = 2
-			while os.path.exists(filename):
-				new_name = self.deck.name + (_(" (copy %d)") % i)
-				filename = os.path.join(os.path.dirname(self.deck.filename),
-					new_name + ".deck")
-				i += 1
-			self.deck.name = new_name
-			self.deck.filename = filename
-			it = self.decklistview.get_selection().get_selected()[1]
-			if it is None:
-				return # no deck selected
-			parent = self.decks.iter_parent(it)
-			it = self.decks.insert_after(parent, it,
-				(self.deck.filename, self.deck.name, False, icon))
-			self.decklistview.set_cursor(self.decks.get_path(it))
-			self._waiting_for_decksave = True
-			self.deckname_entry.set_text(new_name)
-			self.save_deck() # save deck instantly
-	
-	def delete_deck(self, *args):
-		"""Delete the currently selected deck"""
-		if self.deck is not None:
-			modified = (len(self.deck.decklist) > 0 or
-				len(self.deck.sideboard) > 0 or self.deck.description != "")
-			if (modified):
-				deckname = self.deckname_entry.get_text()
-				text = (_("Are you sure you want to delete the deck '%s'?\n" +
-					"(This cannot be undone.)")) % deckname
-				md = gtk.MessageDialog(self.main_win,
-					gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_WARNING,
-					gtk.BUTTONS_YES_NO, text)
-				md.set_default_response(gtk.RESPONSE_NO)
-				result = md.run()
-				md.destroy()
-			if not modified or result == gtk.RESPONSE_YES:
-				filename = self.deck.filename
-				it = self.decklistview.get_selection().get_selected()[1]
-				self.decks.remove(it)
-				self.unload_deck()
-				os.remove(filename)
-	
-	def load_deck(self, filename):
-		"""Load a deck from a file"""
-		# Save old deck before proceeding
-		if self._waiting_for_decksave:
-			self.save_deck()
-		
-		self.unload_deck()
-		if settings.save_ram:
-			# In reduced RAM mode the loading will take much longer
-			self.progressbar_deckload.show()
-		
-			# progress callback
-			def progresscallback(fraction):
-				self.progressbar_deckload.set_fraction(fraction)
-			# return callback
-			def finish_deckload(deck):
-				self.deck = deck
-				self.enable_deck()
-				self.refresh_deck()
-				self.progressbar_deckload.hide()
-		
-			self._deck_load_async_handle = \
-				async.start(decks.load(filename, progresscallback,
-					finish_deckload))
-		else:
-			# No need to display any progress bar here
-			def finish_deckload(deck):
-				self.deck = deck
-				logging.info(_("Deck loaded: %s"), deck.filename)
-				self.enable_deck()
-				self.refresh_deck()
-			async.run(decks.load(filename, None, finish_deckload))
-	
-	def save_deck(self):
-		"""Save the currently edited deck to disk"""
-		if not self._waiting_for_decksave:
-			return # deck has been saved in the meantime
-		self._waiting_for_decksave = False
-		old_filename = None
-		if self.deck.name != self.deck.derive_name():
-			new_filename = self.deck.derive_filename()
-			if not os.path.exists(new_filename):
-				old_filename = self.deck.filename
-				self.deck.filename = new_filename
-		self.except_safe(self.deck.save)
-		logging.info(_("Deck saved: %s"), self.deck.filename)
-		if old_filename is not None and os.path.exists(old_filename):
-			os.remove(old_filename)
-	
-	def export_deck(self, *args):
-		"""Export a deck to a file"""
-		dialog = gtk.FileChooserDialog(_("Export deck..."), self.main_win,
-			gtk.FILE_CHOOSER_ACTION_SAVE, (gtk.STOCK_CANCEL,
-				gtk.RESPONSE_CANCEL, gtk.STOCK_SAVE, gtk.RESPONSE_ACCEPT))
-		dialog.set_default_response(gtk.RESPONSE_CANCEL)
-		dialog.set_do_overwrite_confirmation(True)
-		dialog.set_current_folder(settings.deck_dir)
-		dialog.set_current_name(self.deck.name + u".deck")
-		
-		response = dialog.run()
-		if response == gtk.RESPONSE_ACCEPT:
-			old_filename = self.deck.filename
-			self.deck.filename = dialog.get_filename()
-			self.except_safe(self.deck.save)
-			logging.info(_("Deck exported as: %s"), self.deck.filename)
-			self.deck.filename = old_filename
-		dialog.destroy()
-	
-	def edit_deck(self, *args):
-		"""Edit the deck description and author"""
-		if self.deck is not None:
-			self.notebook_search.set_current_page(3)
-			self.textview_deckdesc.grab_focus()
-	
-	def show_deckstats(self, widget):
-		"""Show statistics about the deck"""
-		if self.deck is not None:
-			self.notebook_search.set_current_page(4)
-	
-	def delayed_decksave(self):
-		if not self._waiting_for_decksave:
-			self._waiting_for_decksave = True
-			glib.timeout_add(settings.decksave_timeout, self.save_deck)
-	
-	def update_cardcount(self):
-		"""Update the decklist and sideboard card count display"""
-		if self.deck is not None:
-			lands = 0
-			for c in self.deck.decklist:
-				if c.cardtype.find("Land") >= 0:
-					lands += 1
-			self.decksummary.set_text(_("Deck: %d (Lands: %d), Sideboard: %d") %
-				(len(self.deck.decklist), lands, len(self.deck.sideboard)))
-			self.deck.derive_color()
-			for c in ["white", "blue", "black", "red", "green"]:
-				if c in self.deck.color:
-					getattr(self, "mana_" + c).show()
-				else:
-					getattr(self, "mana_" + c).hide()
-		else:
-			self.decksummary.set_text("")
-			for c in ["white", "blue", "black", "red", "green"]:
-				getattr(self, "mana_" + c).hide()
 	
 	
 	#
@@ -755,7 +832,7 @@ class Interface(uiloader.Interface):
 		if new_name != "" and not os.path.exists(new_filename):
 			self.deckname_entry.set_property("secondary-icon-stock", None)
 			self.deck.name = new_name
-			model, it = self.decklistview.get_selection().get_selected()
+			model, it = self.treeview_files.get_selection().get_selected()
 			model.set_value(it, 0, new_filename)
 			model.set_value(it, 1, new_name)
 			self.delayed_decksave()

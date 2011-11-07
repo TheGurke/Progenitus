@@ -79,18 +79,6 @@
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
-  <object class="GtkTreeStore" id="decks">
-    <columns>
-      <!-- column-name filename -->
-      <column type="gchararray"/>
-      <!-- column-name deckname -->
-      <column type="gchararray"/>
-      <!-- column-name isdir -->
-      <column type="gboolean"/>
-      <!-- column-name icon -->
-      <column type="GdkPixbuf"/>
-    </columns>
-  </object>
   <object class="GtkListStore" id="eq1">
     <columns>
       <!-- column-name eq -->
@@ -534,17 +522,21 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <child>
-                          <object class="GtkTreeView" id="decklistview">
+                          <object class="GtkTreeView" id="treeview_files">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="model">decks</property>
+                            <property name="model">treestore_files</property>
                             <property name="headers_visible">False</property>
                             <property name="headers_clickable">False</property>
-                            <property name="search_column">1</property>
+                            <property name="search_column">2</property>
                             <signal name="cursor-changed" handler="select_deck" swapped="no"/>
+                            <child internal-child="selection">
+                              <object class="GtkTreeSelection" id="treeview-selection1"/>
+                            </child>
                             <child>
                               <object class="GtkTreeViewColumn" id="treeviewcolumn9">
                                 <property name="title">Deckname</property>
+                                <property name="sort_column_id">2</property>
                                 <child>
                                   <object class="GtkCellRendererPixbuf" id="cellrendererpixbuf1"/>
                                   <attributes>
@@ -552,9 +544,11 @@
                                   </attributes>
                                 </child>
                                 <child>
-                                  <object class="GtkCellRendererText" id="cellrenderertext9"/>
+                                  <object class="GtkCellRendererText" id="cellrenderertext9">
+                                    <property name="editable">True</property>
+                                  </object>
                                   <attributes>
-                                    <attribute name="text">1</attribute>
+                                    <attribute name="text">2</attribute>
                                   </attributes>
                                 </child>
                               </object>
@@ -711,6 +705,9 @@
                                 <signal name="cursor-changed" handler="select_card" swapped="no"/>
                                 <signal name="key-press-event" handler="cardview_keypress" swapped="no"/>
                                 <signal name="row-activated" handler="doubleclick_card" swapped="no"/>
+                                <child internal-child="selection">
+                                  <object class="GtkTreeSelection" id="treeview-selection2"/>
+                                </child>
                                 <child>
                                   <object class="GtkTreeViewColumn" id="treeviewcolumn18">
                                     <property name="title">SB?</property>
@@ -936,6 +933,9 @@
                                 <signal name="cursor-changed" handler="select_result" swapped="no"/>
                                 <signal name="key-press-event" handler="searchview_keypress" swapped="no"/>
                                 <signal name="row-activated" handler="doubleclick_result" swapped="no"/>
+                                <child internal-child="selection">
+                                  <object class="GtkTreeSelection" id="treeview-selection3"/>
+                                </child>
                                 <child>
                                   <object class="GtkTreeViewColumn" id="treeviewcolumn1">
                                     <property name="sizing">autosize</property>
@@ -2423,7 +2423,6 @@ Legality: Legacy, Standard</property>
                           <object class="GtkVBox" id="box1">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="orientation">vertical</property>
                             <child>
                               <object class="GtkLabel" id="label35">
                                 <property name="visible">True</property>
@@ -2651,6 +2650,19 @@ The following setting reduces the memory usage to about 35MB. However, it disabl
     <property name="upper">16</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
+  </object>
+  <object class="GtkTreeStore" id="treestore_files">
+    <columns>
+      <!-- column-name isdir -->
+      <column type="gboolean"/>
+      <!-- column-name path -->
+      <column type="gchararray"/>
+      <!-- column-name name -->
+      <column type="gchararray"/>
+      <!-- column-name icon -->
+      <column type="GdkPixbuf"/>
+    </columns>
+    <signal name="row-changed" handler="move_deckorfolder" swapped="no"/>
   </object>
   <object class="GtkAdjustment" id="value_adjustment">
     <property name="upper">10000</property>
