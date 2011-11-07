@@ -12,7 +12,7 @@ APP_NAME_EDITOR = APP_NAME + " Editor"
 APP_NAME_CLIENT = APP_NAME + " Client"
 
 # Program version
-VERSION = "0.32"
+VERSION = "0.33-beta"
 
 # Program website
 APP_WEBSITE = "http://progenitus.org/"
@@ -43,6 +43,9 @@ TOKEN_PICS_PATH = lambda tid: ("tokens/%s.jpg" % tid)
 DB_FILE = "mtg.sqlite"
 DECKMASTER_PATH = "media/deckmaster.png"
 DEFAULT_DECKS_PATH = "default decks"
+
+# Suffix for the deck files
+DECKFILE_SUFFIX = ".deck"
 
 # Network options
 JOIN_DELAY = 1000 # time to wait for tray creation

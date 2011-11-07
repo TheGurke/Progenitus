@@ -517,7 +517,7 @@ class Interface(uiloader.Interface):
 	def counter_entry_change(self, widget):
 		pass
 	
-	def update_counter_num(self, widget=None, model=None, it=None):
+	def update_counter_num(self, *args):
 		counter = self.entry_counter.get_text()
 		item = self._popup
 		if counter in item.counters:
@@ -525,7 +525,7 @@ class Interface(uiloader.Interface):
 		else:
 			self.spinbutton_num.set_value(1)
 	
-	def entrybar_unfocus(self, widget=None, event=None):
+	def entrybar_unfocus(self, *args):
 		if not self.hbox_entrybar.get_visible():
 			return # entrybar wasn't shown
 		self.hbox_entrybar.hide()
@@ -683,7 +683,7 @@ class Interface(uiloader.Interface):
 		self.show_cardbrowser(self.my_player.library, True)
 		self.button_to_library.hide()
 	
-	def zoom_change(self, widget=None, scroll=None, value=None):
+	def zoom_change(self, *args):
 		value = self.hscale_zoom.get_value()
 		self.cd.zoom = 35 / math.sqrt(value + 1)
 		self.cd.queue_draw()
@@ -839,7 +839,7 @@ class Interface(uiloader.Interface):
 				card.text)
 			)
 	
-	def hide_cardbrowser(self, widget=None, stuff=None):
+	def hide_cardbrowser(self, *args):
 		"""Hide the card browser"""
 		self.win_browse.hide()
 		if self.checkbutton_shuffle.get_active():

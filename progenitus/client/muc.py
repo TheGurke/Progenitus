@@ -19,8 +19,6 @@ class MUCClient(JabberClient):
 		# Set up the logger
 		self.logger = logging.getLogger()
 		self.logger.addHandler(logging.StreamHandler())
-		self.logger.setLevel(logging.INFO)
-			# change to DEBUG for higher verbosity
 		
 		self.room_to_join = room, nick, roompwd
 		self.roomHandler = handler
@@ -45,7 +43,7 @@ class MUCClient(JabberClient):
 		self.roomManager = MucRoomManager(self.stream);
 		self.room_to_join = None
 		self.roomState = self.roomManager.join(room=JID(room), nick=nick,
-			handler=self.roomHandler, history_maxchars=0, password = roompwd)
+			handler=self.roomHandler, history_maxchars=0, password=roompwd)
 		self.roomManager.set_handlers()
 	
 	def idle_callback(self):

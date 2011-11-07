@@ -1,0 +1,52 @@
+
+These are features planned for the 0.3x release.
+
+
+
+------------
+[Deckeditor]
+------------
+
+- Create and remove folders
+- Copy and paste for card lists
+- List deck price
+- export as pdf (visual spoilers)
+- export as html (pretty decklist)
+- card legality
+- Deck statistics overview: mana curve, color/land distribution, example hand
+- Deck list import/export for Magic Online, OCTGN2, OCTGN1, Apprentice formats
+- Mana cost as symbols
+- Card sets as symbols
+- More comprehensive error messages
+
+
+--------
+[Client]
+--------
+
+- display comprehensive card details (+ download card rulings)
+- easy way to focus on the chat entry
+- turn symbol (showing who's turn it is)
+- multiplayer lobby
+- move cards from/to the graveyard by drag and drop
+- play cards face down
+- set nick
+- search for cards automatically (basic lands...)
+- pretty card browser
+- comprehensive logger with colored output
+- console commands
+- undo untap all
+- Save games
+- Replay games
+- Support for draft, block constructed
+- plugins?
+
+
+---------
+[Updater]
+---------
+
+- More backends: e.g. gatherer.wizards.com
+- Fetch items on the fly
+
+

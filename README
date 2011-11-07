@@ -32,22 +32,6 @@ There is a file where the user's settings are stored:
 $HOME/.progenitus.cfg
 
 
----------
-[Updater]
----------
-
-This is a small program for downloading and updating the magic set data and
-card pictures. Please read the disclaimer carefully before using it.
-
-Known issues:
-- The loyalty of plainswalkers is missing sometimes
-- Multiple instances of the program can be run
-
-Planned features:
-- More backends: e.g. gatherer.wizards.com
-- Fetch items on the fly
-
-
 
 ------------
 [Deckeditor]
@@ -72,20 +56,6 @@ Known issues:
 - "No results" in the extended search is not visible enough
 - Moving the center bar to the right while in extended search causes graphic
   bugs
-
-Planned features:
-- Create, rename or remove folders
-- Move decks between folders via drag and drop
-- Copy and paste for card lists
-- List deck price
-- export as pdf (visual spoilers)
-- export as html (pretty decklist)
-- card legality
-- Deck statistics overview: mana curve, color/land distribution, example hand
-- Deck list import/export for Magic Online, OCTGN2, OCTGN1, Apprentice formats
-- Mana cost as symbols
-- Card sets as symbols
-- More comprehensive error messages
 
 
 
@@ -119,22 +89,18 @@ Known issues:
 - the log does not always scroll down
 - there is not graphics for the counters
 
-Desired features:
-- display comprehensive card details (+ download card rulings)
-- easy way to focus on the chat entry
-- turn symbol (showing who's turn it is)
-- multiplayer lobby
-- move cards from/to the graveyard by drag and drop
-- play cards face down
-- set nick
-- search for cards automatically (basic lands...)
-- pretty card browser
-- comprehensive logger with colored output
-- console commands
-- undo untap all
-- Save games
-- Replay games
-- Support for draft, block constructed
-- plugins?
+
+---------
+[Updater]
+---------
+
+This is a small program for downloading and updating the magic set data and
+card pictures. Please read the disclaimer carefully before using it.
+
+Known issues:
+- The loyalty of plainswalkers is missing sometimes
+- Multiple instances of the program can be run
+
+
 
 
