@@ -10,7 +10,7 @@ from gettext import gettext as _
 import logging
 
 # Import everything explicitly
-from progenitus import async, config, lang, settings, uiloader
+from progenitus import async, config, settings, lang, uiloader
 from progenitus.client import desktop, muc, network, players
 from progenitus.db import cards, pics, semantics
 from progenitus.editor import decks
@@ -53,11 +53,18 @@ optparser.add_option("--log", action="store", dest="log_level",
 	help=_("Set the logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)"))
 optparser.add_option("--logfile", action="store", dest="logfile",
 	default=config.LOG_FILE, help=_("External file to write the log to"))
+optparser.add_option("--settings", action="store", dest="settings_file",
+	default=config.SETTINGS_FILE, help=_("Settings file"))
 optparser.set_defaults(run="editor") # by default run the editor
 
 
 # Parse arguments
 options, args = optparser.parse_args()
+
+# Load the settings file
+config.SETTINGS_FILE = options.settings_file
+settings.load()
+
 
 # Initialize the logger
 level = getattr(logging, options.log_level.upper(), None)
@@ -75,6 +82,7 @@ if hasattr(logging, "captureWarnings"):
 	logging.captureWarnings(True)
 if warn_about_invalid_level:
 	logging.warning("'%s' is not a valid logging level.", options.log_level)
+
 
 # Run the program
 if options.run == "editor":

@@ -39,7 +39,6 @@ _settings = [
 	("Editor", "results_limit", "int", 500, "Maximum number of search results"),
 	("Editor", "decksave_timeout", "int", 5000,
 		"The deck is saved automatically in this interval (milliseconds)"),
-	("Editor", "decklist_refreshtime", "int", 60000, "The decklist is " + 		"refreshed automatically in this interval (milliseconds)"),
 	("Client", "username", "str", "", "Jabber login username"),
 	("Client", "userpwd", "str", "", "Jabber login password"),
 	("Client", "server", "str", "", "Jabber server"),

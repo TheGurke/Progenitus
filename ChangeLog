@@ -1,9 +1,14 @@
 
 Version 0.33:
 `````````````
+
+All:
+- Can now override settings file on the command line using --settings
+
 Editor:
 - Move files and folders via drag and drop
 - Rename folders
+- Deck folder is now monitored for changes
 
 
 Version 0.32:
