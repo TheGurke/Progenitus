@@ -34,9 +34,8 @@ setup(
 		'packages':'encodings',
 		"includes": ["gobject", "gio", "cairo", "pango", "pangocairo", "gtk",
 			"atk", "glib"]}},
-	data_files=["client.glade", "editor.glade", "updater.glade", "README",
-		"ChangeLog", "AUTHORS", "COPYING", "media/deckmaster.png",
-		"media/land.png"]
+	data_files=["client.ui", "editor.ui", "updater.ui", "README", "ChangeLog",
+		"AUTHORS", "COPYING"]
 )
 
 
