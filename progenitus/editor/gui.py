@@ -462,6 +462,8 @@ class Interface(uiloader.Interface):
 		it = self.treestore_files.get_iter(modelpath)
 		isdir, old_path, old_name = self.treestore_files.get(it, 0, 1, 2)
 		new_path = os.path.join(os.path.dirname(old_path), new_name)
+		if not isdir:
+			new_path += config.DECKFILE_SUFFIX
 		if os.path.exists(new_path):
 			self.show_dialog(self, self.main_win,
 				(_("Cannot rename '%s' to '%s': a file with that name exists.")
