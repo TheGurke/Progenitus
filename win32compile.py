@@ -16,10 +16,8 @@ from progenitus import config
 # - make sure you don't have conflicting versions of gtk installed
 # - do not copy the redistributable to C:\windows\system32 as instructed
 #   on some webpages!
-# - install mingw
-# - install swig
 # - make sure %PATH% contains the mingw and python /bin path (reboot!)
-# - install dnspython, M2Crypto, pyxmpp as instructed in the packages.
+# - install dnspython and pyxmpp as instructed in the packages.
 #   This should be as easy as "python setup.py build" "python setup.py install"
 #   or similarily.
 # Now you can invoke the compilation script:
@@ -36,9 +34,8 @@ setup(
 		'packages':'encodings',
 		"includes": ["gobject", "gio", "cairo", "pango", "pangocairo", "gtk",
 			"atk", "glib"]}},
-	data_files=["client.glade", "editor.glade", "updater.glade", "README",
-		"ChangeLog", "AUTHORS", "COPYING", "media/deckmaster.png",
-		"media/land.png"]
+	data_files=["client.ui", "editor.ui", "updater.ui", "README", "ChangeLog",
+		"AUTHORS", "COPYING"]
 )
 
 
