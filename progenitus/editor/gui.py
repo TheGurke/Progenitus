@@ -331,6 +331,12 @@ class Interface(uiloader.Interface):
 	_folder_icon = None
 	_deck_icon = None
 	
+	def _create_monitor(self, path):
+		"""Create a file monitor for a directory"""
+		print "monitoring:", path
+		filemonitor = gio.File(settings.deck_dir).monitor_directory()
+		filemonitor.connect("changed", self.update_files)
+	
 	def _expand_dirs(self, path):
 		"""Extract a list of folders from a path"""
 		l = []
@@ -379,6 +385,7 @@ class Interface(uiloader.Interface):
 			if os.path.isdir(path):
 				self._it_by_path[path] = self.treestore_files.append(it_root,
 					(False, path, filename, self._folder_icon))
+				self._create_monitor(path) # Monitor subfolder for changes
 			else:
 				name = decks.Deck("").derive_name(path)
 				self.treestore_files.append(it_root,
