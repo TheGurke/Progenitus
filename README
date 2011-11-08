@@ -17,7 +17,7 @@ Copyright (C) 2011 by TheGurke
 Disclaimer:
 
 Using copyrighted material with this program might be illegal in your country of
-residence. Please note that I, the author of this program, cannot be held
+residence. Please note that the author of this program cannot be held
 responsible for anything that you choose to do with it.
 
 
@@ -29,7 +29,8 @@ Requirements:
 - pyxmpp
 
 There is a file where the user's settings are stored:
-$HOME/.progenitus.cfg
+$HOME/.progenitus.cf
+You can override the location of this file using the --settings paramter.
 
 
 
