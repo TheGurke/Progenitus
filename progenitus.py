@@ -89,17 +89,9 @@ if hasattr(logging, "captureWarnings"):
 if warn_about_invalid_level:
 	logging.warning("'%s' is not a valid logging level.", options.log_level)
 
-
 # Run the program
 if options.run == "editor":
 	iface = editorgui.Interface()
-	
-	# Start deck dir monitoring
-	filemonitor = gio.File(settings.deck_dir).monitor_directory()
-	filemonitor.connect("changed", iface.update_files)
-		# This cannot be moved to a subroutine of editorgui.Interface for some
-		# weird reason
-	
 	iface.main_win.show()
 	iface.main()
 elif options.run == "client":

@@ -24,6 +24,7 @@ _query_new_in_set = ('"setname" = ? AND "name" IN '
 )
 
 
+
 class Interface(uiloader.Interface):
 	
 	isfullscreen = False
@@ -46,7 +47,10 @@ class Interface(uiloader.Interface):
 		self.cardview.get_model().set_sort_column_id(3, gtk.SORT_ASCENDING)
 		self.resultview.get_model().set_sort_column_id(10, gtk.SORT_DESCENDING)
 		gtk.quit_add(0, self.save_deck) # one extra decksave just to be sure
-		async.start(self.init_files())
+		
+		# Init the file view
+		async.start(self._update_dir(settings.deck_dir))
+		self._create_monitor(settings.deck_dir)
 		
 		# Render folder and deck icons
 		self._folder_icon = self.main_win.render_icon(gtk.STOCK_DIRECTORY,
@@ -328,14 +332,16 @@ class Interface(uiloader.Interface):
 	#
 	
 	_it_by_path = dict()
+	_filemonitors = dict()
 	_folder_icon = None
 	_deck_icon = None
 	
 	def _create_monitor(self, path):
 		"""Create a file monitor for a directory"""
-		print "monitoring:", path
-		filemonitor = gio.File(settings.deck_dir).monitor_directory()
+		logging.debug(_("Monitoring '%s' for updates."), path)
+		filemonitor = gio.File(path).monitor_directory()
 		filemonitor.connect("changed", self.update_files)
+		self._filemonitors[path] = filemonitor
 	
 	def _expand_dirs(self, path):
 		"""Extract a list of folders from a path"""
@@ -358,12 +364,11 @@ class Interface(uiloader.Interface):
 		path = os.path.join(settings.deck_dir, path)
 		return path
 	
-	def init_files(self):
-		"""Create the initial file tree"""
-		for root, dirs, files in os.walk(settings.deck_dir, followlinks=True):
-			assert(root == settings.deck_dir or root in self._it_by_path)
-			for subdir in files + dirs:
-				yield self._add_file(os.path.join(root, subdir))
+	def _update_dir(self, path):
+		"""Recursively add a directory to the files view"""
+		assert(path == settings.deck_dir or path in self._it_by_path)
+		for filename in os.listdir(path):
+			yield self._add_file(os.path.join(path, filename))
 	
 	def _add_file(self, path):
 		"""Add a path to the file view"""
@@ -384,8 +389,9 @@ class Interface(uiloader.Interface):
 		else:
 			if os.path.isdir(path):
 				self._it_by_path[path] = self.treestore_files.append(it_root,
-					(False, path, filename, self._folder_icon))
+					(True, path, filename, self._folder_icon))
 				self._create_monitor(path) # Monitor subfolder for changes
+				async.start(self._update_dir(path))
 			else:
 				name = decks.Deck("").derive_name(path)
 				self.treestore_files.append(it_root,
@@ -399,9 +405,16 @@ class Interface(uiloader.Interface):
 		it = self.treestore_files.iter_children(it_root)
 		while it is not None:
 			if self.treestore_files.get_value(it, 1) == path:
+				isdir = self.treestore_files.get_value(it, 0)
 				self.treestore_files.remove(it)
+				if isdir:
+					del self._it_by_path[path]
+					del self._filemonitors[path]
 				break
 			it = self.treestore_files.iter_next(it)
+		else:
+			logging.debug(_("Recieved a file delete event for '%s', "
+				"but the file was not found in the files view."), path)
 	
 	def update_files(self, filemonitor, gfile1, gfile2, event):
 		"""Filemonitor callback if something changed in the deck dir"""
@@ -409,9 +422,6 @@ class Interface(uiloader.Interface):
 			self._add_file(gfile1.get_path())
 		if event == gio.FILE_MONITOR_EVENT_DELETED:
 			self._remove_file(gfile1.get_path())
-		if event == gio.FILE_MONITOR_EVENT_MOVED:
-			self._remove_file(gfile1.get_path())
-			self._add_file(gfile2.get_path())
 	
 	def move_deckorfolder(self, model, path, it):
 		"""Moved a deck or folder in the decklistview using drag and drop"""
@@ -438,8 +448,8 @@ class Interface(uiloader.Interface):
 		if new_path != path:
 			# File/folder has been moved
 			try:
+				pass
 #				os.rename(path, new_path)
-				model.set(it, 1, new_path)
 			except:
 				# TODO: undo move in the treemodel
 				raise

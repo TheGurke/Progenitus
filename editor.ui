@@ -530,9 +530,6 @@
                             <property name="headers_clickable">False</property>
                             <property name="search_column">2</property>
                             <signal name="cursor-changed" handler="select_deck" swapped="no"/>
-                            <child internal-child="selection">
-                              <object class="GtkTreeSelection" id="treeview-selection1"/>
-                            </child>
                             <child>
                               <object class="GtkTreeViewColumn" id="treeviewcolumn9">
                                 <property name="title">Deckname</property>
@@ -545,7 +542,7 @@
                                 </child>
                                 <child>
                                   <object class="GtkCellRendererText" id="cellrenderertext9">
-                                    <property name="editable">True</property>
+                                    <property name="editable">False</property>
                                   </object>
                                   <attributes>
                                     <attribute name="text">2</attribute>
