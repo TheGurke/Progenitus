@@ -12,7 +12,6 @@ try:
 	import pygtk
 	pygtk.require("2.0")
 	import gtk
-	import gobject
 except:
 	import sys
 	import os
@@ -50,7 +49,7 @@ except:
 
 
 
-class Interface(gobject.GObject):
+class Interface(object):
 	"""Interface loader class. Should derive from this."""
 	
 	def __init__(self):
