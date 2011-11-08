@@ -392,9 +392,10 @@ class Interface(uiloader.Interface):
 					(True, path, filename, self._folder_icon))
 				self._create_monitor(path) # Monitor subfolder for changes
 				async.start(self._update_dir(path))
+				return self._it_by_path[path]
 			else:
 				name = decks.Deck("").derive_name(path)
-				self.treestore_files.append(it_root,
+				return self.treestore_files.append(it_root,
 					(False, path, name, self._deck_icon))
 	
 	def _remove_file(self, path):
@@ -456,7 +457,25 @@ class Interface(uiloader.Interface):
 	
 	def new_folder(self, *args):
 		"""Create a new subfolder"""
-		pass # TODO
+		model, it = self.treeview_files.get_selection().get_selected()
+		if it is None:
+			isdir = True
+			path = settings.deck_dir
+		else:
+			isdir, path = model.get(it, 0, 1)
+		root = path if isdir else os.path.basename(path)
+		
+		name = _("new folder")
+		i = 1
+		while os.path.exists(os.path.join(root, name)):
+			i += 1
+			name = _("new folder (%d)") % i
+		path = os.path.join(root, name)
+		
+		os.mkdir(path)
+		it = self._add_file(path)
+		self.treeview_files.expand_to_path(self.treestore_files.get_path(it))
+		self.treeview_files.get_selection().select_iter(it)
 	
 	
 	#
@@ -652,7 +671,7 @@ class Interface(uiloader.Interface):
 			# No need to display any progress bar here
 			def finish_deckload(deck):
 				self.deck = deck
-				logging.info(_("Deck loaded: %s"), deck.filename)
+				logging.info(_("Deck '%s' loaded."), deck.filename)
 				self.enable_deck()
 				self.refresh_deck()
 			async.run(decks.load(filename, None, finish_deckload))

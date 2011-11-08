@@ -235,6 +235,7 @@
             <property name="toolbar_style">icons</property>
             <child>
               <object class="GtkToolButton" id="toolbutton10">
+                <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">New folder</property>
@@ -530,6 +531,9 @@
                             <property name="headers_clickable">False</property>
                             <property name="search_column">2</property>
                             <signal name="cursor-changed" handler="select_deck" swapped="no"/>
+                            <child internal-child="selection">
+                              <object class="GtkTreeSelection" id="treeview-selection1"/>
+                            </child>
                             <child>
                               <object class="GtkTreeViewColumn" id="treeviewcolumn9">
                                 <property name="title">Deckname</property>
@@ -542,7 +546,7 @@
                                 </child>
                                 <child>
                                   <object class="GtkCellRendererText" id="cellrenderertext9">
-                                    <property name="editable">False</property>
+                                    <property name="editable">True</property>
                                   </object>
                                   <attributes>
                                     <attribute name="text">2</attribute>

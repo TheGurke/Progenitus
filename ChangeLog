@@ -1,13 +1,11 @@
 
 Version 0.33:
 `````````````
-
 All:
 - Can now override settings file on the command line using --settings
 
 Editor:
-- Move files and folders via drag and drop
-- Rename folders
+- Create folders
 - Deck folder is now monitored for changes
 
 
@@ -43,7 +41,6 @@ Client:
 
 Version 0.31:
 `````````````
-
 Warning: the file 'mtg.sqlite' is now expected in cache regardless of the
 user's settings. Remember to move it there.
 The 'cache_path' setting is now called 'cache_dir'.
