@@ -199,11 +199,6 @@
     <property name="can_focus">False</property>
     <property name="pixbuf">media/land.png</property>
   </object>
-  <object class="GtkImage" id="img_edit_deck">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-edit</property>
-  </object>
   <object class="GtkListStore" id="liststore_qs_autocomplete">
     <columns>
       <!-- column-name text -->
@@ -547,6 +542,7 @@
                                 <child>
                                   <object class="GtkCellRendererText" id="cellrenderertext9">
                                     <property name="editable">True</property>
+                                    <signal name="edited" handler="rename_file" swapped="no"/>
                                   </object>
                                   <attributes>
                                     <attribute name="text">2</attribute>
@@ -639,36 +635,15 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkEntry" id="deckname_entry">
+                              <object class="GtkLabel" id="decksummary">
                                 <property name="visible">True</property>
-                                <property name="sensitive">False</property>
-                                <property name="can_focus">True</property>
-                                <property name="invisible_char">•</property>
-                                <property name="primary_icon_activatable">False</property>
-                                <property name="secondary_icon_activatable">False</property>
-                                <signal name="changed" handler="deckname_changed" swapped="no"/>
+                                <property name="can_focus">False</property>
                               </object>
                               <packing>
                                 <property name="expand">True</property>
                                 <property name="fill">True</property>
-                                <property name="padding">3</property>
+                                <property name="padding">4</property>
                                 <property name="position">5</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkButton" id="button_deckedit">
-                                <property name="visible">True</property>
-                                <property name="sensitive">False</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">True</property>
-                                <property name="use_action_appearance">False</property>
-                                <property name="image">img_edit_deck</property>
-                                <signal name="clicked" handler="edit_deck" swapped="no"/>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">False</property>
-                                <property name="position">6</property>
                               </packing>
                             </child>
                           </object>
@@ -676,18 +651,6 @@
                             <property name="expand">False</property>
                             <property name="fill">False</property>
                             <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="decksummary">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">False</property>
-                            <property name="padding">4</property>
-                            <property name="position">1</property>
                           </packing>
                         </child>
                         <child>
@@ -707,7 +670,7 @@
                                 <signal name="key-press-event" handler="cardview_keypress" swapped="no"/>
                                 <signal name="row-activated" handler="doubleclick_card" swapped="no"/>
                                 <child internal-child="selection">
-                                  <object class="GtkTreeSelection" id="treeview-selection2"/>
+                                  <object class="GtkTreeSelection" id="treeview-selection"/>
                                 </child>
                                 <child>
                                   <object class="GtkTreeViewColumn" id="treeviewcolumn18">
@@ -842,7 +805,7 @@
                           <packing>
                             <property name="expand">True</property>
                             <property name="fill">True</property>
-                            <property name="position">2</property>
+                            <property name="position">1</property>
                           </packing>
                         </child>
                         <child>
@@ -854,7 +817,7 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">False</property>
-                            <property name="position">3</property>
+                            <property name="position">2</property>
                           </packing>
                         </child>
                       </object>

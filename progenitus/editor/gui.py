@@ -424,36 +424,81 @@ class Interface(uiloader.Interface):
 		if event == gio.FILE_MONITOR_EVENT_DELETED:
 			self._remove_file(gfile1.get_path())
 	
-	def move_deckorfolder(self, model, path, it):
+	def move_deckorfolder(self, model, modelpath, it):
 		"""Moved a deck or folder in the decklistview using drag and drop"""
 		# This is also triggered by the insertions from refresh_files()
 		assert(model is self.treestore_files)
 		
-		# Check if row is fully populated
-		isdir, path, name = model.get(it, 0, 1, 2)
-		if name is None:
-			return
-		
-		# Calculate the new path
-		it_parent = model.iter_parent(it)
-		while it_parent is not None and not model.get_value(it_parent, 0):
-			it_parent = model.iter_parent(it_parent)
-		if it_parent is None:
-			new_dirname = settings.deck_dir
-		else:
-			new_dirname = self._get_path(it_parent)
-		new_path = os.path.join(new_dirname, name +
-			("" if isdir else config.DECKFILE_SUFFIX))
-		
-		# Check if file/folder needs to be moved
-		if new_path != path:
-			# File/folder has been moved
-			try:
-				pass
-#				os.rename(path, new_path)
-			except:
-				# TODO: undo move in the treemodel
-				raise
+#		# Check if row is fully populated
+#		isdir, path, name = model.get(it, 0, 1, 2)
+#		if name is None:
+#			return
+#		
+#		# Calculate the new path
+#		it_parent = model.iter_parent(it)
+#		while it_parent is not None and not model.get_value(it_parent, 0):
+#			it_parent = model.iter_parent(it_parent)
+#		new_dirname = model.get_value(it_parent, 1)
+##		if it_parent is None:
+##			new_dirname = settings.deck_dir
+##		else:
+##			new_dirname = self._get_path(it_parent)
+#		new_path = os.path.join(new_dirname, name +
+#			("" if isdir else config.DECKFILE_SUFFIX))
+#		
+#		# Check if file/folder needs to be moved
+#		if new_path != path:
+#			# File/folder has been moved
+#			try:
+#				pass
+#				print "rename", path, new_path
+##				os.rename(path, new_path)
+#			except:
+#				# TODO: undo move in the treemodel
+#				raise
+	
+	def rename_file(self, cellrenderer, modelpath, new_name):
+		"""Renamed a file or folder in treeview_files"""
+		it = self.treestore_files.get_iter(modelpath)
+		isdir, old_path, old_name = self.treestore_files.get(it, 0, 1, 2)
+		new_path = os.path.join(os.path.dirname(old_path), new_name)
+		if os.path.exists(new_path):
+			self.show_dialog(self, self.main_win,
+				(_("Cannot rename '%s' to '%s': a file with that name exists.")
+					if os.path.isfile(new_path) else
+					_("Cannot rename '%s' to '%s': a folder with that name "
+					"exists.")) % (old_name, new_name), 'error')
+		try:
+			os.rename(old_path, new_path)
+			self.treestore_files.set(it, 1, new_path, 2, new_name)
+		except OSError as e:
+			logging.warning(_("Could not rename '%s' to '%s': %s"), old_path,
+				new_path, str(e))
+			self.show_dialog(self, self.main_win,
+				_("Cannot rename '%s' to '%s': %s.")
+					% (old_name, new_name, str(e)), 'error')
+	
+	def remove_file(self, *args):
+		"""Delete the currently selected file or directory"""
+		if self.deck is not None:
+			modified = (len(self.deck.decklist) > 0 or
+				len(self.deck.sideboard) > 0 or self.deck.description != "")
+			if modified:
+				deckname = self.deck.name
+				text = (_("Are you sure you want to delete the deck '%s'?\n" +
+					"(This cannot be undone.)")) % deckname
+				md = gtk.MessageDialog(self.main_win,
+					gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_WARNING,
+					gtk.BUTTONS_YES_NO, text)
+				md.set_default_response(gtk.RESPONSE_NO)
+				result = md.run()
+				md.destroy()
+			if not modified or result == gtk.RESPONSE_YES:
+				filename = self.deck.filename
+				it = self.treeview_files.get_selection().get_selected()[1]
+				self.treestore_files.remove(it)
+				self.unload_deck()
+				os.remove(filename)
 	
 	def new_folder(self, *args):
 		"""Create a new subfolder"""
@@ -492,19 +537,11 @@ class Interface(uiloader.Interface):
 		# Opposite: unload_deck
 		self.cards.clear()
 		self._is_loading = True
-		self.deckname_entry.set_text(self.deck.name)
-		if self.deck.author != "":
-			self.deckname_entry.set_tooltip_text(_("Author: %s") 
-				% self.deck.author)
-		else:
-			self.deckname_entry.set_tooltip_text("")
 		self.entry_author.set_text(self.deck.author)
 		self.textview_deckdesc.get_buffer().set_text(self.deck.description)
 		self.cardview.set_sensitive(True)
-		self.deckname_entry.set_sensitive(True)
 		self.entry_author.set_sensitive(True)
 		self.textview_deckdesc.set_sensitive(True)
-		self.button_deckedit.set_sensitive(True)
 		self.toolbutton_copy_deck.set_sensitive(True)
 		self.toolbutton_delete_deck.set_sensitive(True)
 		self.toolbutton_export_deck.set_sensitive(True)
@@ -526,11 +563,8 @@ class Interface(uiloader.Interface):
 		self.deck = None
 		self.cardview.set_sensitive(False)
 		self.cards.clear()
-		self.deckname_entry.set_sensitive(False)
-		self.deckname_entry.set_text("")
 		self.entry_author.set_text("")
 		self.textview_deckdesc.get_buffer().set_text("")
-		self.button_deckedit.set_sensitive(False)
 		self.toolbutton_copy_deck.set_sensitive(False)
 		self.toolbutton_delete_deck.set_sensitive(False)
 		self.toolbutton_export_deck.set_sensitive(False)
@@ -592,7 +626,6 @@ class Interface(uiloader.Interface):
 		self.enable_deck()
 		with open(path, 'w') as f:
 			pass # touch file
-		self.deckname_entry.grab_focus()
 	
 	def copy_deck(self, *args):
 		"""Copy the currently selected deck"""
@@ -618,30 +651,7 @@ class Interface(uiloader.Interface):
 				(self.deck.filename, self.deck.name, False, icon))
 			self.treeview_files.set_cursor(self.treestore_files.get_path(it))
 			self._waiting_for_decksave = True
-			self.deckname_entry.set_text(new_name)
 			self.save_deck() # save deck instantly
-	
-	def delete_deck(self, *args):
-		"""Delete the currently selected deck"""
-		if self.deck is not None:
-			modified = (len(self.deck.decklist) > 0 or
-				len(self.deck.sideboard) > 0 or self.deck.description != "")
-			if (modified):
-				deckname = self.deckname_entry.get_text()
-				text = (_("Are you sure you want to delete the deck '%s'?\n" +
-					"(This cannot be undone.)")) % deckname
-				md = gtk.MessageDialog(self.main_win,
-					gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_WARNING,
-					gtk.BUTTONS_YES_NO, text)
-				md.set_default_response(gtk.RESPONSE_NO)
-				result = md.run()
-				md.destroy()
-			if not modified or result == gtk.RESPONSE_YES:
-				filename = self.deck.filename
-				it = self.treeview_files.get_selection().get_selected()[1]
-				self.treestore_files.remove(it)
-				self.unload_deck()
-				os.remove(filename)
 	
 	def load_deck(self, filename):
 		"""Load a deck from a file"""

@@ -5,7 +5,7 @@ All:
 - Can now override settings file on the command line using --settings
 
 Editor:
-- Create folders
+- Create and rename folders
 - Deck folder is now monitored for changes
 
 
