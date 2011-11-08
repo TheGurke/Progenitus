@@ -8,6 +8,7 @@ from gettext import gettext as _
 import logging
 
 import glib
+import gio
 import gtk
 
 from progenitus import *
@@ -45,13 +46,13 @@ class Interface(uiloader.Interface):
 		self.cardview.get_model().set_sort_column_id(3, gtk.SORT_ASCENDING)
 		self.resultview.get_model().set_sort_column_id(10, gtk.SORT_DESCENDING)
 		gtk.quit_add(0, self.save_deck) # one extra decksave just to be sure
-		async.start(self.refresh_files())
+		async.start(self.init_files())
 		
-		# Check periodically if the deck files on the disk have changed	
-		def _refresh_files():
-			async.start(self.refresh_files())
-			return True
-		glib.timeout_add(settings.decklist_refreshtime, _refresh_files)
+		# Render folder and deck icons
+		self._folder_icon = self.main_win.render_icon(gtk.STOCK_DIRECTORY,
+			gtk.ICON_SIZE_MENU, None)
+		self._deck_icon = self.main_win.render_icon(gtk.STOCK_FILE,
+			gtk.ICON_SIZE_MENU, None)
 		
 		# Check if the database is accessable
 		db_file = os.path.join(settings.cache_dir, config.DB_FILE)
@@ -327,6 +328,8 @@ class Interface(uiloader.Interface):
 	#
 	
 	_it_by_path = dict()
+	_folder_icon = None
+	_deck_icon = None
 	
 	def _expand_dirs(self, path):
 		"""Extract a list of folders from a path"""
@@ -349,72 +352,59 @@ class Interface(uiloader.Interface):
 		path = os.path.join(settings.deck_dir, path)
 		return path
 	
-	def _check_for_removed_rec(self, it):
-		"""Recursively check for removed files/folders"""
-		if it is None:
-			return # abort recursion
-		
-		isdir, path = self.treestore_files.get(it, 0, 1)
-		if not os.path.exists(path) or os.path.isfile(path) == isdir:
-			logging.info(_("Updated the file tree: '%s' has been deleted on the"
-				" file system."), path)
-			it_is_valid = self.treestore_files.remove(it)
-			if not it_is_valid:
-				it = None
-		else:
-			# Check the children
-			it_child = self.treestore_files.iter_children(it)
-			async.start(self._check_for_removed_rec(it_child))
-			it = self.treestore_files.iter_next(it)
-		
-		# Check the siblings
-		yield async.run(self._check_for_removed_rec(it))
-	
-	def refresh_files(self):
-		"""Refresh the file tree"""
-		logging.debug(_("Refreshing the file tree"))
-		
-		folder_icon = self.main_win.render_icon(gtk.STOCK_DIRECTORY,
-			gtk.ICON_SIZE_MENU, None)
-		deck_icon = self.main_win.render_icon(gtk.STOCK_FILE,
-			gtk.ICON_SIZE_MENU, None)
-		
-		# Find new files/folders
+	def init_files(self):
+		"""Create the initial file tree"""
 		for root, dirs, files in os.walk(settings.deck_dir, followlinks=True):
 			assert(root == settings.deck_dir or root in self._it_by_path)
-			yield
-			
-			# Create subfolders
-			for subdir in dirs:
-				path = os.path.join(root, subdir)
-				if path not in self._it_by_path:
-					self._it_by_path[path] = self.treestore_files.append(
-						self._it_by_path.get(root, None),
-							(True, path, subdir, folder_icon))
-			
-			# Add all files that have the deckfile suffix
-			for filename in files:
-				suffix = config.DECKFILE_SUFFIX
-				if filename[-len(suffix):] != suffix:
-					continue
-				path = os.path.join(root, filename)
-				
-				# File already in the tree?
-				it = self._it_by_path.get(os.path.dirname(path), None)
-				it = self.treestore_files.iter_children(it)
-				while it is not None:
-					if self.treestore_files.get_value(it, 1) == path:
-						break # entry found
-					it = self.treestore_files.iter_next(it)
-				else:
-					name = decks.Deck("").derive_name(path)
-					it = self._it_by_path.get(root, None)
-					self.treestore_files.append(it,
-						(False, path, name, deck_icon))
+			for subdir in files + dirs:
+				yield self._add_file(os.path.join(root, subdir))
+	
+	def _add_file(self, path):
+		"""Add a path to the file view"""
+		root, filename = os.path.split(path)
 		
-		# Any files/folders removed since the last check?
-		it_first = self.treestore_files.get_iter_first()
-		async.start(self._check_for_removed_rec(it_first))
+		suffix = config.DECKFILE_SUFFIX
+		if os.path.isfile(path) and filename[-len(suffix):] != suffix:
+			return # ignore non-deck files
+		
+		it_root = self._it_by_path.get(root, None)
+		
+		# File already in the tree?
+		it = self.treestore_files.iter_children(it_root)
+		while it is not None:
+			if self.treestore_files.get_value(it, 1) == path:
+				break # entry found
+			it = self.treestore_files.iter_next(it)
+		else:
+			if os.path.isdir(path):
+				self._it_by_path[path] = self.treestore_files.append(it_root,
+					(False, path, filename, self._folder_icon))
+			else:
+				name = decks.Deck("").derive_name(path)
+				self.treestore_files.append(it_root,
+					(False, path, name, self._deck_icon))
+	
+	def _remove_file(self, path):
+		"""Remove a path from the file view"""
+		root, filename = os.path.split(path)
+		it_root = self._it_by_path.get(root, None)
+		
+		it = self.treestore_files.iter_children(it_root)
+		while it is not None:
+			if self.treestore_files.get_value(it, 1) == path:
+				self.treestore_files.remove(it)
+				break
+			it = self.treestore_files.iter_next(it)
+	
+	def update_files(self, filemonitor, gfile1, gfile2, event):
+		"""Filemonitor callback if something changed in the deck dir"""
+		if event == gio.FILE_MONITOR_EVENT_CREATED:
+			self._add_file(gfile1.get_path())
+		if event == gio.FILE_MONITOR_EVENT_DELETED:
+			self._remove_file(gfile1.get_path())
+		if event == gio.FILE_MONITOR_EVENT_MOVED:
+			self._remove_file(gfile1.get_path())
+			self._add_file(gfile2.get_path())
 	
 	def move_deckorfolder(self, model, path, it):
 		"""Moved a deck or folder in the decklistview using drag and drop"""
@@ -441,7 +431,7 @@ class Interface(uiloader.Interface):
 		if new_path != path:
 			# File/folder has been moved
 			try:
-				os.rename(path, new_path)
+#				os.rename(path, new_path)
 				model.set(it, 1, new_path)
 			except:
 				# TODO: undo move in the treemodel

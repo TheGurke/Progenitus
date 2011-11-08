@@ -1,7 +1,12 @@
 #!/usr/bin/python
 # Written by TheGurke 2011
-"""Deck editor and network client for Wizard of the Coast's Magic the Gathering
-trading card game"""
+"""
+Deck editor and network client for Wizard of the Coast's Magic the Gathering
+trading card game
+
+This is the startup script. It parses command line arguments and initializes the
+interfaces.
+"""
 
 
 import os
@@ -20,6 +25,7 @@ from progenitus.editor import gui as editorgui
 from progenitus.updater import gui as updatergui
 
 import glib
+import gio
 import gtk
 
 
@@ -87,6 +93,13 @@ if warn_about_invalid_level:
 # Run the program
 if options.run == "editor":
 	iface = editorgui.Interface()
+	
+	# Start deck dir monitoring
+	filemonitor = gio.File(settings.deck_dir).monitor_directory()
+	filemonitor.connect("changed", iface.update_files)
+		# This cannot be moved to a subroutine of editorgui.Interface for some
+		# weird reason
+	
 	iface.main_win.show()
 	iface.main()
 elif options.run == "client":
