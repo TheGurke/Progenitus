@@ -10,6 +10,7 @@ import logging
 import glib
 import gio
 import gtk
+import pango
 
 from progenitus import *
 from progenitus.db import cards
@@ -215,7 +216,7 @@ class Interface(uiloader.Interface):
 			if event.keyval == ord('f') and event.state & gtk.gdk.CONTROL_MASK:
 				self.quicksearch_entry.grab_focus()
 			if event.keyval == ord('q') and event.state & gtk.gdk.CONTROL_MASK:
-				self.extended_search(None)
+				self.show_extended_search(None)
 			if event.keyval == ord('n') and event.state & gtk.gdk.CONTROL_MASK:
 				self.new_deck()
 			if event.keyval == ord('s') and event.state & gtk.gdk.CONTROL_MASK:
@@ -240,7 +241,12 @@ class Interface(uiloader.Interface):
 		row = model[it]
 		self._execute_search(row[2], (row[3],) * row[2].count("?"))
 	
-	def custom_search(self, widget):
+	def show_extended_search(self, widget):
+		"""Clicked on the extended search button"""
+		self.notebook_search.set_current_page(1)
+		self.entry_text.grab_focus()
+	
+	def show_custom_search(self, widget):
 		"""Clicked on the custom search button"""
 		self.notebook_search.set_current_page(2)
 	
@@ -1009,12 +1015,12 @@ class Interface(uiloader.Interface):
 			i += 1
 			if i >= 2:
 				query = "%" + _replace_chars(query) + "%"
+		if l == []:
+			self.quicksearch_entry.modify_base(gtk.STATE_NORMAL,
+				gtk.gdk.color_parse("#A51818"))
+			glib.timeout_add(500, self.quicksearch_entry.modify_base,
+				gtk.STATE_NORMAL, gtk.gdk.color_parse("#FFFFFF"))
 		self._show_results(l)
-	
-	def extended_search(self, widget):
-		"""Clicked on the extended search button"""
-		self.notebook_search.set_current_page(1)
-		self.entry_text.grab_focus()
 	
 	def clear_search(self, widget):
 		"""Clear the extended search fields"""
@@ -1155,9 +1161,11 @@ class Interface(uiloader.Interface):
 		
 		# Execute query
 		if self._execute_search(query[:-3], args) != []:
-			self.no_results.hide()
+			self.label_no_results.hide()
 		else:
-			self.no_results.show()
+			self.label_no_results.show()
+			glib.timeout_add(400, self.label_no_results.hide)
+			glib.timeout_add(800, self.label_no_results.show)
 	
 	def execute_custom_search(self, widget):
 		"""Execute the custom search"""
@@ -1271,6 +1279,8 @@ class Interface(uiloader.Interface):
 		if len(cardlist) < settings.results_limit:
 			self.button_more_results.hide()
 
+
+# Helper functions
 
 def _price_to_text(price):
 	assert(isinstance(price, int))

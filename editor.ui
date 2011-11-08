@@ -354,7 +354,7 @@
                 <property name="label" translatable="yes">Extended search</property>
                 <property name="use_underline">True</property>
                 <property name="stock_id">gtk-find</property>
-                <signal name="clicked" handler="extended_search" swapped="no"/>
+                <signal name="clicked" handler="show_extended_search" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -370,7 +370,7 @@
                 <property name="label" translatable="yes">Custom search query</property>
                 <property name="use_underline">True</property>
                 <property name="stock_id">gtk-find-and-replace</property>
-                <signal name="clicked" handler="custom_search" swapped="no"/>
+                <signal name="clicked" handler="show_custom_search" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -2035,11 +2035,12 @@ e.g. "counter target spell"</property>
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkHButtonBox" id="hbuttonbox1">
+                                  <object class="GtkHBox" id="hbox17">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
+                                    <property name="spacing">10</property>
                                     <child>
-                                      <object class="GtkButton" id="button2">
+                                      <object class="GtkButton" id="button_clear_extended_search">
                                         <property name="label">gtk-clear</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
@@ -2058,32 +2059,35 @@ e.g. "counter target spell"</property>
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkLabel" id="no_results">
+                                      <object class="GtkLabel" id="label_no_results">
                                         <property name="can_focus">False</property>
                                         <property name="label" translatable="yes">No results.</property>
+                                        <property name="justify">center</property>
                                         <attributes>
+                                          <attribute name="weight" value="bold"/>
+                                          <attribute name="scale" value="1.5"/>
                                           <attribute name="foreground" value="#a61417db17db"/>
                                         </attributes>
                                       </object>
                                       <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">False</property>
+                                        <property name="expand">True</property>
+                                        <property name="fill">True</property>
                                         <property name="position">1</property>
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkButton" id="button1">
-                                        <property name="label">gtk-find</property>
+                                      <object class="GtkButton" id="button_extended_search">
+                                        <property name="label">Search</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
                                         <property name="use_action_appearance">False</property>
-                                        <property name="use_stock">True</property>
                                         <signal name="clicked" handler="search" swapped="no"/>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">False</property>
+                                        <property name="pack_type">end</property>
                                         <property name="position">2</property>
                                       </packing>
                                     </child>
@@ -2091,7 +2095,6 @@ e.g. "counter target spell"</property>
                                   <packing>
                                     <property name="expand">False</property>
                                     <property name="fill">False</property>
-                                    <property name="padding">5</property>
                                     <property name="position">1</property>
                                   </packing>
                                 </child>

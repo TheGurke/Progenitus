@@ -8,6 +8,8 @@ Editor:
 - Create and rename folders
 - Deck folder is now monitored for changes
 - Button to start the updater from the editor
+- Made "No results" in the extended search more visible
+- Visual feedback for the quicksearch if nothing is found
 - FIXED: Moving the center bar to the right while in extended search caused
   graphic bugs
 

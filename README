@@ -56,7 +56,7 @@ Known issues:
 - Closing the updater also closes the editor
 - When the updater finishes, it does not close
 - Renaming folders does not work recursively
-- "No results" in the extended search is not visible enough
+- Deleting decks or folders is broken
 
 
 
