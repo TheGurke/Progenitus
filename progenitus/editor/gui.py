@@ -148,7 +148,8 @@ class Interface(uiloader.Interface):
 		"""Display a warning that there are no cards in the database"""
 		dialog = self.show_dialog(self.main_win,
 			_("The card database is empty. Please run the updater."), "warning")
-		dialog.connect("destroy", self.quit)
+		dialog.connect("destroy", self.main_win.hide)
+		dialog.connect("destroy", self.run_updater)
 	
 	def show_about(self, widget):
 		"""Display information about this program"""
@@ -160,6 +161,15 @@ class Interface(uiloader.Interface):
 		dialog.set_comments(_("This program is Free Software by the GPL3."))
 		dialog.run()
 		dialog.destroy()
+	
+	def run_updater(self, *args):
+		if not hasattr(self, "iface_updater"):
+			from progenitus.updater import gui as updatergui
+			self.iface_updater = updatergui.Interface()
+			self.iface_updater.quit = self.iface_updater.dont_delete
+			# FIXME: does not work very well!
+		else:
+			self.iface_updater.main_win.show()
 	
 	def select_all(self, widget, event):
 		"""Selects all text in an entry"""
