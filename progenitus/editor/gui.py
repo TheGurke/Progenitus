@@ -486,8 +486,7 @@ class Interface(uiloader.Interface):
 		except OSError as e:
 			logging.warning(_("Could not rename '%s' to '%s': %s"), old_path,
 				new_path, str(e))
-			self.show_dialog(self, self.main_win,
-				_("Cannot rename '%s' to '%s': %s.")
+			self.show_dialog(self.main_win, _("Cannot rename '%s' to '%s': %s.")
 					% (old_name, new_name, str(e)), 'error')
 	
 	def remove_file(self, *args):
