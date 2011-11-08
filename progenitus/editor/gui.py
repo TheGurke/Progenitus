@@ -1020,6 +1020,7 @@ class Interface(uiloader.Interface):
 				gtk.gdk.color_parse("#A51818"))
 			glib.timeout_add(500, self.quicksearch_entry.modify_base,
 				gtk.STATE_NORMAL, gtk.gdk.color_parse("#FFFFFF"))
+			# FIXME: #ffffff might not be the default background color
 		self._show_results(l)
 	
 	def clear_search(self, widget):
@@ -1166,6 +1167,7 @@ class Interface(uiloader.Interface):
 			self.label_no_results.show()
 			glib.timeout_add(400, self.label_no_results.hide)
 			glib.timeout_add(800, self.label_no_results.show)
+			# FIXME: another search might get executed in the mean time
 	
 	def execute_custom_search(self, widget):
 		"""Execute the custom search"""

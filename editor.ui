@@ -287,7 +287,7 @@
                 <property name="label" translatable="yes">Delete deck</property>
                 <property name="use_underline">True</property>
                 <property name="stock_id">gtk-delete</property>
-                <signal name="clicked" handler="delete_deck" swapped="no"/>
+                <signal name="clicked" handler="remove_file" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
