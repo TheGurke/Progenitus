@@ -92,7 +92,6 @@ if warn_about_invalid_level:
 # Run the program
 if options.run == "editor":
 	iface = editorgui.Interface()
-	iface.main_win.show()
 	iface.main()
 elif options.run == "client":
 	iface = clientgui.Interface(options.solitaire)

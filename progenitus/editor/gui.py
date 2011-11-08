@@ -48,10 +48,6 @@ class Interface(uiloader.Interface):
 		self.resultview.get_model().set_sort_column_id(10, gtk.SORT_DESCENDING)
 		gtk.quit_add(0, self.save_deck) # one extra decksave just to be sure
 		
-		# Init the file view
-		async.start(self._update_dir(settings.deck_dir))
-		self._create_monitor(settings.deck_dir)
-		
 		# Render folder and deck icons
 		self._folder_icon = self.main_win.render_icon(gtk.STOCK_DIRECTORY,
 			gtk.ICON_SIZE_MENU, None)
@@ -78,6 +74,10 @@ class Interface(uiloader.Interface):
 			if os.name == 'posix':
 				os.symlink(os.path.abspath(config.DEFAULT_DECKS_PATH),
 					os.path.join(settings.deck_dir, _("default decks")))
+		
+		# Initialize the file view
+		async.start(self._update_dir(settings.deck_dir))
+		self._create_monitor(settings.deck_dir)
 		
 		# Initialize the quicksearch autocompletion
 		async.start(self.init_qs_autocomplete())
@@ -147,8 +147,8 @@ class Interface(uiloader.Interface):
 	def warn_about_empty_db(self):
 		"""Display a warning that there are no cards in the database"""
 		dialog = self.show_dialog(self.main_win,
-			_("The card database is empty. Please run the updater."), "warning")
-		dialog.connect("destroy", self.main_win.hide)
+			_("The card database is empty. Starting the updater."), "warning")
+		dialog.connect("destroy", lambda w: self.main_win.hide())
 		dialog.connect("destroy", self.run_updater)
 	
 	def show_about(self, widget):
