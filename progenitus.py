@@ -95,9 +95,6 @@ if options.run == "editor":
 	iface.main()
 elif options.run == "client":
 	iface = clientgui.Interface(options.solitaire)
-	iface.main_win.show()
-	if not options.solitaire:
-		iface.login_win.show()
 	try:
 		iface.main()
 	finally:
