@@ -52,18 +52,7 @@ class Interface(uiloader.Interface):
 		# Check if running in solitaire mode
 		self.solitaire = solitaire
 		if solitaire:
-			self.main_win.set_sensitive(True)
-			self.label_gamename.set_text(_("Solitaire game"))
-			self.hpaned1.set_position(0)
-			self.hpaned1.set_property("position-set", True)
-			
-			# Use a fake user class
-			class FakeUser(object):
-				nick = ""
-				def same_as(self, other):
-					return self is other
-			self.my_player = self.create_player(FakeUser(), config.VERSION)
-			glib.idle_add(self.my_player.create_tray, None, (0.8, 0.8, 1.0))
+			self.solitaire_mode(None)
 		else:
 			self.network_manager = network.NetworkManager()
 			self.network_manager.logger.log_callback = self.add_log_line
@@ -235,35 +224,56 @@ class Interface(uiloader.Interface):
 		
 		return player
 	
+	def solitaire_mode(self, widget):
+		"""Go into solitaire mode"""
+		self.label_gamename.set_text(_("Solitaire game"))
+		self.hpaned1.set_position(0)
+		self.hpaned1.set_property("position-set", True)
+		
+		# Use a fake user class
+		class FakeUser(object):
+			nick = ""
+			def same_as(self, other):
+				return self is other
+		self.my_player = self.create_player(FakeUser(), config.VERSION)
+		glib.idle_add(self.my_player.create_tray, None, (0.8, 0.8, 1.0))
+		
+		self.notebook.set_page(3)
+	
 	def start_connecting(self, widget):
-		"""Start connecting to the jabber room"""
-		self.login_win.hide()
+		"""Login to the jabber account"""
 		username = self.entry_username.get_text()
 		pwd = self.entry_pwd.get_text()
-		gamename = (config.DEFAULT_GAME_PREFIX + self.entry_gamename.get_text()
-			+ "@conference." + self.entry_server.get_text())
-		self.label_gamename.set_text("%s@%s" %
-			(self.entry_gamename.get_text(), self.entry_server.get_text()))
-		gamepwd = self.entry_gamepwd.get_text()
 		
 		# Save login details to settings
 		settings.username = username
 		settings.userpwd = pwd if self.checkbutton_save_pwd.get_active() else ""
 		settings.server = self.entry_server.get_text()
-		settings.gamename = self.entry_gamename.get_text()
-		settings.gamepwd = gamepwd
 		settings.save()
 		
 		# Connect
 		self.network_manager.connect(username, pwd, gamename, username, gamepwd)
 		# FIXME: async!
 		glib.timeout_add(100, self.check_login_status)
+		
+		self.label_servername.set_text(settings.server)
+	
+	def join_game(self, widget):
+		"""Join a game room"""
+		gamename = (config.DEFAULT_GAME_PREFIX + self.entry_gamename.get_text()
+			+ "@conference." + self.entry_server.get_text())
+		self.label_gamename.set_text("%s@%s" %
+			(self.entry_gamename.get_text(), self.entry_server.get_text()))
+		gamepwd = self.entry_gamepwd.get_text()
+		
+		settings.gamename = self.entry_gamename.get_text()
+		settings.gamepwd = gamepwd
+		settings.save()
 	
 	def check_login_status(self):
 		"""Check if the connection has been established yet"""
 		if self.network_manager.is_connected():
-			self.main_win.set_sensitive(True)
-			self.progressbar.hide()
+			self.notebook.set_page(2)
 			
 			# Set nick
 			user = self.network_manager.get_my_user()
