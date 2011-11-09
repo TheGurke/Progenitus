@@ -1,7 +1,17 @@
 
 Version 0.33:
 `````````````
+All:
+- Can now override settings file on the command line using --settings
 
+Editor:
+- Create and rename folders
+- Deck folder is now monitored for changes
+- Button to start the updater from the editor
+- Made "No results" in the extended search more visible
+- Visual feedback for the quicksearch if nothing is found
+- FIXED: Moving the center bar to the right while in extended search caused
+  graphic bugs
 
 
 Version 0.32:
@@ -36,7 +46,6 @@ Client:
 
 Version 0.31:
 `````````````
-
 Warning: the file 'mtg.sqlite' is now expected in cache regardless of the
 user's settings. Remember to move it there.
 The 'cache_path' setting is now called 'cache_dir'.
