@@ -1,10 +1,8 @@
 
-These are features planned for the 0.3.x releases.
+0.3.x releases
+==============
 
-------------
-[Deckeditor]
-------------
-
+Deckeditor
 - move files and folders via drag and drop
 - remove folders
 - copy and paste for card lists
@@ -18,11 +16,7 @@ These are features planned for the 0.3.x releases.
 - card sets as symbols
 - more comprehensive error messages
 
-
---------
-[Client]
---------
-
+Client
 - multiplayer lobby
 - record and replay games
 - set game nick
@@ -39,21 +33,21 @@ These are features planned for the 0.3.x releases.
 - save games
 - more comprehensive error messages
 
-
----------
-[Updater]
----------
-
+Updater
 - More backends: e.g. gatherer.wizards.com
 - Fetch items on the fly
 
 
-For the 0.4.x and higher releases:
+0.4.x releases
+==============
+
 - Move to Python3 and GTK3
 - Use new style string formatting
 - support for client plugins: - draft, block constructed
 
-For other future releases:
+
+Future
+======
 - Secure network protocol
 
 

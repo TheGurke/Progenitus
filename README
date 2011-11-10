@@ -1,3 +1,6 @@
+Copyright notice
+================
+
 Copyright (C) 2011 by TheGurke
 
   This program is free software: you can redistribute it and/or modify
@@ -14,29 +17,28 @@ Copyright (C) 2011 by TheGurke
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-Disclaimer:
+Disclaimer
+==========
 
 Using copyrighted material with this program might be illegal in your country of
 residence. Please note that the author of this program cannot be held
 responsible for anything that you choose to do with it.
 
 
-
-Requirements:
+Requirements
+------------
 - Python 2.6 or 2.7
 - GTK 2.20 or higher
-- pygtk
+- PyGTK
 - sleekxmpp (included)
 
 There is a file where the user's settings are stored:
-$HOME/.progenitus.cf
+$HOME/.progenitus.cfg
 You can override the location of this file using the --settings parameter.
 
 
-
-------------
-[Deckeditor]
-------------
+Deckeditor
+==========
 
 The deck editor is used to construct your magic decks.
 
@@ -52,17 +54,16 @@ sideboard.
 'ctrl + e' edits the current deck's description and author
 'f11' toggles fullscreen
 
-Known issues:
+Known issues
+------------
 - Closing the updater also closes the editor
 - When the updater finishes, it does not close
 - Renaming folders does not work recursively
 - Deleting decks or folders is broken
 
 
-
---------
-[Client]
---------
+Client
+======
 
 The client program is used to connect with other player over the internet and
 play magic games together.
@@ -81,7 +82,8 @@ The client has 5 (hidden) commands:
 
 'f11' toggles fullscreen
 
-Known issues:
+Known issues
+------------
 - multiplayer lobby is not implemented yet
 - game list is missing
 - tray layout is kinda broken
@@ -93,14 +95,14 @@ Known issues:
 - there is not graphics for the counters
 
 
----------
-[Updater]
----------
+Updater
+=======
 
 This is a small program for downloading and updating the magic set data and
 card pictures. Please read the disclaimer carefully before using it.
 
-Known issues:
+Known issues
+------------
 - The loyalty of plainswalkers is missing sometimes
 - Multiple instances of the program can be run
 

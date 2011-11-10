@@ -1,12 +1,13 @@
 
-Version 0.33:
-`````````````
-All:
+Version 0.33
+============
+
+All
 - Can now override settings file on the command line using --settings
 - Switched from PyXMPP to SleekXMPP -> less dependancies
 - Windows binaries
 
-Editor:
+Editor
 - Create and rename folders
 - Deck folder is now monitored for changes
 - Button to start the updater from the editor
@@ -15,22 +16,22 @@ Editor:
 - FIXED: Moving the center bar to the right while in extended search caused
   graphic bugs
 
-Client:
+Client
 - Gui redesign
 - Introduced multiplayer lobby
-- 
 
 
-Version 0.32:
-`````````````
-All:
+Version 0.32
+============
+
+All
 - Introduced RAM-saving mode
 - Introduced logging support (use the command line switches)
 
-Updater:
+Updater
 - Fixed some minor progressbar issues
 
-Editor:
+Editor
 - Startup works more smoothly now
 - Autocompletion is now more pretty
 - Can now create new decks in subfolders
@@ -42,7 +43,7 @@ Editor:
 - Fixed: deck copy would not update the deckname entry
 - Fixed: can now search for compound types like 'legendary cat'
 
-Client:
+Client
 - Fixed the issue with the broken ui file
 - Fixed token entry issues
 - Improved counter entry
@@ -51,34 +52,36 @@ Client:
 - +1/+1 and -1/-1 tokens now cancel each other out
 
 
-Version 0.31:
-`````````````
-Warning: the file 'mtg.sqlite' is now expected in cache regardless of the
-user's settings. Remember to move it there.
+Version 0.31
+============
+
+*Warning*: the file 'mtg.sqlite' is now expected in the cache folder regardless
+of the user's settings. Remember to move it there.
 The 'cache_path' setting is now called 'cache_dir'.
 
-Updater:
+Updater
 - Downloads Eldrazi Spawn tokens
 
-Deckeditor:
+Deckeditor
 - Introduced preferences panel
 - Greatly sped up deck loading
 - Autocompletion for the quicksearch entry
 - Yet more theme decks
 
-Client:
+Client
 - Greatly sped up deck loading
 - New token selection widget using autocompletion
 - No more screen flicker when the entrybar is shown
 
 
-Version 0.30:
-`````````````
+Version 0.30
+============
+
 This version introduces a new card id pattern and database format. The database
 as well as the card pictures of the old version are incompatible and have to be
 redownloaded!
 
-Updater:
+Updater
 - Rewritten the updater in oder to handle the Innistrad cards.
   (The non-numeric characters in the collector's id caused trouble.)
 - Download speed improved drastically
@@ -86,7 +89,7 @@ Updater:
 - Fixed: Updater no longer crashes upon completion.
 - Fixed: Connection is no longer reestablished for every card
 
-Editor:
+Editor
 - Fixed: New deck removes the color symbols
 - Fixed: Show expansion no longer breaks when window is closed once
 - Fixed: Author and description entries are now disabled while deck is loading
@@ -97,7 +100,7 @@ Editor:
 - Fixed: Deck renaming issues
 - Fixed: Could not single click on the sideboard checkbuttons
 
-Client:
+Client
 - Changed network protocol; Now broadcasting client version and sending
   card names in addition to ids.
 - Token creation is now supported
@@ -118,8 +121,9 @@ Client:
 - Fixed: the enlarged picture is flipped iff the card is
 
 
-Version 0.29:
-`````````````
+Version 0.29
+============
+
 First release.
 
 
