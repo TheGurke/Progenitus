@@ -104,11 +104,11 @@ class NetworkManager(object):
 	def __init__(self):
 		self.logger = Logger()
 	
-	def connect(self, username, pwd):
+	def connect(self, jid, pwd):
 		"""Connect to a server"""
 		if self.client is not None:
 			self.disconnect() # disconnect the old connection first
-		self.client = muc.XMPPClient(username, pwd, config.APP_NAME)
+		self.client = muc.XMPPClient(jid, pwd, config.APP_NAME)
 		if not self.client.connect():
 			raise RuntimeError("Connection failed")
 		else:
@@ -120,6 +120,7 @@ class NetworkManager(object):
 		logging.info(_("Joining game '%s'..."), gamename)
 		game = muc.Room(self.client, gamename, pwd, nick)
 		self.games.append(game)
+		game.muc_message = self._muc_message
 		game.join()
 		return game
 	
@@ -140,14 +141,34 @@ class NetworkManager(object):
 			self.client.disconnect()
 			self.client = None
 	
-	def get_my_user(self):
-		"""Get the MucRoomUser object associated with this client"""
+	def get_my_jid(self):
+		"""Get the JID object associated with this client"""
 		if self.client is not None:
 			return self.client.boundjid
 		else:
 			raise RuntimeError(_("Not yet connected"))
 	
-	def _incoming_commands(self, user, cmdlist):
+	def _muc_message(self, game, sender, text):
+		"""Recieved a muc message"""
+		if text is not None and sender != game.get_my_jid():
+			matched = False
+			cmdlist = []
+			lines = text.split('\n')
+			for i in range(len(lines)):
+				line = lines[i]
+				for k in range(len(res)):
+					match = res[k].match(line)
+					if match is not None:
+						if i == 0:
+							matched = True
+						cmdlist.append((k, match.groups()))
+						break
+			if matched:
+				self._incoming_commands(game, sender, cmdlist)
+			else:
+				self._incoming_chat(game, sender, text)
+	
+	def _incoming_commands(self, game, sender, cmdlist):
 		"""Handle an incoming command"""
 		cmdlist_ = []
 		for k, groups in cmdlist:
@@ -166,39 +187,18 @@ class NetworkManager(object):
 					args[i] = float(args[i])
 			cmdlist_.append((cmd, tuple(args)))
 		
-		self.logger.log_commands(user, cmdlist_)
+		self.logger.log_commands(sender, cmdlist_)
 		if self.incoming_commands is not None:
-			self.incoming_commands(user, cmdlist_)
+			self.incoming_commands(game, sender, cmdlist_)
 	
-	def _incoming_chat(self, user, text):
+	def _incoming_chat(self, game, sender, text):
 		"""Recieve an incoming chat messsage"""
 		if len(text) == 0:
 			return # Ignore message
 		if text[0] == '\\':
 			text = text[1:]
 		if self.incoming_chat is not None:
-			self.incoming_chat(user, text)
-	
-	def message_received(self, user, stanza):
-		"""Recieved a chat line"""
-		text = stanza.get_body()
-		if text is not None and not user == self.manager.get_my_user():
-			matched = False
-			cmdlist = []
-			lines = text.split('\n')
-			for i in range(len(lines)):
-				line = lines[i]
-				for k in range(len(res)):
-					match = res[k].match(line)
-					if match is not None:
-						if i == 0:
-							matched = True
-						cmdlist.append((k, match.groups()))
-						break
-			if matched:
-				self.manager._incoming_commands(user, cmdlist)
-			else:
-				self.manager._incoming_chat(user, text)
+			self.incoming_chat(game, sender, text)
 	
 	def user_joined(self, user, stanza):
 		"""A user joined the room"""
@@ -226,8 +226,7 @@ class NetworkManager(object):
 				cmd_str = commands[cmd]
 				text += (cmd_str % args) + "\n"
 			if logged:
-				user = self.get_my_user()
-				self.logger.log_commands(user, cmdlist)
+				self.logger.log_commands(self.get_my_jid(), cmdlist)
 			glib.idle_add(game.send_message, text[:-1])
 	
 	def send_chat(self, text, game=None):
@@ -236,7 +235,11 @@ class NetworkManager(object):
 			return # don't send an empty message
 		if text[0] == '[' or text[0] == '\\':
 			text = '\\' + text
-		glib.idle_add(game.send_message, text)
+		if game is not None:
+			glib.idle_add(game.send_message, text)
+		else:
+			pass
+			# TODO: Send to lobby
 
 
 # Recorder
@@ -254,12 +257,12 @@ class Logger(object):
 		if self.log_callback is not None:
 			self.log_callback(message)
 	
-	def log_commands(self, user, cmdlist):
+	def log_commands(self, jid, cmdlist):
 		"""Log a network command"""
 		# TODO
 		for cmd, args in cmdlist:
 			if cmd in logger_msgs.keys():
-				self.log(logger_msgs[cmd].format(user.user, *args))
+				self.log(logger_msgs[cmd].format(jid.resource, *args))
 	
 	def get_log(self):
 		"""Get the complete log"""

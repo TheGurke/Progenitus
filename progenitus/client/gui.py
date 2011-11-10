@@ -18,6 +18,7 @@ from progenitus.editor import decks
 import network
 import players
 import desktop
+import muc
 
 
 class Interface(uiloader.Interface):
@@ -125,33 +126,33 @@ class Interface(uiloader.Interface):
 	
 	# Network methods
 	
-	def _incoming_cmds(self, user, cmdlist):
+	def _incoming_cmds(self, game, sender, cmdlist):
 		"""Pass incoming network commands on to the player instances"""
 		# Check if a new player entered
 		cmd1, args1 = cmdlist[0]
 		if cmd1 == "hello":
-			player = self.create_player(user, args1[0])
+			player = self.create_player(game, sender, args1[0])
 			player.has_been_welcomed = True
-			self.my_player.handle_network_cmds(user, cmdlist)
+			self.my_player.handle_network_cmds(sender, cmdlist)
 		if cmd1 == "welcome":
 			user_known = False
 			for player in self.players:
-				if player.user == user:
+				if player.jid == sender:
 					user_known = True
 			if not user_known:
-				player = self.create_player(user)
+				player = self.create_player(game, sender)
 				player.version = args1[0]
 		
 		# Pass on the commands
 		for player in self.players:
 			if player is not self.my_player:
-				player.handle_network_cmds(user, cmdlist)
+				player.handle_network_cmds(sender, cmdlist)
 	
-	def get_userid(self, user):
+	def get_userid(self, jid):
 		"""Get the id corresponding to a room user"""
 		userid = None
 		for i, u in self.users.items():
-			if user == u:
+			if jid == u:
 				userid = i
 				break
 		return userid
@@ -197,17 +198,18 @@ class Interface(uiloader.Interface):
 				self.liststore_users[i][1] = user.user
 				self.liststore_users[i][2] = unicode(user.full)
 	
-	def create_player(self, game, user, version=""):
+	def create_player(self, game, jid, version=""):
 		"""Create a player object for a user"""
+		jid = muc.JID(jid)
 		for player in self.players:
 			# Check that the player has not yet been created
-			assert(not player.user == user)
-		player = players.Player(user)
+			assert(player.jid != jid)
+		player = players.Player(game, jid)
 		player.version = version
 		if self.network_manager is not None:
-			if user == self.network_manager.get_my_user():
-				player.send_network_cmds = (lambda *args:
-					self.network_manager.send_commands(game, *args)
+			if jid == self.game.get_my_jid():
+				player.send_network_cmds = (lambda *args, **kwargs:
+					self.network_manager.send_commands(game, *args, **kwargs)
 				)
 				player.updated_hand = self.cd.repaint_hand
 		else:
@@ -219,7 +221,7 @@ class Interface(uiloader.Interface):
 		self.players.append(player)
 		
 		# Update a user's version information
-		userid = self.get_userid(user)
+		userid = self.get_userid(jid)
 		for i in range(len(self.liststore_users)):
 			if self.liststore_users[i][0] == userid:
 				self.liststore_users[i][3] = version
@@ -233,12 +235,7 @@ class Interface(uiloader.Interface):
 		self.hpaned_desktop.set_property("position-set", True)
 		self.notebook.set_page(2)
 		
-		# Use a fake user class
-		class FakeUser(object):
-			user = ""
-			def __eq__(self, other):
-				return self is other
-		self.my_player = self.create_player(None, FakeUser(), config.VERSION)
+		self.my_player = self.create_player(None, "", config.VERSION)
 		glib.idle_add(self.my_player.create_tray, None, (0.8, 0.8, 1.0))
 	
 	def start_connecting(self, widget):
@@ -257,8 +254,9 @@ class Interface(uiloader.Interface):
 		self.hbox_login_status.show()
 		self.spinner_login.start()
 		for widget in (self.entry_username, self.entry_pwd, self.entry_server,
-				self.checkbutton_save_pwd, self.button_login,
-				self.button_solitaire_mode):
+			self.checkbutton_save_pwd, self.button_login,
+			self.button_solitaire_mode
+		):
 			widget.set_sensitive(False)
 		self.label_servername.set_text(self.server)
 		
@@ -273,10 +271,6 @@ class Interface(uiloader.Interface):
 		self.spinner_login.stop()
 		self.notebook.set_page(1)
 		self.button_join.grab_focus()
-		
-		# Set nick
-		user = self.network_manager.get_my_user()
-		assert(user is not None)
 	
 	def join_game(self, widget):
 		"""Join a game room"""
@@ -292,24 +286,27 @@ class Interface(uiloader.Interface):
 		
 		self.notebook.set_page(2)
 		
-		nick = self.network_manager.get_my_user().user
+		nick = self.network_manager.get_my_jid().user
 		self.game = self.network_manager.join_game(gamename, gamepwd, nick)
 		self.game.joined = self._game_joined
 	
 	def _game_joined(self):
 		"""A game room has sucessfully been joined"""
-#		logging.info(_("Room joined successfully."))
+		logging.info(_("Room '%s' joined successfully."), self.game.jid)
 		self.hpaned_desktop.set_sensitive(True)
 		
 		# Create player
-		user = self.game.get_my_jid()
-		self.my_player = self.create_player(self.game, user, config.VERSION)
-		self.network_manager.send_commands(self.game,
-			[("hello", (config.VERSION,))])
+		jid = self.game.get_my_jid()
+		self.my_player = self.create_player(self.game, jid, config.VERSION)
+		self.my_player.send_network_cmds([("hello", (config.VERSION,))])
 		
 		# Create tray
-		glib.timeout_add(config.JOIN_DELAY, self.my_player.create_tray,
-			None, (0.8, 0.8, 1.0))
+		glib.timeout_add(
+			config.JOIN_DELAY,
+			self.my_player.create_tray,
+			None,
+			(0.8, 0.8, 1.0)
+		)
 	
 	def add_log_line(self, message):
 		"""Add a line to the game log"""
@@ -320,9 +317,9 @@ class Interface(uiloader.Interface):
 		mark = buf.get_mark("insert")
 		self.logview.scroll_to_mark(mark, 0)
 	
-	def add_chat_line(self, user, message):
+	def add_chat_line(self, game, sender, message):
 		"""Recieved a chat message"""
-		self.add_log_line(_("%s: %s") % (user.user, message))
+		self.add_log_line(_("%s: %s") % (sender.user, message))
 	
 	def send_chat_message(self, widget):
 		"""Send a chat message"""
@@ -344,18 +341,18 @@ class Interface(uiloader.Interface):
 				# Flip a coin
 				result = (_("heads"), _("tails"))[random.randint(0, 1)]
 				msg = _("The coin came up %s.") % result
-				self.network_manager.send_chat(msg)
+				self.network_manager.send_chat(msg, self.game)
 				self.add_log_line(msg)
 			if text[:5] == "/roll":
 				# Roll a die
 				result = random.randint(1, 6)
 				msg = _("Rolled a %d.") % result
-				self.network_manager.send_chat(msg)
+				self.network_manager.send_chat(msg, self.game)
 				self.add_log_line(msg)
 		
 		else:
 			if self.network_manager is not None:
-				self.network_manager.send_chat(text)
+				self.network_manager.send_chat(text, self.game)
 			self.add_log_line(_("You: %s") % text)
 		self.entry_chat.set_text("")
 	

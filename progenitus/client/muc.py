@@ -7,6 +7,7 @@ supports MUC (XEP 0045).
 """
 
 import sleekxmpp
+from sleekxmpp.xmlstream.stanzabase import JID
 
 
 class XMPPClient(sleekxmpp.ClientXMPP):
@@ -32,7 +33,7 @@ class XMPPClient(sleekxmpp.ClientXMPP):
 		
 		# Add event handlers
 		self.add_event_handler("session_start", self._session_started)
-		self.add_event_handler("chat_message", self._incoming_message)
+#		self.add_event_handler("chat_message", self._incoming_message)
 
 	
 	def _session_started(self, event):
@@ -66,63 +67,66 @@ class Room(object):
 	muc_message = None # Handler for incoming messages from the room
 	muc_presence = None # Handler for incoming presence from the room
 	
-	def __init__(self, client, name, password, nick):
+	def __init__(self, client, jid, password, nick):
 		assert(isinstance(client, XMPPClient))
 		self.client = client
-		self.name = name
+		self.jid = jid
 		self.password = password
 		self.nick = nick
 		self.muc_plugin = self.client.plugin['xep_0045']
 	
 	def get_my_jid(self):
 		"""Get my full jid for this room"""
-		return sleekxmpp.xmlstream.stanzabase.JID("%s/%s" % (self.name,
-			self.nick))
+		return JID(self.muc_plugin.getOurJidInRoom(self.jid))
 	
 	def join(self):
 		"""Connect to the room"""
-		self.muc_plugin.joinMUC(self.name, self.nick, password=self.password)
-		self.client.add_event_handler("muc::%s::presence" % self.name,
+		self.muc_plugin.joinMUC(self.jid, self.nick, password=self.password)
+		self.client.add_event_handler("groupchat_message", self._muc_message)
+		self.client.add_event_handler("muc::%s::presence" % self.jid,
 			self._joined)
-		self.client.add_event_handler("muc::%s::got_online" % self.name,
+		self.client.add_event_handler("muc::%s::got_online" % self.jid,
 			self._muc_presence)
 	
 	def _joined(self, presence):
 		"""The room has been joined successfully"""
-		print presence
 		# Look for my own presence information
 		if presence["from"].full != self.get_my_jid().full:
 			return
-		print "JOINED"
+		self.client.del_event_handler("muc::%s::presence" % self.jid,
+			self._joined)
 		if self.joined is not None:
 			self.joined()
 	
 	def leave(self, message=""):
 		"""Disconnect from the room"""
-		self.muc_plugin.leaveMUC(self.name, self.nick, message)
+		self.muc_plugin.leaveMUC(self.jid, self.nick, message)
 	
-	def _muc_message(self, *args):
+	def _muc_message(self, message):
 		"""The message handler passes on incoming room chat messages"""
+		# Filter out messages that are not for this room
+		if message["from"].bare != self.jid:
+			return
 		if self.muc_message is not None:
-			self.muc_message(*args)
+			self.muc_message(self, message["from"], message["body"])
 	
-	def _muc_presence(self, *args):
+	def _muc_presence(self, presence):
 		"""The presence handler passes on incoming room presence information"""
 		if self.muc_presence is not None:
-			self.muc_presence(*args)
+			self.muc_presence(presence["from"], presence["role"]) # TODO
 	
 	def list_participants(self):
 		"""Fetch a list of all users in the room"""
-		return self.muc_plugin.getRoster(self.name)
+		return self.muc_plugin.getRoster(self.jid)
 	
 	def invite(self, jid, message=""):
 		"""Invite a user to this room"""
-		self.muc_plugin.invite(self.name, jid, reason=message)
+		self.muc_plugin.invite(self.jid, jid, reason=message)
 	
 	def send_message(self, text):
 		"""Send a message to the room"""
 		self.client.send_message(
-			mto=self.name,
+			mto=self.jid,
 			mbody=text,
 			mtype="groupchat",
 			mnick=self.nick
@@ -131,4 +135,6 @@ class Room(object):
 	def change_nick(self, text):
 		"""Change this client's nick name in the room"""
 		pass # TODO
+
+
 

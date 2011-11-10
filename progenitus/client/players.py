@@ -49,9 +49,10 @@ class Player(object):
 	# Network command sender
 	send_network_cmds = do_nothing
 	
-	def __init__(self, user):
-		self.user = user
-		self.name = user.user
+	def __init__(self, game, jid):
+		self.game = game
+		self.jid = jid
+		self.nick = jid.resource
 		
 		self.library = [] # cards in the library
 		self.graveyard = [] # cards in the graveyard
@@ -467,7 +468,7 @@ class Player(object):
 			elif counter in item.counters:
 				del item.counters[counter]
 	
-	def handle_network_cmds(self, user, cmdlist):
+	def handle_network_cmds(self, sender, cmdlist):
 		"""Handle an incoming network command"""
 		cmd1, args1 = cmdlist[0]
 		if cmd1 == "hello" and self.tray is not None:
@@ -475,7 +476,7 @@ class Player(object):
 			self.send_network_cmds(cmdlist, logged=False)
 		
 		# Other than hello only handle commands that concern this player's user
-		if not user == self.user:
+		if sender != self.jid:
 			return
 		
 		if cmd1 == "welcome":

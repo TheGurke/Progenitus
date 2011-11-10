@@ -827,7 +827,7 @@ class Tray(Container):
 		self.name_item.y = -self.h / 2
 		self.name_item.fontsize = 3.5 * 0.2
 		self.name_item.update = \
-			lambda: self.name_item.set_text(self.player.user.user)
+			lambda: self.name_item.set_text(self.player.jid.resource)
 		self.add(self.name_item)
 		self.card_count_item = TextItem()
 		self.card_count_item.color = 0.5, 0.5, 0
