@@ -136,7 +136,7 @@ class Interface(uiloader.Interface):
 		if cmd1 == "welcome":
 			user_known = False
 			for player in self.players:
-				if player.user.same_as(user):
+				if player.user == user:
 					user_known = True
 			if not user_known:
 				player = self.create_player(user)
@@ -151,7 +151,7 @@ class Interface(uiloader.Interface):
 		"""Get the id corresponding to a room user"""
 		userid = None
 		for i, u in self.users.items():
-			if user.same_as(u):
+			if user == u:
 				userid = i
 				break
 		return userid
@@ -163,7 +163,7 @@ class Interface(uiloader.Interface):
 		while userid in self.users.keys():
 			userid += 1
 		self.users[userid] = user
-		self.liststore_users.append((userid, user.nick, unicode(user.real_jid),
+		self.liststore_users.append((userid, user.user, unicode(user.full),
 			None, True))
 	
 	def user_left(self, user):
@@ -179,7 +179,7 @@ class Interface(uiloader.Interface):
 		# Find the corresponding player
 		player = None
 		for pl in self.players:
-			if pl.user.same_as(user):
+			if pl.user == user:
 				player = pl
 				break
 		if player is None:
@@ -194,18 +194,18 @@ class Interface(uiloader.Interface):
 		userid = self.get_userid(user)
 		for i in range(len(self.liststore_users)):
 			if self.liststore_users[i][0] == userid:
-				self.liststore_users[i][1] = user.nick
-				self.liststore_users[i][2] = unicode(user.real_jid)
+				self.liststore_users[i][1] = user.user
+				self.liststore_users[i][2] = unicode(user.full)
 	
 	def create_player(self, user, version=""):
 		"""Create a player object for a user"""
 		for player in self.players:
 			# Check that the player has not yet been created
-			assert(not player.user.same_as(user))
+			assert(not player.user == user)
 		player = players.Player(user)
 		player.version = version
 		if self.network_manager is not None:
-			if user.same_as(self.network_manager.get_my_user()):
+			if user == self.network_manager.get_my_user():
 				player.send_network_cmds = self.network_manager.send_commands
 				player.updated_hand = self.cd.repaint_hand
 		else:
@@ -233,7 +233,7 @@ class Interface(uiloader.Interface):
 		# Use a fake user class
 		class FakeUser(object):
 			nick = ""
-			def same_as(self, other):
+			def __eq__(self, other):
 				return self is other
 		self.my_player = self.create_player(FakeUser(), config.VERSION)
 		glib.idle_add(self.my_player.create_tray, None, (0.8, 0.8, 1.0))
@@ -251,12 +251,12 @@ class Interface(uiloader.Interface):
 		settings.server = self.entry_server.get_text()
 		settings.save()
 		
-		# Connect
-		self.network_manager.connect(username, pwd, gamename, username, gamepwd)
-		# FIXME: async!
-		glib.timeout_add(100, self.check_login_status)
-		
 		self.label_servername.set_text(settings.server)
+		
+		# Connect
+		self.network_manager.connect(username, pwd)
+		self.network_manager.client.connection_established = \
+			self._connection_established
 	
 	def join_game(self, widget):
 		"""Join a game room"""
@@ -270,29 +270,25 @@ class Interface(uiloader.Interface):
 		settings.gamepwd = gamepwd
 		settings.save()
 	
-	def check_login_status(self):
+	def _connection_established(self):
 		"""Check if the connection has been established yet"""
-		if self.network_manager.is_connected():
-			self.notebook.set_page(2)
-			
-			# Set nick
-			user = self.network_manager.get_my_user()
-			self.network_manager.change_nick(user.nick.split('@')[0])
-			
-			# Create player
-			assert(user is not None)
-			self.my_player = self.create_player(user, config.VERSION)
-			
-			# Initialize handshake
-			self.network_manager.send_commands([("hello", (config.VERSION,))])
-			
-			# Create tray
-			glib.timeout_add(config.JOIN_DELAY, self.my_player.create_tray,
-				None, (0.8, 0.8, 1.0))
-			
-			return False
-		self.progressbar.pulse()
-		return True	
+		self.notebook.set_page(1)
+		
+		# Set nick
+		user = self.network_manager.get_my_user()
+		assert(user is not None)
+		
+		# Create player
+		self.my_player = self.create_player(user, config.VERSION)
+	
+	def _game_joined(self):
+		"""A game room has sucessfully been joined"""
+		# Initialize handshake
+		self.network_manager.send_commands([("hello", (config.VERSION,))])
+		
+		# Create tray
+		glib.timeout_add(config.JOIN_DELAY, self.my_player.create_tray,
+			None, (0.8, 0.8, 1.0))
 	
 	def add_log_line(self, message):
 		"""Add a line to the game log"""
@@ -305,7 +301,7 @@ class Interface(uiloader.Interface):
 	
 	def add_chat_line(self, user, message):
 		"""Recieved a chat message"""
-		self.add_log_line(_("%s: %s") % (user.nick, message))
+		self.add_log_line(_("%s: %s") % (user.user, message))
 	
 	def send_chat_message(self, widget):
 		"""Send a chat message"""

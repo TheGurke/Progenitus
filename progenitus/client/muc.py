@@ -16,29 +16,47 @@ class XMPPClient(sleekxmpp.ClientXMPP):
 	A connection object to the XMPP server; derives from sleekxmpp.ClientXMPP
 	"""
 	
-	def __init__(self, username, password, resource):
+	is_connected = False
+	
+	# Event handlers
+	connection_established = None
+	incoming_message = None
+	
+	def __init__(self, jid, password, resource):
 		"""The constructer does not initialize the connection"""
-		sleekxmpp.ClientXMPP.__init__(self, username, password)
+		sleekxmpp.ClientXMPP.__init__(self, jid, password)
+		self.boundjid.resource = resource
 		
 		# Register plugins
-		xmpp.register_plugin('xep_0030') # Service Discovery
-		xmpp.register_plugin('xep_0045') # Multi-User Chat
-		xmpp.register_plugin('xep_0199') # XMPP Ping
+		self.register_plugin('xep_0030') # Service Discovery
+		self.register_plugin('xep_0045') # Multi-User Chat
+		self.register_plugin('xep_0199') # XMPP Ping
 		
 		# Add event handlers
-		self.add_event_handler("session_start", self.session_started)
-		self.add_event_handler("groupchat_message", self.muc_message)
-		
-		# TODO: set resource
+		self.add_event_handler("session_start", self._session_started)
+		self.add_event_handler("chat_message", self._incoming_message)
+
 	
-	def session_started(self, event):
+	def _session_started(self, event):
 		"""
 		This is called when the connection with the server is established and
 		the XML streams are ready for use.
 		"""
 		self.get_roster()
 		self.send_presence()
-
+		is_connected = True
+		if self.connection_established is not None:
+			self.connection_established()
+	
+	def _incoming_message(self, message):
+		"""Recieved an incoming chat message"""
+		if self.incoming_message is not None:
+			self.incoming_message(message)
+	
+	def disconnect(self, reconnect=False):
+		"""Disconnect from the server"""
+		is_connected = False
+		sleekxmpp.ClientXMPP.disconnect(self, reconnect)
 
 
 class Room(object):

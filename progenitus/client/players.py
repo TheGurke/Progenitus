@@ -51,7 +51,7 @@ class Player(object):
 	
 	def __init__(self, user):
 		self.user = user
-		self.name = user.nick
+		self.name = user.user
 		
 		self.library = [] # cards in the library
 		self.graveyard = [] # cards in the graveyard
@@ -475,7 +475,7 @@ class Player(object):
 			self.send_network_cmds(cmdlist, logged=False)
 		
 		# Other than hello only handle commands that concern this player's user
-		if not user.same_as(self.user):
+		if not user == self.user:
 			return
 		
 		if cmd1 == "welcome":

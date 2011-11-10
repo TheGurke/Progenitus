@@ -9,7 +9,6 @@ Incoming messages are unpackaged and returned as instruction tuples.
 import re
 import glib
 from gettext import gettext as _
-from pyxmpp.jabber.muc import MucRoomHandler
 
 from progenitus import config
 import muc
@@ -83,58 +82,13 @@ def create_res():
 create_res()
 
 
-# MUC Room handler
-
-class Roomhandler(MucRoomHandler):
-	
-	def __init__(self, network_manager):
-#		super(self.__class__, self).__init__()
-		MucRoomHandler.__init__(self)
-		self.manager = network_manager
-	
-	def message_received(self, user, stanza):
-		"""Recieved a chat line"""
-		text = stanza.get_body()
-		if text is not None and not user.same_as(self.manager.get_my_user()):
-			matched = False
-			cmdlist = []
-			lines = text.split('\n')
-			for i in range(len(lines)):
-				line = lines[i]
-				for k in range(len(res)):
-					match = res[k].match(line)
-					if match is not None:
-						if i == 0:
-							matched = True
-						cmdlist.append((k, match.groups()))
-						break
-			if matched:
-				self.manager._incoming_commands(user, cmdlist)
-			else:
-				self.manager._incoming_chat(user, text)
-	
-	def user_joined(self, user, stanza):
-		"""A user joined the room"""
-		if self.manager.user_joined is not None:
-			self.manager.user_joined(user)
-	
-	def user_left(self, user, stanza):
-		"""A user left the room"""
-		if self.manager.user_left is not None:
-			self.manager.user_left(user)
-	
-	def nick_changed(self, user, old_nick, stanza):
-		"""A user changed their nick"""
-		if self.manager.user_nick_changed is not None:
-			self.manager.user_nick_changed(user)
-
-
 
 # Network manager class
 
 class NetworkManager(object):
 	
 	client = None # MUCClient
+	games = [] # Joined chat rooms
 	logger = None # Logger
 	
 	# Callback methods (please attach!)
@@ -147,47 +101,48 @@ class NetworkManager(object):
 	
 	def __init__(self):
 		self.logger = Logger()
-		glib.timeout_add(10, self._idle)
 	
-	def _idle(self):
-		"""Idle method which should be called frequently"""
-		if self.client is not None:
-			try:
-				self.client.idle_callback()
-			except Exception as e:
-				if self.exception_handler is not None:
-					self.exception_handler(e)
-		return True
-	
-	def connect(self, username, pwd, gamename, nick, gamepwd):
+	def connect(self, username, pwd):
 		"""Connect to a server"""
-		self.client = muc.MUCClient(username, pwd, config.APP_NAME, gamename,
-			nick, gamepwd, Roomhandler(self))
-		self.client.connect()
+		if self.client is not None:
+			self.disconnect() # disconnect the old connection first
+		self.client = muc.XMPPClient(username, pwd, config.APP_NAME)
+		if not self.client.connect():
+			raise RuntimeError("Connection failed")
+		else:
+			# Process incoming messages in a seperate thread
+			self.client.process(threaded=True)
+	
+	def join_game(self, gamename, pwd, nick):
+		"""Join a network game"""
+		game = muc.Room(self.client, gamename, pwd, nick)
+		self.games.append(game)
+		game.join()
+		return game
+	
+	def leave_game(self, game):
+		"""Leave a network game"""
+		assert(game in self.games)
+		game.leave()
+		self.games.remove(game)
 	
 	def is_connected(self):
 		"""Is the connection established?"""
-		return (hasattr(self.client, 'roomState')
-			and self.client.get_my_user() is not None)
+		return self.client.is_connected
 	
 	def disconnect(self):
 		"""Disconnect from the server"""
+		self.games = []
 		if self.client is not None:
-			if hasattr(self.client, "roomState"):
-				self.client.roomState.leave()
 			self.client.disconnect()
 			self.client = None
 	
 	def get_my_user(self):
 		"""Get the MucRoomUser object associated with this client"""
 		if self.client is not None:
-			return self.client.get_my_user()
+			return self.client.boundjid
 		else:
 			raise RuntimeError(_("Not yet connected"))
-	
-	def change_nick(self, new_nick):
-		"""Change the nick in the current game"""
-		self.client.roomState.change_nick(new_nick)
 	
 	def _incoming_commands(self, user, cmdlist):
 		"""Handle an incoming command"""
@@ -220,6 +175,42 @@ class NetworkManager(object):
 			text = text[1:]
 		if self.incoming_chat is not None:
 			self.incoming_chat(user, text)
+	
+	def message_received(self, user, stanza):
+		"""Recieved a chat line"""
+		text = stanza.get_body()
+		if text is not None and not user == self.manager.get_my_user():
+			matched = False
+			cmdlist = []
+			lines = text.split('\n')
+			for i in range(len(lines)):
+				line = lines[i]
+				for k in range(len(res)):
+					match = res[k].match(line)
+					if match is not None:
+						if i == 0:
+							matched = True
+						cmdlist.append((k, match.groups()))
+						break
+			if matched:
+				self.manager._incoming_commands(user, cmdlist)
+			else:
+				self.manager._incoming_chat(user, text)
+	
+	def user_joined(self, user, stanza):
+		"""A user joined the room"""
+		if self.manager.user_joined is not None:
+			self.manager.user_joined(user)
+	
+	def user_left(self, user, stanza):
+		"""A user left the room"""
+		if self.manager.user_left is not None:
+			self.manager.user_left(user)
+	
+	def nick_changed(self, user, old_nick, stanza):
+		"""A user changed their nick"""
+		if self.manager.user_nick_changed is not None:
+			self.manager.user_nick_changed(user)
 	
 	def send_commands(self, cmdlist, logged=True):
 		"""Send a list of commands over the network"""
@@ -264,7 +255,7 @@ class Logger(object):
 		# TODO
 		for cmd, args in cmdlist:
 			if cmd in logger_msgs.keys():
-				self.log(logger_msgs[cmd].format(user.nick, *args))
+				self.log(logger_msgs[cmd].format(user.user, *args))
 	
 	def get_log(self):
 		"""Get the complete log"""
