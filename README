@@ -54,7 +54,9 @@ sideboard.
 'ctrl + e' edits the current deck's description and author
 'f11' toggles fullscreen
 
+
 Known issues
+
 - Closing the updater also closes the editor
 - When the updater finishes, it does not close
 - Renaming folders does not work recursively
@@ -81,7 +83,9 @@ The client has 5 (hidden) commands:
 
 'f11' toggles fullscreen
 
+
 Known issues
+
 - multiplayer lobby is not implemented yet
 - game list is missing
 - tray layout is kinda broken
@@ -99,7 +103,9 @@ Updater
 This is a small program for downloading and updating the magic set data and
 card pictures. Please read the disclaimer carefully before using it.
 
+
 Known issues
+
 - The loyalty of plainswalkers is missing sometimes
 - Multiple instances of the program can be run
 
