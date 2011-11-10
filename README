@@ -32,10 +32,12 @@ Requirements
 - PyGTK
 - sleekxmpp (included)
 
-There is a file where the user's settings are stored:
-$HOME/.progenitus.cfg
+There is a file where the user's settings are stored: $HOME/.progenitus.cfg.
 You can override the location of this file using the --settings parameter.
 
+
+Documentation
+=============
 
 Deckeditor
 ----------
