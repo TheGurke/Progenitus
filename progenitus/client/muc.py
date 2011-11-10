@@ -6,8 +6,6 @@ This is a library abstraction for sleekxmpp; but it could use any library that
 supports MUC (XEP 0045).
 """
 
-import logging
-
 import sleekxmpp
 
 
@@ -64,8 +62,9 @@ class Room(object):
 	An connection object to the XMPP chat room (MUC)
 	"""
 	
-	muc_message_handler = None # Handler for incoming messages from the room
-	muc_presence_handler = None # Handler for incoming presence from the room
+	joined = None # Handler for successful room joining
+	muc_message = None # Handler for incoming messages from the room
+	muc_presence = None # Handler for incoming presence from the room
 	
 	def __init__(self, client, name, password, nick):
 		assert(isinstance(client, XMPPClient))
@@ -75,26 +74,42 @@ class Room(object):
 		self.nick = nick
 		self.muc_plugin = self.client.plugin['xep_0045']
 	
+	def get_my_jid(self):
+		"""Get my full jid for this room"""
+		return sleekxmpp.xmlstream.stanzabase.JID("%s/%s" % (self.name,
+			self.nick))
+	
 	def join(self):
 		"""Connect to the room"""
 		self.muc_plugin.joinMUC(self.name, self.nick, password=self.password)
-			# wait=True
+		self.client.add_event_handler("muc::%s::presence" % self.name,
+			self._joined)
 		self.client.add_event_handler("muc::%s::got_online" % self.name,
-			self._muc_presence_handler)
+			self._muc_presence)
+	
+	def _joined(self, presence):
+		"""The room has been joined successfully"""
+		print presence
+		# Look for my own presence information
+		if presence["from"].full != self.get_my_jid().full:
+			return
+		print "JOINED"
+		if self.joined is not None:
+			self.joined()
 	
 	def leave(self, message=""):
 		"""Disconnect from the room"""
 		self.muc_plugin.leaveMUC(self.name, self.nick, message)
 	
-	def _muc_message_handler(self, *args):
+	def _muc_message(self, *args):
 		"""The message handler passes on incoming room chat messages"""
-		if self.muc_message_handler is not None:
-			self.muc_message_handler(*args)
+		if self.muc_message is not None:
+			self.muc_message(*args)
 	
-	def _muc_presence_handler(self, *args):
+	def _muc_presence(self, *args):
 		"""The presence handler passes on incoming room presence information"""
-		if self.muc_presence_handler is not None:
-			self.muc_presence_handler(*args)
+		if self.muc_presence is not None:
+			self.muc_presence(*args)
 	
 	def list_participants(self):
 		"""Fetch a list of all users in the room"""
@@ -115,4 +130,5 @@ class Room(object):
 	
 	def change_nick(self, text):
 		"""Change this client's nick name in the room"""
+		pass # TODO
 

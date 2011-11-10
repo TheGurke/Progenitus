@@ -197,7 +197,7 @@ class Interface(uiloader.Interface):
 				self.liststore_users[i][1] = user.user
 				self.liststore_users[i][2] = unicode(user.full)
 	
-	def create_player(self, user, version=""):
+	def create_player(self, game, user, version=""):
 		"""Create a player object for a user"""
 		for player in self.players:
 			# Check that the player has not yet been created
@@ -206,7 +206,9 @@ class Interface(uiloader.Interface):
 		player.version = version
 		if self.network_manager is not None:
 			if user == self.network_manager.get_my_user():
-				player.send_network_cmds = self.network_manager.send_commands
+				player.send_network_cmds = (lambda *args:
+					self.network_manager.send_commands(game, *args)
+				)
 				player.updated_hand = self.cd.repaint_hand
 		else:
 			player.updated_hand = self.cd.repaint_hand
@@ -227,41 +229,59 @@ class Interface(uiloader.Interface):
 	def solitaire_mode(self, widget):
 		"""Go into solitaire mode"""
 		self.label_gamename.set_text(_("Solitaire game"))
-		self.hpaned1.set_position(0)
-		self.hpaned1.set_property("position-set", True)
+		self.hpaned_desktop.set_position(0)
+		self.hpaned_desktop.set_property("position-set", True)
+		self.notebook.set_page(2)
 		
 		# Use a fake user class
 		class FakeUser(object):
-			nick = ""
+			user = ""
 			def __eq__(self, other):
 				return self is other
-		self.my_player = self.create_player(FakeUser(), config.VERSION)
+		self.my_player = self.create_player(None, FakeUser(), config.VERSION)
 		glib.idle_add(self.my_player.create_tray, None, (0.8, 0.8, 1.0))
-		
-		self.notebook.set_page(3)
 	
 	def start_connecting(self, widget):
 		"""Login to the jabber account"""
 		username = self.entry_username.get_text()
 		pwd = self.entry_pwd.get_text()
+		self.server = self.entry_server.get_text()
 		
 		# Save login details to settings
 		settings.username = username
 		settings.userpwd = pwd if self.checkbutton_save_pwd.get_active() else ""
-		settings.server = self.entry_server.get_text()
+		settings.server = self.server
 		settings.save()
 		
-		self.label_servername.set_text(settings.server)
+		# Set interface
+		self.hbox_login_status.show()
+		self.spinner_login.start()
+		for widget in (self.entry_username, self.entry_pwd, self.entry_server,
+				self.checkbutton_save_pwd, self.button_login,
+				self.button_solitaire_mode):
+			widget.set_sensitive(False)
+		self.label_servername.set_text(self.server)
 		
 		# Connect
 		self.network_manager.connect(username, pwd)
 		self.network_manager.client.connection_established = \
 			self._connection_established
 	
+	def _connection_established(self):
+		"""Check if the connection has been established yet"""
+		self.hbox_login_status.hide()
+		self.spinner_login.stop()
+		self.notebook.set_page(1)
+		self.button_join.grab_focus()
+		
+		# Set nick
+		user = self.network_manager.get_my_user()
+		assert(user is not None)
+	
 	def join_game(self, widget):
 		"""Join a game room"""
 		gamename = (config.DEFAULT_GAME_PREFIX + self.entry_gamename.get_text()
-			+ "@conference." + self.entry_server.get_text())
+			+ "@conference." + self.server)
 		self.label_gamename.set_text("%s@%s" %
 			(self.entry_gamename.get_text(), self.entry_server.get_text()))
 		gamepwd = self.entry_gamepwd.get_text()
@@ -269,22 +289,23 @@ class Interface(uiloader.Interface):
 		settings.gamename = self.entry_gamename.get_text()
 		settings.gamepwd = gamepwd
 		settings.save()
-	
-	def _connection_established(self):
-		"""Check if the connection has been established yet"""
-		self.notebook.set_page(1)
 		
-		# Set nick
-		user = self.network_manager.get_my_user()
-		assert(user is not None)
+		self.notebook.set_page(2)
 		
-		# Create player
-		self.my_player = self.create_player(user, config.VERSION)
+		nick = self.network_manager.get_my_user().user
+		self.game = self.network_manager.join_game(gamename, gamepwd, nick)
+		self.game.joined = self._game_joined
 	
 	def _game_joined(self):
 		"""A game room has sucessfully been joined"""
-		# Initialize handshake
-		self.network_manager.send_commands([("hello", (config.VERSION,))])
+#		logging.info(_("Room joined successfully."))
+		self.hpaned_desktop.set_sensitive(True)
+		
+		# Create player
+		user = self.game.get_my_jid()
+		self.my_player = self.create_player(self.game, user, config.VERSION)
+		self.network_manager.send_commands(self.game,
+			[("hello", (config.VERSION,))])
 		
 		# Create tray
 		glib.timeout_add(config.JOIN_DELAY, self.my_player.create_tray,

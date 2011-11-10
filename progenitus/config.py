@@ -51,8 +51,11 @@ DECKFILE_SUFFIX = ".deck"
 JOIN_DELAY = 1000 # time to wait for tray creation
 MAX_ITEMID = 2**16 - 1
 
+# Lobby room name
+LOBBY_ROOM = "progenituslobby"
+
 # Default prefix for network games
-DEFAULT_GAME_PREFIX = "progenitus-"
+DEFAULT_GAME_PREFIX = "progenitus_"
 
 # Game specific constants
 DEFAULT_LIFE = 20

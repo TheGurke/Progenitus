@@ -6,9 +6,11 @@ This module recieves network instructions and packages them into xmpp messages.
 Incoming messages are unpackaged and returned as instruction tuples.
 """
 
+import logging
 import re
-import glib
 from gettext import gettext as _
+
+import glib
 
 from progenitus import config
 import muc
@@ -115,6 +117,7 @@ class NetworkManager(object):
 	
 	def join_game(self, gamename, pwd, nick):
 		"""Join a network game"""
+		logging.info(_("Joining game '%s'..."), gamename)
 		game = muc.Room(self.client, gamename, pwd, nick)
 		self.games.append(game)
 		game.join()
@@ -212,7 +215,7 @@ class NetworkManager(object):
 		if self.manager.user_nick_changed is not None:
 			self.manager.user_nick_changed(user)
 	
-	def send_commands(self, cmdlist, logged=True):
+	def send_commands(self, game, cmdlist, logged=True):
 		"""Send a list of commands over the network"""
 		for cmd, args in cmdlist:
 			assert(cmd in commands.keys())
@@ -223,23 +226,24 @@ class NetworkManager(object):
 				cmd_str = commands[cmd]
 				text += (cmd_str % args) + "\n"
 			if logged:
-				user = self.client.get_my_user()
+				user = self.get_my_user()
 				self.logger.log_commands(user, cmdlist)
-			glib.idle_add(self.client.send_message, text[:-1])
+			glib.idle_add(game.send_message, text[:-1])
 	
-	def send_chat(self, text):
+	def send_chat(self, text, game=None):
 		"""Send a chat message over the network"""
 		if text == "":
 			return # don't send an empty message
 		if text[0] == '[' or text[0] == '\\':
 			text = '\\' + text
-		glib.idle_add(self.client.send_message, text)
+		glib.idle_add(game.send_message, text)
 
 
-# Logger
+# Recorder
+# TODO
 
 class Logger(object):
-	"""An object to store log messages"""
+	"""Record network commands"""
 	
 	_log = []
 	log_callback = None
