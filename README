@@ -26,11 +26,11 @@ Requirements:
 - Python 2.6 or 2.7
 - GTK 2.20 or higher
 - pygtk
-- pyxmpp
+- sleekxmpp (included)
 
 There is a file where the user's settings are stored:
 $HOME/.progenitus.cf
-You can override the location of this file using the --settings paramter.
+You can override the location of this file using the --settings parameter.
 
 
 
@@ -82,6 +82,8 @@ The client has 5 (hidden) commands:
 'f11' toggles fullscreen
 
 Known issues:
+- multiplayer lobby is not implemented yet
+- game list is missing
 - tray layout is kinda broken
 - mouse is not exactly on the card when dragging a card to play
 - Enlarged card flicker when the mouse is near the center of the screen

@@ -5,40 +5,39 @@ These are features planned for the 0.3.x releases.
 [Deckeditor]
 ------------
 
-- Move files and folders via drag and drop
-- Remove folders
-- Copy and paste for card lists
-- List deck price
+- move files and folders via drag and drop
+- remove folders
+- copy and paste for card lists
+- list deck price
 - export as pdf (visual spoilers)
 - export as html (pretty decklist)
 - card legality
-- Deck statistics overview: mana curve, color/land distribution, example hand
-- Deck list import/export for Magic Online, OCTGN2, OCTGN1, Apprentice formats
-- Mana cost as symbols
-- Card sets as symbols
-- More comprehensive error messages
+- deck statistics overview: mana curve, color/land distribution, example hand
+- deck list import/export for Magic Online, OCTGN2, OCTGN1, Apprentice formats
+- mana cost as symbols
+- card sets as symbols
+- more comprehensive error messages
 
 
 --------
 [Client]
 --------
 
+- multiplayer lobby
+- record and replay games
+- set game nick
 - display comprehensive card details (+ download card rulings)
 - easy way to focus on the chat entry
 - turn symbol (showing who's turn it is)
-- multiplayer lobby
 - move cards from/to the graveyard by drag and drop
 - play cards face down
-- set nick
 - search for cards automatically (basic lands...)
 - pretty card browser
 - comprehensive logger with colored output
 - console commands
 - undo untap all
-- Save games
-- Replay games
-- Support for draft, block constructed
-- plugins?
+- save games
+- more comprehensive error messages
 
 
 ---------
@@ -52,6 +51,9 @@ These are features planned for the 0.3.x releases.
 For the 0.4.x and higher releases:
 - Move to Python3 and GTK3
 - Use new style string formatting
+- support for client plugins: - draft, block constructed
+
+For other future releases:
 - Secure network protocol
 
 
