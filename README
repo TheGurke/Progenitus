@@ -88,6 +88,7 @@ The client has 5 (hidden) commands:
 
 Known issues
 
+- My player is created twice
 - multiplayer lobby is not implemented yet
 - game list is missing
 - tray layout is kinda broken

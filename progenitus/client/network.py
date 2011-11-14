@@ -164,7 +164,6 @@ class Game(muc.Room):
 		"""Recieved a muc message"""
 		self.recorder.record(sender, text)
 		if text is not None and sender != self.get_my_jid():
-			print "MUC", sender, self.get_my_jid()
 			matched = False
 			cmdlist = []
 			lines = text.split('\n')

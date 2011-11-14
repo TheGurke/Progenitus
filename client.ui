@@ -1,11 +1,11 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk+" version="2.20"/>
+  <requires lib="gtk+" version="2.24"/>
   <!-- interface-naming-policy toplevel-contextual -->
   <object class="GtkAdjustment" id="adjustment_life">
-    <property name="value">20</property>
     <property name="lower">-1000000</property>
     <property name="upper">1000000</property>
+    <property name="value">20</property>
     <property name="step_increment">1</property>
     <property name="page_increment">5</property>
   </object>
@@ -15,8 +15,8 @@
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adjustment_zoom">
-    <property name="value">2</property>
     <property name="upper">10</property>
+    <property name="value">2</property>
     <property name="step_increment">0.10000000000000001</property>
     <property name="page_increment">1</property>
   </object>
@@ -74,21 +74,25 @@
     <property name="width_request">800</property>
     <property name="height_request">520</property>
     <property name="visible">True</property>
+    <property name="can_focus">False</property>
     <property name="default_width">1000</property>
     <property name="default_height">600</property>
-    <signal name="destroy" handler="quit"/>
-    <signal name="key_press_event" handler="keypress"/>
+    <signal name="destroy" handler="quit" swapped="no"/>
+    <signal name="key-press-event" handler="keypress" swapped="no"/>
     <child>
       <object class="GtkVBox" id="vbox2">
         <property name="visible">True</property>
-        <property name="orientation">vertical</property>
+        <property name="can_focus">False</property>
         <child>
           <object class="GtkToolbar" id="toolbar">
+            <property name="can_focus">False</property>
             <property name="toolbar_style">icons</property>
             <child>
               <object class="GtkToolButton" id="toolbutton_leave_game">
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
+                <property name="can_focus">False</property>
+                <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">Leave game</property>
                 <property name="use_underline">True</property>
                 <property name="stock_id">gtk-disconnect</property>
@@ -101,6 +105,7 @@
             <child>
               <object class="GtkSeparatorToolItem" id="toolbutton_sep1">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -110,10 +115,12 @@
             <child>
               <object class="GtkToolButton" id="toolbutton_zoom_in">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">Zoom in</property>
                 <property name="use_underline">True</property>
                 <property name="stock_id">gtk-zoom-in</property>
-                <signal name="clicked" handler="zoom_in"/>
+                <signal name="clicked" handler="zoom_in" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -123,10 +130,12 @@
             <child>
               <object class="GtkToolButton" id="toolbutton_zoom_out">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">Zoom out</property>
                 <property name="use_underline">True</property>
                 <property name="stock_id">gtk-zoom-out</property>
-                <signal name="clicked" handler="zoom_out"/>
+                <signal name="clicked" handler="zoom_out" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -136,6 +145,7 @@
             <child>
               <object class="GtkSeparatorToolItem" id="toolbutton_sep2">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -145,11 +155,13 @@
             <child>
               <object class="GtkToolButton" id="toolbutton_untap_all">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="tooltip_text" translatable="yes">Untap all your cards and tokens on the battlefield</property>
+                <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">Untap all</property>
                 <property name="use_underline">True</property>
                 <property name="stock_id">gtk-undo</property>
-                <signal name="clicked" handler="untap_all"/>
+                <signal name="clicked" handler="untap_all" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -159,11 +171,13 @@
             <child>
               <object class="GtkToolButton" id="toolbutton_random_card">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="tooltip_text" translatable="yes">Create a random card</property>
+                <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">Random card</property>
                 <property name="use_underline">True</property>
                 <property name="stock_id">gtk-help</property>
-                <signal name="clicked" handler="create_random_card"/>
+                <signal name="clicked" handler="create_random_card" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -173,11 +187,13 @@
             <child>
               <object class="GtkToolButton" id="toolbutton_load_deck">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="tooltip_text" translatable="yes">Load a deck and reset game</property>
+                <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">Load a deck...</property>
                 <property name="use_underline">True</property>
                 <property name="stock_id">gtk-open</property>
-                <signal name="clicked" handler="load_deck"/>
+                <signal name="clicked" handler="load_deck" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -187,11 +203,13 @@
             <child>
               <object class="GtkToolButton" id="toolbutton_about">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="tooltip_text" translatable="yes">About this program</property>
+                <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">About</property>
                 <property name="use_underline">True</property>
                 <property name="stock_id">gtk-about</property>
-                <signal name="clicked" handler="show_about"/>
+                <signal name="clicked" handler="show_about" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -201,6 +219,7 @@
           </object>
           <packing>
             <property name="expand">False</property>
+            <property name="fill">True</property>
             <property name="position">0</property>
           </packing>
         </child>
@@ -211,9 +230,11 @@
             <child>
               <object class="GtkTable" id="table1">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <child>
                   <object class="GtkTable" id="table2">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <property name="n_rows">8</property>
                     <property name="n_columns">5</property>
                     <property name="column_spacing">5</property>
@@ -222,9 +243,13 @@
                       <object class="GtkEntry" id="entry_username">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="invisible_char">&#x2022;</property>
+                        <property name="invisible_char">•</property>
                         <property name="invisible_char_set">True</property>
-                        <signal name="activate" handler="start_connecting"/>
+                        <property name="primary_icon_activatable">False</property>
+                        <property name="secondary_icon_activatable">False</property>
+                        <property name="primary_icon_sensitive">True</property>
+                        <property name="secondary_icon_sensitive">True</property>
+                        <signal name="activate" handler="start_connecting" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">2</property>
@@ -240,9 +265,13 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="visibility">False</property>
-                        <property name="invisible_char">&#x2022;</property>
+                        <property name="invisible_char">•</property>
                         <property name="invisible_char_set">True</property>
-                        <signal name="activate" handler="start_connecting"/>
+                        <property name="primary_icon_activatable">False</property>
+                        <property name="secondary_icon_activatable">False</property>
+                        <property name="primary_icon_sensitive">True</property>
+                        <property name="secondary_icon_sensitive">True</property>
+                        <signal name="activate" handler="start_connecting" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">2</property>
@@ -256,6 +285,7 @@
                     <child>
                       <object class="GtkLabel" id="label1">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="xalign">1</property>
                         <property name="label" translatable="yes">username:</property>
                       </object>
@@ -271,6 +301,7 @@
                     <child>
                       <object class="GtkLabel" id="label2">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="xalign">1</property>
                         <property name="label" translatable="yes">password:</property>
                       </object>
@@ -287,9 +318,13 @@
                       <object class="GtkEntry" id="entry_server">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="invisible_char">&#x2022;</property>
+                        <property name="invisible_char">•</property>
                         <property name="invisible_char_set">True</property>
-                        <signal name="activate" handler="start_connecting"/>
+                        <property name="primary_icon_activatable">False</property>
+                        <property name="secondary_icon_activatable">False</property>
+                        <property name="primary_icon_sensitive">True</property>
+                        <property name="secondary_icon_sensitive">True</property>
+                        <signal name="activate" handler="start_connecting" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">2</property>
@@ -303,6 +338,7 @@
                     <child>
                       <object class="GtkLabel" id="label10">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="xalign">1</property>
                         <property name="label" translatable="yes">server name:</property>
                       </object>
@@ -318,6 +354,7 @@
                     <child>
                       <object class="GtkHButtonBox" id="hbuttonbox1">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="spacing">10</property>
                         <property name="layout_style">end</property>
                         <child>
@@ -326,10 +363,12 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <signal name="clicked" handler="solitaire_mode"/>
+                            <property name="use_action_appearance">False</property>
+                            <signal name="clicked" handler="solitaire_mode" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
+                            <property name="fill">False</property>
                             <property name="position">0</property>
                           </packing>
                         </child>
@@ -339,7 +378,8 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <signal name="clicked" handler="start_connecting"/>
+                            <property name="use_action_appearance">False</property>
+                            <signal name="clicked" handler="start_connecting" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -364,6 +404,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="xalign">0</property>
                         <property name="draw_indicator">True</property>
                       </object>
@@ -378,14 +419,29 @@
                     </child>
                     <child>
                       <object class="GtkHBox" id="hbox_login_status">
+                        <property name="can_focus">False</property>
                         <property name="spacing">5</property>
+                        <child>
+                          <object class="GtkSpinner" id="spinner_login">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">False</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
                         <child>
                           <object class="GtkLabel" id="label6">
                             <property name="visible">True</property>
+                            <property name="can_focus">False</property>
                             <property name="xalign">0</property>
                             <property name="label" translatable="yes">Connecting...</property>
                           </object>
                           <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
                             <property name="position">1</property>
                           </packing>
                         </child>
@@ -402,13 +458,16 @@
                     <child>
                       <object class="GtkAlignment" id="alignment2">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <child>
                           <object class="GtkHBox" id="hbox7">
                             <property name="visible">True</property>
+                            <property name="can_focus">False</property>
                             <property name="spacing">5</property>
                             <child>
                               <object class="GtkImage" id="image3">
                                 <property name="visible">True</property>
+                                <property name="can_focus">False</property>
                                 <property name="pixbuf">media/xmpp.svg</property>
                               </object>
                               <packing>
@@ -420,6 +479,7 @@
                             <child>
                               <object class="GtkLabel" id="label5">
                                 <property name="visible">True</property>
+                                <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">Please use your XMPP/Jabber account to log in.</property>
                               </object>
                               <packing>
@@ -443,11 +503,13 @@
                     <child>
                       <object class="GtkFixed" id="fixed1">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                       </object>
                     </child>
                     <child>
                       <object class="GtkFixed" id="fixed2">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                       </object>
                       <packing>
                         <property name="left_attach">4</property>
@@ -526,6 +588,7 @@
             <child type="tab">
               <object class="GtkLabel" id="label7">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Login Screen</property>
               </object>
               <packing>
@@ -541,14 +604,17 @@
                 <child>
                   <object class="GtkVBox" id="vbox6">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <property name="spacing">3</property>
                     <child>
                       <object class="GtkLabel" id="label_servername">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">server name</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
+                        <property name="fill">True</property>
                         <property name="padding">4</property>
                         <property name="position">0</property>
                       </packing>
@@ -584,15 +650,19 @@
                         </child>
                       </object>
                       <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
                         <property name="position">1</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkHSeparator" id="separator1">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
+                        <property name="fill">True</property>
                         <property name="padding">5</property>
                         <property name="position">2</property>
                       </packing>
@@ -600,12 +670,14 @@
                     <child>
                       <object class="GtkLabel" id="label3">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="xalign">0</property>
                         <property name="xpad">5</property>
                         <property name="label" translatable="yes">game name:</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
+                        <property name="fill">True</property>
                         <property name="position">3</property>
                       </packing>
                     </child>
@@ -613,23 +685,31 @@
                       <object class="GtkEntry" id="entry_gamename">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="invisible_char">&#x25CF;</property>
+                        <property name="invisible_char">●</property>
                         <property name="invisible_char_set">True</property>
+                        <property name="primary_icon_activatable">False</property>
+                        <property name="secondary_icon_activatable">False</property>
+                        <property name="primary_icon_sensitive">True</property>
+                        <property name="secondary_icon_sensitive">True</property>
+                        <signal name="activate" handler="join_game" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
+                        <property name="fill">True</property>
                         <property name="position">4</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkLabel" id="label4">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="xalign">0</property>
                         <property name="xpad">5</property>
                         <property name="label" translatable="yes">password:</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
+                        <property name="fill">True</property>
                         <property name="position">5</property>
                       </packing>
                     </child>
@@ -638,17 +718,24 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="visibility">False</property>
-                        <property name="invisible_char">&#x25CF;</property>
+                        <property name="invisible_char">●</property>
                         <property name="invisible_char_set">True</property>
+                        <property name="primary_icon_activatable">False</property>
+                        <property name="secondary_icon_activatable">False</property>
+                        <property name="primary_icon_sensitive">True</property>
+                        <property name="secondary_icon_sensitive">True</property>
+                        <signal name="activate" handler="join_game" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
+                        <property name="fill">True</property>
                         <property name="position">6</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkHButtonBox" id="hbuttonbox2">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="spacing">10</property>
                         <property name="layout_style">end</property>
                         <child>
@@ -660,7 +747,8 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <signal name="clicked" handler="join_game"/>
+                            <property name="use_action_appearance">False</property>
+                            <signal name="clicked" handler="join_game" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -672,6 +760,7 @@
                       </object>
                       <packing>
                         <property name="expand">False</property>
+                        <property name="fill">True</property>
                         <property name="position">7</property>
                       </packing>
                     </child>
@@ -684,6 +773,7 @@
                 <child>
                   <object class="GtkVBox" id="vbox1">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <property name="spacing">3</property>
                     <child>
                       <object class="GtkScrolledWindow" id="scrolledwindow3">
@@ -703,6 +793,8 @@
                         </child>
                       </object>
                       <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
                         <property name="position">0</property>
                       </packing>
                     </child>
@@ -710,9 +802,13 @@
                       <object class="GtkEntry" id="entry_chat_lobby">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="invisible_char">&#x2022;</property>
+                        <property name="invisible_char">•</property>
                         <property name="invisible_char_set">True</property>
-                        <signal name="activate" handler="send_lobby_message"/>
+                        <property name="primary_icon_activatable">False</property>
+                        <property name="secondary_icon_activatable">False</property>
+                        <property name="primary_icon_sensitive">True</property>
+                        <property name="secondary_icon_sensitive">True</property>
+                        <signal name="activate" handler="send_lobby_message" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -734,6 +830,7 @@
             <child type="tab">
               <object class="GtkLabel" id="label8">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Lobby</property>
               </object>
               <packing>
@@ -749,14 +846,17 @@
                 <child>
                   <object class="GtkVBox" id="vbox3">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <property name="spacing">3</property>
                     <child>
                       <object class="GtkLabel" id="label_gamename">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">game name</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
+                        <property name="fill">True</property>
                         <property name="padding">4</property>
                         <property name="position">0</property>
                       </packing>
@@ -827,6 +927,8 @@
                         </child>
                       </object>
                       <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
                         <property name="position">1</property>
                       </packing>
                     </child>
@@ -834,9 +936,13 @@
                       <object class="GtkEntry" id="entry_chat">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="invisible_char">&#x2022;</property>
+                        <property name="invisible_char">•</property>
                         <property name="invisible_char_set">True</property>
-                        <signal name="activate" handler="send_chat_message"/>
+                        <property name="primary_icon_activatable">False</property>
+                        <property name="secondary_icon_activatable">False</property>
+                        <property name="primary_icon_sensitive">True</property>
+                        <property name="secondary_icon_sensitive">True</property>
+                        <signal name="activate" handler="send_chat_message" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -853,18 +959,23 @@
                 <child>
                   <object class="GtkTable" id="table3">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <property name="n_rows">3</property>
                     <child>
                       <object class="GtkHBox" id="hbox_entrybar">
+                        <property name="can_focus">False</property>
                         <property name="spacing">15</property>
-                        <signal name="size_allocate" handler="entrybar_size_allocation"/>
+                        <signal name="size-allocate" handler="entrybar_size_allocation" swapped="no"/>
                         <child>
                           <object class="GtkLabel" id="label_entrybar">
                             <property name="visible">True</property>
+                            <property name="can_focus">False</property>
                             <property name="xalign">1</property>
                             <property name="label" translatable="yes">description</property>
                           </object>
                           <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
                             <property name="position">0</property>
                           </packing>
                         </child>
@@ -872,14 +983,18 @@
                           <object class="GtkSpinButton" id="spinbutton_life">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="invisible_char">&#x2022;</property>
+                            <property name="invisible_char">•</property>
                             <property name="invisible_char_set">True</property>
                             <property name="caps_lock_warning">False</property>
+                            <property name="primary_icon_activatable">False</property>
+                            <property name="secondary_icon_activatable">False</property>
+                            <property name="primary_icon_sensitive">True</property>
+                            <property name="secondary_icon_sensitive">True</property>
                             <property name="adjustment">adjustment_life</property>
                             <property name="snap_to_ticks">True</property>
                             <property name="numeric">True</property>
-                            <signal name="activate" handler="entrybar_unfocus"/>
-                            <signal name="focus_out_event" handler="entrybar_unfocus"/>
+                            <signal name="activate" handler="entrybar_unfocus" swapped="no"/>
+                            <signal name="focus-out-event" handler="entrybar_unfocus" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -891,14 +1006,18 @@
                           <object class="GtkSpinButton" id="spinbutton_num">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="invisible_char">&#x2022;</property>
+                            <property name="invisible_char">•</property>
                             <property name="xalign">1</property>
                             <property name="invisible_char_set">True</property>
                             <property name="caps_lock_warning">False</property>
+                            <property name="primary_icon_activatable">False</property>
+                            <property name="secondary_icon_activatable">False</property>
+                            <property name="primary_icon_sensitive">True</property>
+                            <property name="secondary_icon_sensitive">True</property>
                             <property name="adjustment">adjustment_num</property>
                             <property name="snap_to_ticks">True</property>
                             <property name="numeric">True</property>
-                            <signal name="activate" handler="entrybar_unfocus"/>
+                            <signal name="activate" handler="entrybar_unfocus" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -910,9 +1029,13 @@
                           <object class="GtkEntry" id="entry">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="invisible_char">&#x2022;</property>
+                            <property name="invisible_char">•</property>
                             <property name="invisible_char_set">True</property>
-                            <signal name="activate" handler="entrybar_unfocus"/>
+                            <property name="primary_icon_activatable">False</property>
+                            <property name="secondary_icon_activatable">False</property>
+                            <property name="primary_icon_sensitive">True</property>
+                            <property name="secondary_icon_sensitive">True</property>
+                            <signal name="activate" handler="entrybar_unfocus" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -923,9 +1046,19 @@
                         <child>
                           <object class="GtkComboBoxEntry" id="combobox_counters">
                             <property name="visible">True</property>
+                            <property name="can_focus">False</property>
                             <property name="model">liststore_counters</property>
                             <property name="text_column">0</property>
-                            <signal name="changed" handler="update_counter_num"/>
+                            <signal name="changed" handler="update_counter_num" swapped="no"/>
+                            <child internal-child="entry">
+                              <object class="GtkEntry" id="entry_counters">
+                                <property name="can_focus">False</property>
+                                <property name="primary_icon_activatable">False</property>
+                                <property name="secondary_icon_activatable">False</property>
+                                <property name="primary_icon_sensitive">True</property>
+                                <property name="secondary_icon_sensitive">True</property>
+                              </object>
+                            </child>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -936,9 +1069,19 @@
                         <child>
                           <object class="GtkComboBoxEntry" id="combobox_tokens">
                             <property name="visible">True</property>
+                            <property name="can_focus">False</property>
                             <property name="model">liststore_tokens</property>
                             <property name="text_column">1</property>
-                            <signal name="changed" handler="token_pick"/>
+                            <signal name="changed" handler="token_pick" swapped="no"/>
+                            <child internal-child="entry">
+                              <object class="GtkEntry" id="entry_tokens">
+                                <property name="can_focus">False</property>
+                                <property name="primary_icon_activatable">False</property>
+                                <property name="secondary_icon_activatable">False</property>
+                                <property name="primary_icon_sensitive">True</property>
+                                <property name="secondary_icon_sensitive">True</property>
+                              </object>
+                            </child>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -951,7 +1094,8 @@
                             <property name="label" translatable="yes">Yes</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <signal name="clicked" handler="entrybar_accept"/>
+                            <property name="use_action_appearance">False</property>
+                            <signal name="clicked" handler="entrybar_accept" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -961,6 +1105,7 @@
                         </child>
                         <child>
                           <object class="GtkLabel" id="label_entrybar2">
+                            <property name="can_focus">False</property>
                             <property name="xpad">5</property>
                             <property name="label" translatable="yes">description2</property>
                           </object>
@@ -980,9 +1125,11 @@
                     <child>
                       <object class="GtkHBox" id="hbox1">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <child>
                           <object class="GtkImage" id="image1">
                             <property name="visible">True</property>
+                            <property name="can_focus">False</property>
                             <property name="stock">gtk-zoom-in</property>
                             <property name="icon-size">2</property>
                           </object>
@@ -999,7 +1146,7 @@
                             <property name="can_focus">True</property>
                             <property name="adjustment">adjustment_zoom</property>
                             <property name="draw_value">False</property>
-                            <signal name="change_value" handler="zoom_change"/>
+                            <signal name="change-value" handler="zoom_change" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -1010,6 +1157,7 @@
                         <child>
                           <object class="GtkImage" id="image2">
                             <property name="visible">True</property>
+                            <property name="can_focus">False</property>
                             <property name="stock">gtk-zoom-out</property>
                             <property name="icon-size">2</property>
                           </object>
@@ -1022,8 +1170,11 @@
                         <child>
                           <object class="GtkLabel" id="status_label">
                             <property name="visible">True</property>
+                            <property name="can_focus">False</property>
                           </object>
                           <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
                             <property name="padding">20</property>
                             <property name="position">3</property>
                           </packing>
@@ -1031,9 +1182,11 @@
                         <child>
                           <object class="GtkProgressBar" id="progressbar">
                             <property name="visible">True</property>
+                            <property name="can_focus">False</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
+                            <property name="fill">True</property>
                             <property name="position">4</property>
                           </packing>
                         </child>
@@ -1049,7 +1202,8 @@
                         <property name="width_request">800</property>
                         <property name="height_request">450</property>
                         <property name="visible">True</property>
-                        <signal name="button_press_event" handler="entrybar_unfocus"/>
+                        <property name="can_focus">False</property>
+                        <signal name="button-press-event" handler="entrybar_unfocus" swapped="no"/>
                         <child>
                           <placeholder/>
                         </child>
@@ -1069,6 +1223,7 @@
             <child type="tab">
               <object class="GtkLabel" id="label9">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Desktop</property>
               </object>
               <packing>
@@ -1078,6 +1233,8 @@
             </child>
           </object>
           <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
             <property name="position">1</property>
           </packing>
         </child>
@@ -1086,54 +1243,68 @@
   </object>
   <object class="GtkMenu" id="menu_card">
     <property name="visible">True</property>
+    <property name="can_focus">False</property>
     <child>
       <object class="GtkMenuItem" id="menuitem_to_hand">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">to hand</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="card_to_hand"/>
+        <signal name="activate" handler="card_to_hand" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem_to_lib">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">to library</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="card_to_library"/>
+        <signal name="activate" handler="card_to_library" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem_to_graveyard">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">to graveyard</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="card_to_graveyard"/>
+        <signal name="activate" handler="card_to_graveyard" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem_exile">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">exile</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="exile_card"/>
+        <signal name="activate" handler="exile_card" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem_clone">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">clone</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="clone_card"/>
+        <signal name="activate" handler="clone_card" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkSeparatorMenuItem" id="menuitem_cardsep1">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem_attack">
         <property name="sensitive">False</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">attack</property>
         <property name="use_underline">True</property>
       </object>
@@ -1141,6 +1312,8 @@
     <child>
       <object class="GtkMenuItem" id="menuitem_block">
         <property name="sensitive">False</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">block</property>
         <property name="use_underline">True</property>
       </object>
@@ -1148,12 +1321,16 @@
     <child>
       <object class="GtkMenuItem" id="menuitem_use_effect">
         <property name="sensitive">False</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">use effect</property>
         <property name="use_underline">True</property>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem_target">
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">is targeted</property>
         <property name="use_underline">True</property>
       </object>
@@ -1161,208 +1338,260 @@
     <child>
       <object class="GtkCheckMenuItem" id="menuitem_flipped">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">flipped</property>
         <property name="use_underline">True</property>
-        <signal name="toggled" handler="flip_card"/>
+        <signal name="toggled" handler="flip_card" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkCheckMenuItem" id="menuitem_faceup">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">face down</property>
         <property name="use_underline">True</property>
-        <signal name="toggled" handler="turn_card_over"/>
+        <signal name="toggled" handler="turn_card_over" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkSeparatorMenuItem" id="menuitem_cardsep2">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
       </object>
     </child>
     <child>
       <object class="GtkCheckMenuItem" id="menuitem_does_not_untap">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">does not untap</property>
         <property name="use_underline">True</property>
-        <signal name="toggled" handler="card_set_no_untap"/>
+        <signal name="toggled" handler="card_set_no_untap" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem_set_counters">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">set counters...</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="card_set_counters"/>
+        <signal name="activate" handler="card_set_counters" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem_give_to">
         <property name="visible">True</property>
         <property name="sensitive">False</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">give to...</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="card_give_to"/>
+        <signal name="activate" handler="card_give_to" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkSeparatorMenuItem" id="menuitem_cardsep3">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem_details">
         <property name="visible">True</property>
         <property name="sensitive">False</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">details</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="card_show_details"/>
+        <signal name="activate" handler="card_show_details" swapped="no"/>
       </object>
     </child>
   </object>
   <object class="GtkMenu" id="menu_desktop">
     <property name="visible">True</property>
+    <property name="can_focus">False</property>
     <child>
       <object class="GtkMenuItem" id="menuitem_untap_all">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">untap all</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="untap_all"/>
+        <signal name="activate" handler="untap_all" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem_browse_exile">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">browse exile...</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="browse_exile"/>
+        <signal name="activate" handler="browse_exile" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem_create_token">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">create token...</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="create_token"/>
+        <signal name="activate" handler="create_token" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem_switch_sides">
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">switch sides</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="switch_sides"/>
+        <signal name="activate" handler="switch_sides" swapped="no"/>
       </object>
     </child>
   </object>
   <object class="GtkMenu" id="menu_graveyard">
     <property name="visible">True</property>
+    <property name="can_focus">False</property>
     <child>
       <object class="GtkMenuItem" id="menuitem_graveyard_to_hand">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">return to hand</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="return_to_hand_from_graveyard"/>
+        <signal name="activate" handler="return_to_hand_from_graveyard" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem5">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">exile</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="exile_from_graveyard"/>
+        <signal name="activate" handler="exile_from_graveyard" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem28">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">browse...</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="browse_graveyard"/>
+        <signal name="activate" handler="browse_graveyard" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem_graveyard_shuffle_lib">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">shuffle into library</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="shuffle_graveyard_into_library"/>
+        <signal name="activate" handler="shuffle_graveyard_into_library" swapped="no"/>
       </object>
     </child>
   </object>
   <object class="GtkMenu" id="menu_hand">
     <property name="visible">True</property>
+    <property name="can_focus">False</property>
     <child>
       <object class="GtkMenuItem" id="menuitem34">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">draw a card</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="draw_a_card"/>
+        <signal name="activate" handler="draw_a_card" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem3">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">discard this card</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="discard_this"/>
+        <signal name="activate" handler="discard_this" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem37">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">exile this card</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="exile_this"/>
+        <signal name="activate" handler="exile_this" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem38">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">to library</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="hand_to_library"/>
+        <signal name="activate" handler="hand_to_library" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkSeparatorMenuItem" id="menuitem39">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem29">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">discard random card</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="discard_random"/>
+        <signal name="activate" handler="discard_random" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem32">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">discard all</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="discard_all"/>
+        <signal name="activate" handler="discard_all" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem30">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">mulligan</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="mulligan"/>
+        <signal name="activate" handler="mulligan" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem31">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">shuffle</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="shuffle_hand"/>
+        <signal name="activate" handler="shuffle_hand" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkCheckMenuItem" id="checkmenuitem1">
         <property name="visible">True</property>
         <property name="sensitive">False</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">reveal to all players</property>
         <property name="use_underline">True</property>
       </object>
@@ -1370,56 +1599,70 @@
   </object>
   <object class="GtkMenu" id="menu_library">
     <property name="visible">True</property>
+    <property name="can_focus">False</property>
     <child>
       <object class="GtkMenuItem" id="menuitem_draw_from_lib">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">draw a card</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="draw_a_card"/>
+        <signal name="activate" handler="draw_a_card" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem_draw_7_from_lib">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">draw 7 cards</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="draw_7_cards"/>
+        <signal name="activate" handler="draw_7_cards" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem_lib_top_to_bottom">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
         <property name="tooltip_text" translatable="yes">Put the top card of your library to the bottom.</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">top to bottom</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="lib_top_to_bottom"/>
+        <signal name="activate" handler="lib_top_to_bottom" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem24">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">shuffle</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="shuffle_library"/>
+        <signal name="activate" handler="shuffle_library" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkSeparatorMenuItem" id="menuitem27">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem23">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">browse...</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="browse_library"/>
+        <signal name="activate" handler="browse_library" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem26">
         <property name="visible">True</property>
         <property name="sensitive">False</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">look at...</property>
         <property name="use_underline">True</property>
       </object>
@@ -1427,50 +1670,61 @@
   </object>
   <object class="GtkMenu" id="menu_tray">
     <property name="visible">True</property>
+    <property name="can_focus">False</property>
     <child>
       <object class="GtkMenuItem" id="menuitem40">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">load a deck...</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="load_deck"/>
+        <signal name="activate" handler="load_deck" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem41">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">reset game</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="reset_game"/>
+        <signal name="activate" handler="reset_game" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem42">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">set life...</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="set_life"/>
+        <signal name="activate" handler="set_life" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem43">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="use_action_appearance">False</property>
         <property name="label" translatable="yes">spectate</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="spectate"/>
+        <signal name="activate" handler="spectate" swapped="no"/>
       </object>
     </child>
   </object>
   <object class="GtkWindow" id="win_browse">
+    <property name="can_focus">False</property>
     <property name="title" translatable="yes">Browse...</property>
     <property name="default_height">500</property>
     <property name="destroy_with_parent">True</property>
     <property name="type_hint">dialog</property>
     <property name="skip_taskbar_hint">True</property>
     <property name="transient_for">main_win</property>
-    <signal name="delete_event" handler="hide_cardbrowser"/>
+    <signal name="delete-event" handler="hide_cardbrowser" swapped="no"/>
     <child>
       <object class="GtkVBox" id="vbox5">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
         <child>
           <object class="GtkScrolledWindow" id="scrolledwindow2">
             <property name="visible">True</property>
@@ -1570,15 +1824,19 @@
             </child>
           </object>
           <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
             <property name="position">0</property>
           </packing>
         </child>
         <child>
           <object class="GtkHSeparator" id="hseparator1">
             <property name="visible">True</property>
+            <property name="can_focus">False</property>
           </object>
           <packing>
             <property name="expand">False</property>
+            <property name="fill">True</property>
             <property name="padding">5</property>
             <property name="position">1</property>
           </packing>
@@ -1586,16 +1844,20 @@
         <child>
           <object class="GtkHBox" id="hbox3">
             <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <child>
               <object class="GtkCheckButton" id="checkbutton_shuffle">
                 <property name="label" translatable="yes">shuffle afterwards</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
+                <property name="use_action_appearance">False</property>
                 <property name="active">True</property>
                 <property name="draw_indicator">True</property>
               </object>
               <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
                 <property name="padding">10</property>
                 <property name="position">0</property>
               </packing>
@@ -1603,6 +1865,7 @@
             <child>
               <object class="GtkHButtonBox" id="hbuttonbox3">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="spacing">5</property>
                 <child>
                   <object class="GtkButton" id="button_to_graveyard">
@@ -1610,7 +1873,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="browser_to_graveyard"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="browser_to_graveyard" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -1624,7 +1888,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="browser_to_library"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="browser_to_library" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -1638,7 +1903,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="browser_exile"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="browser_exile" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -1652,7 +1918,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="browser_to_hand"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="browser_to_hand" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -1667,7 +1934,8 @@
                     <property name="sensitive">False</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="browser_to_top"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="browser_to_top" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -1682,7 +1950,8 @@
                     <property name="sensitive">False</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="browser_to_bottom"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="browser_to_bottom" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -1696,7 +1965,8 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="hide_cardbrowser"/>
+                    <property name="use_action_appearance">False</property>
+                    <signal name="clicked" handler="hide_cardbrowser" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -1706,6 +1976,8 @@
                 </child>
               </object>
               <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
                 <property name="position">1</property>
               </packing>
             </child>

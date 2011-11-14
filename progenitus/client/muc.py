@@ -106,7 +106,6 @@ class Room(object):
 		"""The message handler passes on incoming room chat messages"""
 		# Filter out messages that are not for this room
 		if message["from"].bare != self.jid:
-			print message["from"].bare, self.jid
 			return
 		if self.muc_message is not None:
 			self.muc_message(self, message["from"], message["body"])

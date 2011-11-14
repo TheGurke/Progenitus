@@ -74,7 +74,7 @@ class Interface(uiloader.Interface):
 				glib.idle_add(self.entry_username.grab_focus)
 		
 		# Initialize tokens
-		self.init_counter_autocomplete()
+		self.init_counters_autocomplete()
 		glib.idle_add(self.init_token_autocomplete)
 	
 	
@@ -110,13 +110,13 @@ class Interface(uiloader.Interface):
 		completion.connect("match-selected", self.token_autocomplete_pick)
 		self.entry_tokens.set_completion(completion)
 	
-	def init_counter_autocomplete(self):
+	def init_counters_autocomplete(self):
 		completion = gtk.EntryCompletion()
 		completion.set_model(self.liststore_counters)
 		completion.set_text_column(0)
 		completion.set_inline_completion(False)
 		completion.connect("match-selected", self.update_counter_num)
-		self.entry_counter.set_completion(completion)
+		self.entry_counters.set_completion(completion)
 	
 	
 	# Network methods
@@ -158,8 +158,13 @@ class Interface(uiloader.Interface):
 		self.network_manager.client.connection_established = \
 			self._connection_established
 	
-	def _connection_established(self):
-		"""Check if the connection has been established yet"""
+	def _join_lobby(self):
+		"""Join the lobby room"""
+		nick = self.network_manager.get_my_jid().user
+		room = config.
+		self.lobby = muc.Room(self.network_manager.client, room, None, nick)
+	
+	def _show_lobby(self):
 		self.hbox_login_status.hide()
 		self.spinner_login.stop()
 		self.notebook.set_page(1)
@@ -211,7 +216,7 @@ class Interface(uiloader.Interface):
 		jid = muc.JID(jid)
 		for player in self.players:
 			# Check that the player has not yet been created
-			assert(player.jid != jid)
+			assert(jid != player.jid)
 		player = players.Player(game, jid)
 		player.version = version
 		if self.network_manager is not None:
@@ -243,22 +248,15 @@ class Interface(uiloader.Interface):
 			player.has_been_welcomed = True
 			self.my_player.handle_network_cmds(sender, cmdlist)
 		if cmd1 == "welcome":
-			user_known = False
 			for player in self.players:
 				if player.jid == sender:
-					user_known = True
-			if not user_known:
-				player = self.create_player(game, sender)
-				player.version = args1[0]
+					break # user found
+			else:
+				player = self.create_player(game, sender, args1[0])
 		
-		print [p.jid for p in self.players]
-		if len(self.players) >= 3:
-			print self.players[2].jid, sender
-#			print type(self.players[2].jid), type(sender)
 		# Pass on the commands
 		for player in self.players:
 			if player is not self.my_player:
-				print player.jid, player.jid == sender
 				player.handle_network_cmds(sender, cmdlist)
 	
 	def get_userid(self, jid):
@@ -509,15 +507,15 @@ class Interface(uiloader.Interface):
 		# Set default entry
 		if len(item.counters) > 0:
 			counter, num = item.counters.items()[0]
-			self.entry_counter.set_text(counter)
+			self.entry_counters.set_text(counter)
 			self.spinbutton_num.set_value(num)
 		elif item.default_counters != []:
 			counter = item.default_counters[0]
-			self.entry_counter.set_text(counter)
+			self.entry_counters.set_text(counter)
 			if counter in item.counters:
 				self.spinbutton_num.set_value(item.counters[counter])
 		else:
-			self.entry_counter.set_text("")
+			self.entry_counters.set_text("")
 		self.liststore_counters.clear()
 		for counter in item.default_counters:
 			self.liststore_counters.append((counter,))
@@ -531,7 +529,7 @@ class Interface(uiloader.Interface):
 		self.hbox_entrybar.show()
 		if len(item.counters) == 0:
 			self.spinbutton_num.set_value(1)
-			self.entry_counter.grab_focus()
+			self.entry_counters.grab_focus()
 		else:
 			self.spinbutton_num.grab_focus()
 	
@@ -545,7 +543,7 @@ class Interface(uiloader.Interface):
 		pass
 	
 	def update_counter_num(self, *args):
-		counter = self.entry_counter.get_text()
+		counter = self.entry_counters.get_text()
 		item = self._popup
 		if counter in item.counters:
 			self.spinbutton_num.set_value(item.counters[counter])
@@ -562,10 +560,10 @@ class Interface(uiloader.Interface):
 			if life != self.my_player.life:
 				self.my_player.set_life(life)
 		elif self._entrybar_task == "counters":
-			if self.entry_counter.get_text() != "":
-				counter = self.entry_counter.get_text()
+			if self.entry_counters.get_text() != "":
+				counter = self.entry_counters.get_text()
 				num = int(self.spinbutton_num.get_value())
-				self.my_player.set_counter(self._popup, num, counter)
+				self.my_player.set_counters(self._popup, num, counter)
 		self._entrybar_task = ""
 	
 	def entrybar_accept(self, widget):
