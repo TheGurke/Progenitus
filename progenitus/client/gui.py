@@ -57,11 +57,6 @@ class Interface(uiloader.Interface):
 		else:
 			self.network_manager = network.NetworkManager()
 			self.network_manager.logger.log_callback = self.add_log_line
-			self.network_manager.incoming_commands = self._incoming_cmds
-			self.network_manager.incoming_chat = self.add_chat_line
-			self.network_manager.user_joined = self.user_joined
-			self.network_manager.user_left = self.user_left
-			self.network_manager.user_nick_changed = self.user_nick_changed
 			self.network_manager.exception_handler = self.handle_exception
 			
 			# Set default login entries
@@ -126,108 +121,6 @@ class Interface(uiloader.Interface):
 	
 	# Network methods
 	
-	def _incoming_cmds(self, game, sender, cmdlist):
-		"""Pass incoming network commands on to the player instances"""
-		# Check if a new player entered
-		cmd1, args1 = cmdlist[0]
-		if cmd1 == "hello":
-			player = self.create_player(game, sender, args1[0])
-			player.has_been_welcomed = True
-			self.my_player.handle_network_cmds(sender, cmdlist)
-		if cmd1 == "welcome":
-			user_known = False
-			for player in self.players:
-				if player.jid == sender:
-					user_known = True
-			if not user_known:
-				player = self.create_player(game, sender)
-				player.version = args1[0]
-		
-		# Pass on the commands
-		for player in self.players:
-			if player is not self.my_player:
-				player.handle_network_cmds(sender, cmdlist)
-	
-	def get_userid(self, jid):
-		"""Get the id corresponding to a room user"""
-		userid = None
-		for i, u in self.users.items():
-			if jid == u:
-				userid = i
-				break
-		return userid
-	
-	def user_joined(self, user):
-		"""A user joined the game"""
-		# Create new user id
-		userid = 0
-		while userid in self.users.keys():
-			userid += 1
-		self.users[userid] = user
-		self.liststore_users.append((userid, user.user, unicode(user.full),
-			None, True))
-	
-	def user_left(self, user):
-		"""A user left the game"""
-		# Remove the user
-		userid = self.get_userid(user)
-		del self.users[userid]
-		for i in range(len(self.liststore_users)):
-			if self.liststore_users[i][0] == userid:
-				del self.liststore_users[i]
-				break
-		
-		# Find the corresponding player
-		player = None
-		for pl in self.players:
-			if pl.user == user:
-				player = pl
-				break
-		if player is None:
-			return # Player did not join the game
-		self.players.remove(player)
-		if player.tray is not None:
-			player.remove_tray()
-	
-	def user_nick_changed(self, user):
-		"""A user changed their nick name"""
-		# Update liststore_users
-		userid = self.get_userid(user)
-		for i in range(len(self.liststore_users)):
-			if self.liststore_users[i][0] == userid:
-				self.liststore_users[i][1] = user.user
-				self.liststore_users[i][2] = unicode(user.full)
-	
-	def create_player(self, game, jid, version=""):
-		"""Create a player object for a user"""
-		jid = muc.JID(jid)
-		for player in self.players:
-			# Check that the player has not yet been created
-			assert(player.jid != jid)
-		player = players.Player(game, jid)
-		player.version = version
-		if self.network_manager is not None:
-			if jid == self.game.get_my_jid():
-				player.send_network_cmds = (lambda *args, **kwargs:
-					self.network_manager.send_commands(game, *args, **kwargs)
-				)
-				player.updated_hand = self.cd.repaint_hand
-		else:
-			player.updated_hand = self.cd.repaint_hand
-		player.new_item = self.new_item
-		player.new_tray = self.new_tray
-		player.delete_item = self.delete_item
-		player.exception_handler = self.handle_exception
-		self.players.append(player)
-		
-		# Update a user's version information
-		userid = self.get_userid(jid)
-		for i in range(len(self.liststore_users)):
-			if self.liststore_users[i][0] == userid:
-				self.liststore_users[i][3] = version
-		
-		return player
-	
 	def solitaire_mode(self, widget):
 		"""Go into solitaire mode"""
 		self.label_gamename.set_text(_("Solitaire game"))
@@ -289,10 +182,15 @@ class Interface(uiloader.Interface):
 		nick = self.network_manager.get_my_jid().user
 		self.game = self.network_manager.join_game(gamename, gamepwd, nick)
 		self.game.joined = self._game_joined
+		self.game.incoming_commands = self._incoming_cmds
+		self.game.incoming_chat = self.add_chat_line
+		self.game.user_joined = self.user_joined
+		self.game.user_left = self.user_left
+		self.game.user_nick_changed = self.user_nick_changed
 	
 	def _game_joined(self):
 		"""A game room has sucessfully been joined"""
-		logging.info(_("Room '%s' joined successfully."), self.game.jid)
+		logging.info(_("Game '%s' joined successfully."), self.game.jid)
 		self.hpaned_desktop.set_sensitive(True)
 		
 		# Create player
@@ -307,6 +205,111 @@ class Interface(uiloader.Interface):
 			None,
 			(0.8, 0.8, 1.0)
 		)
+	
+	def create_player(self, game, jid, version=""):
+		"""Create a player object for a user"""
+		jid = muc.JID(jid)
+		for player in self.players:
+			# Check that the player has not yet been created
+			assert(player.jid != jid)
+		player = players.Player(game, jid)
+		player.version = version
+		if self.network_manager is not None:
+			if jid == self.game.get_my_jid():
+				player.send_network_cmds = game.send_commands
+				player.updated_hand = self.cd.repaint_hand
+		else:
+			player.updated_hand = self.cd.repaint_hand
+		player.new_item = self.new_item
+		player.new_tray = self.new_tray
+		player.delete_item = self.delete_item
+		player.exception_handler = self.handle_exception
+		self.players.append(player)
+		
+		# Update a user's version information
+		userid = self.get_userid(jid)
+		for i in range(len(self.liststore_users)):
+			if self.liststore_users[i][0] == userid:
+				self.liststore_users[i][3] = version
+		
+		return player
+	
+	def _incoming_cmds(self, game, sender, cmdlist):
+		"""Pass incoming network commands on to the player instances"""
+		# Check if a new player entered
+		cmd1, args1 = cmdlist[0]
+		if cmd1 == "hello":
+			player = self.create_player(game, sender, args1[0])
+			player.has_been_welcomed = True
+			self.my_player.handle_network_cmds(sender, cmdlist)
+		if cmd1 == "welcome":
+			user_known = False
+			for player in self.players:
+				if player.jid == sender:
+					user_known = True
+			if not user_known:
+				player = self.create_player(game, sender)
+				player.version = args1[0]
+		
+		print [p.jid for p in self.players]
+		if len(self.players) >= 3:
+			print self.players[2].jid, sender
+#			print type(self.players[2].jid), type(sender)
+		# Pass on the commands
+		for player in self.players:
+			if player is not self.my_player:
+				print player.jid, player.jid == sender
+				player.handle_network_cmds(sender, cmdlist)
+	
+	def get_userid(self, jid):
+		"""Get the id corresponding to a room user"""
+		userid = None
+		for i, u in self.users.items():
+			if jid == u:
+				userid = i
+				break
+		return userid
+	
+	def user_joined(self, user):
+		"""A user joined the game"""
+		# Create new user id
+		userid = 0
+		while userid in self.users.keys():
+			userid += 1
+		self.users[userid] = user
+		self.liststore_users.append((userid, user.user, unicode(user.full),
+			None, True))
+	
+	def user_left(self, user):
+		"""A user left the game"""
+		# Remove the user
+		userid = self.get_userid(user)
+		del self.users[userid]
+		for i in range(len(self.liststore_users)):
+			if self.liststore_users[i][0] == userid:
+				del self.liststore_users[i]
+				break
+		
+		# Find the corresponding player
+		player = None
+		for pl in self.players:
+			if pl.user == user:
+				player = pl
+				break
+		if player is None:
+			return # Player did not join the game
+		self.players.remove(player)
+		if player.tray is not None:
+			player.remove_tray()
+	
+	def user_nick_changed(self, user):
+		"""A user changed their nick name"""
+		# Update liststore_users
+		userid = self.get_userid(user)
+		for i in range(len(self.liststore_users)):
+			if self.liststore_users[i][0] == userid:
+				self.liststore_users[i][1] = user.user
+				self.liststore_users[i][2] = unicode(user.full)
 	
 	def add_log_line(self, message):
 		"""Add a line to the game log"""

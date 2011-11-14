@@ -6,6 +6,7 @@ This module recieves network instructions and packages them into xmpp messages.
 Incoming messages are unpackaged and returned as instruction tuples.
 """
 
+import datetime
 import logging
 import re
 from gettext import gettext as _
@@ -94,11 +95,6 @@ class NetworkManager(object):
 	logger = None # Logger
 	
 	# Callback methods (please attach!)
-	incoming_commands = None
-	incoming_chat = None
-	user_joined = None
-	user_left = None
-	user_nick_changed = None
 	exception_handler = None
 	
 	def __init__(self):
@@ -118,9 +114,8 @@ class NetworkManager(object):
 	def join_game(self, gamename, pwd, nick):
 		"""Join a network game"""
 		logging.info(_("Joining game '%s'..."), gamename)
-		game = muc.Room(self.client, gamename, pwd, nick)
+		game = Game(self.client, gamename, pwd, nick)
 		self.games.append(game)
-		game.muc_message = self._muc_message
 		game.join()
 		return game
 	
@@ -136,6 +131,8 @@ class NetworkManager(object):
 	
 	def disconnect(self):
 		"""Disconnect from the server"""
+		for game in self.games:
+			game.leave()
 		self.games = []
 		if self.client is not None:
 			self.client.disconnect()
@@ -147,10 +144,27 @@ class NetworkManager(object):
 			return self.client.boundjid
 		else:
 			raise RuntimeError(_("Not yet connected"))
+
+
+class Game(muc.Room):
+	"""A network game"""
 	
-	def _muc_message(self, game, sender, text):
+	# Callback methods
+	incoming_commands = None
+	incoming_chat = None
+	user_joined = None
+	user_left = None
+	user_nick_changed = None
+	
+	def __init__(self, client, jid, password, nick):
+		super(self.__class__, self).__init__(client, jid, password, nick)
+		self.recorder = Recorder() # record every game by default
+	
+	def muc_message(self, room, sender, text):
 		"""Recieved a muc message"""
-		if text is not None and sender != game.get_my_jid():
+		self.recorder.record(sender, text)
+		if text is not None and sender != self.get_my_jid():
+			print "MUC", sender, self.get_my_jid()
 			matched = False
 			cmdlist = []
 			lines = text.split('\n')
@@ -164,11 +178,11 @@ class NetworkManager(object):
 						cmdlist.append((k, match.groups()))
 						break
 			if matched:
-				self._incoming_commands(game, sender, cmdlist)
+				self._incoming_commands(sender, cmdlist)
 			else:
-				self._incoming_chat(game, sender, text)
+				self._incoming_chat(sender, text)
 	
-	def _incoming_commands(self, game, sender, cmdlist):
+	def _incoming_commands(self, sender, cmdlist):
 		"""Handle an incoming command"""
 		cmdlist_ = []
 		for k, groups in cmdlist:
@@ -187,35 +201,20 @@ class NetworkManager(object):
 					args[i] = float(args[i])
 			cmdlist_.append((cmd, tuple(args)))
 		
-		self.logger.log_commands(sender, cmdlist_)
+#		self.client.logger.log_commands(sender, cmdlist_)
 		if self.incoming_commands is not None:
-			self.incoming_commands(game, sender, cmdlist_)
+			self.incoming_commands(self, sender, cmdlist_)
 	
-	def _incoming_chat(self, game, sender, text):
+	def _incoming_chat(self, sender, text):
 		"""Recieve an incoming chat messsage"""
 		if len(text) == 0:
 			return # Ignore message
 		if text[0] == '\\':
 			text = text[1:]
 		if self.incoming_chat is not None:
-			self.incoming_chat(game, sender, text)
+			self.incoming_chat(self, sender, text)
 	
-	def user_joined(self, user, stanza):
-		"""A user joined the room"""
-		if self.manager.user_joined is not None:
-			self.manager.user_joined(user)
-	
-	def user_left(self, user, stanza):
-		"""A user left the room"""
-		if self.manager.user_left is not None:
-			self.manager.user_left(user)
-	
-	def nick_changed(self, user, old_nick, stanza):
-		"""A user changed their nick"""
-		if self.manager.user_nick_changed is not None:
-			self.manager.user_nick_changed(user)
-	
-	def send_commands(self, game, cmdlist, logged=True):
+	def send_commands(self, cmdlist, logged=True):
 		"""Send a list of commands over the network"""
 		for cmd, args in cmdlist:
 			assert(cmd in commands.keys())
@@ -225,25 +224,45 @@ class NetworkManager(object):
 			for cmd, args in cmdlist:
 				cmd_str = commands[cmd]
 				text += (cmd_str % args) + "\n"
-			if logged:
-				self.logger.log_commands(self.get_my_jid(), cmdlist)
-			glib.idle_add(game.send_message, text[:-1])
+#			if logged:
+#				self.client.logger.log_commands(self.get_my_jid(), cmdlist)
+			glib.idle_add(self.send_message, text[:-1])
 	
-	def send_chat(self, text, game=None):
+	def send_chat(self, text):
 		"""Send a chat message over the network"""
 		if text == "":
 			return # don't send an empty message
 		if text[0] == '[' or text[0] == '\\':
 			text = '\\' + text
-		if game is not None:
-			glib.idle_add(game.send_message, text)
-		else:
-			pass
-			# TODO: Send to lobby
+		glib.idle_add(self.send_message, text)
+	
+	def _nick_changed(self, user, old_nick, stanza):
+		"""A user changed their nick"""
+		if self.user_nick_changed is not None:
+			self.user_nick_changed(user)
 
 
-# Recorder
-# TODO
+class Recorder(object):
+	"""Record network commands for later replay"""
+	
+	_log = []
+	
+	def record(self, jid, message):
+		"""Record a text message"""
+		record = (datetime.datetime.now(), jid, message)
+		self._log.append(record)
+	
+	def to_text(self):
+		"""Return a string representation of this recorder's log."""
+		text = ""
+		for time, jid, content in self._log:
+			text += "%s %s %s\n" % (str(time), jid.full, str(content))
+		return text[:-1]
+	
+	def clear_log(self):
+		"""Clear the log"""
+		self._log = []
+
 
 class Logger(object):
 	"""Record network commands"""

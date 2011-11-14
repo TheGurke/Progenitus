@@ -70,7 +70,7 @@ class Room(object):
 	def __init__(self, client, jid, password, nick):
 		assert(isinstance(client, XMPPClient))
 		self.client = client
-		self.jid = jid
+		self.jid = jid  # room jid as string
 		self.password = password
 		self.nick = nick
 		self.muc_plugin = self.client.plugin['xep_0045']
@@ -106,6 +106,7 @@ class Room(object):
 		"""The message handler passes on incoming room chat messages"""
 		# Filter out messages that are not for this room
 		if message["from"].bare != self.jid:
+			print message["from"].bare, self.jid
 			return
 		if self.muc_message is not None:
 			self.muc_message(self, message["from"], message["body"])
@@ -113,7 +114,7 @@ class Room(object):
 	def _muc_presence(self, presence):
 		"""The presence handler passes on incoming room presence information"""
 		if self.muc_presence is not None:
-			self.muc_presence(presence["from"], presence["role"]) # TODO
+			self.muc_presence(self, presence["from"], presence["role"]) # TODO
 	
 	def list_participants(self):
 		"""Fetch a list of all users in the room"""
