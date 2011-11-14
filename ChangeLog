@@ -20,6 +20,10 @@ Client
 - Gui redesign
 - Introduced multiplayer lobby
 
+Updater
+- There is no longer a starter for the updater; it should now be started from
+  the editor.
+
 
 Version 0.32
 ============
