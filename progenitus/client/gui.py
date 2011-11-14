@@ -435,21 +435,15 @@ class Interface(uiloader.Interface):
 			# Cancel the current loading process
 			self._deck_load_async_handle.cancel()
 		self.status_label.set_text(_("Loading deck..."))
-		self.progressbar.show()
-		
-		# progress callback
-		def progresscallback(fraction):
-			self.progressbar.set_fraction(fraction)
 		
 		# return callback
 		def finish_deckload(deck):
 			self._deck_load_async_handle = None
 			self.my_player.load_deck(deck)
-			self.progressbar.hide()
 			self.status_label.set_text(_("Deck load complete."))
 		
 		self._deck_load_async_handle = \
-			async.start(decks.load(filename, progresscallback, finish_deckload))
+			async.start(decks.load(filename, None, finish_deckload))
 	
 	
 	# Entry bar

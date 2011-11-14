@@ -100,9 +100,10 @@
                 <property name="sensitive">False</property>
                 <property name="can_focus">False</property>
                 <property name="use_action_appearance">False</property>
-                <property name="label" translatable="yes">Leave game</property>
+                <property name="label" translatable="yes">logout</property>
                 <property name="use_underline">True</property>
                 <property name="icon_name">system-log-out</property>
+                <signal name="clicked" handler="logout" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
