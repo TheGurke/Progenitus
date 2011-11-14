@@ -83,6 +83,7 @@
     <property name="can_focus">False</property>
     <property name="default_width">1000</property>
     <property name="default_height">600</property>
+    <property name="icon">media/icons/progenitus.svg</property>
     <signal name="destroy" handler="quit" swapped="no"/>
     <signal name="key-press-event" handler="keypress" swapped="no"/>
     <child>
@@ -480,7 +481,7 @@ This server can be different from your account's server.</property>
                                   <object class="GtkImage" id="image3">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="pixbuf">media/xmpp.svg</property>
+                                    <property name="pixbuf">media/icons/xmpp.svg</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>

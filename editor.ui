@@ -198,12 +198,12 @@
   <object class="GtkImage" id="image4">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">media/search-lands.svg</property>
+    <property name="pixbuf">media/icons/search-lands.svg</property>
   </object>
   <object class="GtkImage" id="image5">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="icon_name">system-software-update</property>
+    <property name="pixbuf">media/icons/update.svg</property>
   </object>
   <object class="GtkListStore" id="liststore_qs_autocomplete">
     <columns>
@@ -224,6 +224,7 @@
     <property name="window_position">center</property>
     <property name="default_width">800</property>
     <property name="default_height">400</property>
+    <property name="icon">media/icons/progenitus.svg</property>
     <signal name="destroy" handler="quit" swapped="no"/>
     <signal name="key-press-event" handler="keypress" swapped="no"/>
     <child>
