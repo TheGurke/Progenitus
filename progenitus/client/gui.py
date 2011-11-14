@@ -155,20 +155,22 @@ class Interface(uiloader.Interface):
 		
 		# Connect
 		self.network_manager.connect(username, pwd)
-		self.network_manager.client.connection_established = \
-			self._connection_established
+		self.network_manager.client.connection_established = self._join_lobby
 	
 	def _join_lobby(self):
 		"""Join the lobby room"""
 		nick = self.network_manager.get_my_jid().user
-		room = config.
+		room = "%s@conference.%s" % (config.LOBBY_ROOM, self.server)
 		self.lobby = muc.Room(self.network_manager.client, room, None, nick)
+		self.lobby.joined = self._show_lobby
+		self.lobby.muc_message = self._incoming_lobby_chat
+		glib.idle_add(self.lobby.join)
 	
 	def _show_lobby(self):
 		self.hbox_login_status.hide()
 		self.spinner_login.stop()
 		self.notebook.set_page(1)
-		self.button_join.grab_focus()
+		self.entry_gamename.grab_focus()
 	
 	def join_game(self, widget):
 		"""Join a game room"""
@@ -238,6 +240,20 @@ class Interface(uiloader.Interface):
 				self.liststore_users[i][3] = version
 		
 		return player
+	
+	def _incoming_lobby_chat(self, lobby, sender, message):
+		assert(lobby is self.lobby)
+		buf = self.logview_lobby.get_buffer()
+		text = _("\n%s: %s") % (sender.resource, message)
+		buf.insert(buf.get_end_iter(), text, -1)
+		mark = buf.get_mark("insert")
+		self.logview_lobby.scroll_to_mark(mark, 0)
+	
+	def send_lobby_chat(self, widget):
+		"""Send a chat message to the lobby"""
+		if self.lobby is not None:
+			self.lobby.send_message(self.entry_chat_lobby.get_text())
+			self.entry_chat_lobby.set_text("")
 	
 	def _incoming_cmds(self, game, sender, cmdlist):
 		"""Pass incoming network commands on to the player instances"""

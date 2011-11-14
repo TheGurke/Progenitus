@@ -808,7 +808,7 @@
                         <property name="secondary_icon_activatable">False</property>
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
-                        <signal name="activate" handler="send_lobby_message" swapped="no"/>
+                        <signal name="activate" handler="send_lobby_chat" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
