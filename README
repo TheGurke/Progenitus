@@ -88,8 +88,7 @@ The client has 5 (hidden) commands:
 
 Known issues
 
-- My player is created twice
-- multiplayer lobby is not implemented yet
+- can only join rooms that have been configured
 - game list is missing
 - tray layout is kinda broken
 - mouse is not exactly on the card when dragging a card to play

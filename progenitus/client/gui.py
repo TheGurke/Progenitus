@@ -39,6 +39,7 @@ class Interface(uiloader.Interface):
 		self.main_win.set_title(config.APP_NAME_CLIENT)
 		self.main_win.maximize()
 		glib.idle_add(cards.connect)
+		self.label_version.set_text(config.VERSION)
 		
 		# Insert a CairoDesktop
 		self.cd = desktop.CairoDesktop(self, self.eventbox)
@@ -53,7 +54,7 @@ class Interface(uiloader.Interface):
 		# Check if running in solitaire mode
 		self.solitaire = solitaire
 		if solitaire:
-			self.solitaire_mode(None)
+			self.solitaire_mode()
 		else:
 			self.network_manager = network.NetworkManager()
 			self.network_manager.logger.log_callback = self.add_log_line
@@ -121,7 +122,7 @@ class Interface(uiloader.Interface):
 	
 	# Network methods
 	
-	def solitaire_mode(self, widget):
+	def solitaire_mode(self, *args):
 		"""Go into solitaire mode"""
 		self.label_gamename.set_text(_("Solitaire game"))
 		self.hpaned_desktop.set_position(0)
@@ -154,11 +155,13 @@ class Interface(uiloader.Interface):
 		self.label_servername.set_text(self.server)
 		
 		# Connect
+		logging.info(_("Started connecting to '%s'."), self.server)
 		self.network_manager.connect(username, pwd)
 		self.network_manager.client.connection_established = self._join_lobby
 	
 	def _join_lobby(self):
 		"""Join the lobby room"""
+		logging.info(_("Joining lobby on '%s'..."), self.server)
 		nick = self.network_manager.get_my_jid().user
 		room = "%s@conference.%s" % (config.LOBBY_ROOM, self.server)
 		self.lobby = muc.Room(self.network_manager.client, room, None, nick)
@@ -170,6 +173,7 @@ class Interface(uiloader.Interface):
 		self.hbox_login_status.hide()
 		self.spinner_login.stop()
 		self.notebook.set_page(1)
+		logging.info(_("Connection established."))
 		self.entry_gamename.grab_focus()
 	
 	def join_game(self, widget):
