@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk+" version="2.20"/>
+  <!-- interface-naming-policy toplevel-contextual -->
   <object class="GtkAdjustment" id="adjustment_dacksave_intervall">
     <property name="upper">120</property>
     <property name="value">10</property>
@@ -199,6 +200,11 @@
     <property name="can_focus">False</property>
     <property name="pixbuf">media/land.png</property>
   </object>
+  <object class="GtkImage" id="image5">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="icon_name">system-software-update</property>
+  </object>
   <object class="GtkListStore" id="liststore_qs_autocomplete">
     <columns>
       <!-- column-name text -->
@@ -236,7 +242,7 @@
                 <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">New folder</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-directory</property>
+                <property name="icon_name">folder-new</property>
                 <signal name="clicked" handler="new_folder" swapped="no"/>
               </object>
               <packing>
@@ -252,7 +258,7 @@
                 <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">New deck</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-new</property>
+                <property name="icon_name">document-new</property>
                 <signal name="clicked" handler="new_deck" swapped="no"/>
               </object>
               <packing>
@@ -269,7 +275,7 @@
                 <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">Copy deck</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-copy</property>
+                <property name="icon_name">edit-copy</property>
                 <signal name="clicked" handler="copy_deck" swapped="no"/>
               </object>
               <packing>
@@ -286,7 +292,7 @@
                 <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">Delete deck</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-delete</property>
+                <property name="icon_name">edit-delete</property>
                 <signal name="clicked" handler="remove_file" swapped="no"/>
               </object>
               <packing>
@@ -303,7 +309,7 @@
                 <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">Export deck</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-save-as</property>
+                <property name="icon_name">document-save-as</property>
                 <signal name="clicked" handler="export_deck" swapped="no"/>
               </object>
               <packing>
@@ -332,9 +338,11 @@
                     <property name="can_focus">True</property>
                     <property name="tooltip_text" translatable="yes">Quicksearch (Ctrl+f)</property>
                     <property name="invisible_char">●</property>
-                    <property name="primary_icon_stock">gtk-find</property>
+                    <property name="primary_icon_name">edit-find</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
+                    <property name="primary_icon_sensitive">True</property>
+                    <property name="secondary_icon_sensitive">True</property>
                     <signal name="activate" handler="quicksearch" swapped="no"/>
                     <signal name="button-release-event" handler="select_all" swapped="no"/>
                   </object>
@@ -353,7 +361,7 @@
                 <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">Extended search</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-find</property>
+                <property name="icon_name">edit-find</property>
                 <signal name="clicked" handler="show_extended_search" swapped="no"/>
               </object>
               <packing>
@@ -369,7 +377,7 @@
                 <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">Custom search query</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-find-and-replace</property>
+                <property name="icon_name">edit-find-replace</property>
                 <signal name="clicked" handler="show_custom_search" swapped="no"/>
               </object>
               <packing>
@@ -471,7 +479,7 @@
                 <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">Run Updater</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-network</property>
+                <property name="icon_widget">image5</property>
                 <signal name="clicked" handler="run_updater" swapped="no"/>
               </object>
               <packing>
@@ -487,7 +495,7 @@
                 <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">Preferences</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-preferences</property>
+                <property name="icon_name">applications-system</property>
                 <signal name="clicked" handler="show_preferences" swapped="no"/>
               </object>
               <packing>
@@ -503,7 +511,7 @@
                 <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">About</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-about</property>
+                <property name="icon_name">help-about</property>
                 <signal name="clicked" handler="show_about" swapped="no"/>
               </object>
               <packing>
@@ -637,9 +645,6 @@
                                 <property name="headers_visible">False</property>
                                 <property name="search_column">2</property>
                                 <signal name="cursor-changed" handler="select_deck" swapped="no"/>
-                                <child internal-child="selection">
-                                  <object class="GtkTreeSelection" id="treeview-selection"/>
-                                </child>
                                 <child>
                                   <object class="GtkTreeViewColumn" id="treeviewcolumn9">
                                     <property name="title">Deckname</property>
@@ -781,9 +786,6 @@
                                     <signal name="cursor-changed" handler="select_card" swapped="no"/>
                                     <signal name="key-press-event" handler="cardview_keypress" swapped="no"/>
                                     <signal name="row-activated" handler="doubleclick_card" swapped="no"/>
-                                    <child internal-child="selection">
-                                      <object class="GtkTreeSelection" id="treeview-selection1"/>
-                                    </child>
                                     <child>
                                       <object class="GtkTreeViewColumn" id="treeviewcolumn18">
                                         <property name="title">SB?</property>
@@ -923,8 +925,8 @@
                             <child>
                               <object class="GtkProgressBar" id="progressbar_deckload">
                                 <property name="can_focus">False</property>
-                                <property name="text" translatable="yes">Loading deck...</property>
                                 <property name="show_text">True</property>
+                                <property name="text" translatable="yes">Loading deck...</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -1009,9 +1011,6 @@
                                     <signal name="cursor-changed" handler="select_result" swapped="no"/>
                                     <signal name="key-press-event" handler="searchview_keypress" swapped="no"/>
                                     <signal name="row-activated" handler="doubleclick_result" swapped="no"/>
-                                    <child internal-child="selection">
-                                      <object class="GtkTreeSelection" id="treeview-selection3"/>
-                                    </child>
                                     <child>
                                       <object class="GtkTreeViewColumn" id="treeviewcolumn1">
                                         <property name="sizing">autosize</property>
@@ -1197,6 +1196,8 @@
                                         <property name="invisible_char_set">True</property>
                                         <property name="primary_icon_activatable">False</property>
                                         <property name="secondary_icon_activatable">False</property>
+                                        <property name="primary_icon_sensitive">True</property>
+                                        <property name="secondary_icon_sensitive">True</property>
                                         <signal name="activate" handler="search" swapped="no"/>
                                       </object>
                                       <packing>
@@ -1228,6 +1229,8 @@
                                         <property name="invisible_char_set">True</property>
                                         <property name="primary_icon_activatable">False</property>
                                         <property name="secondary_icon_activatable">False</property>
+                                        <property name="primary_icon_sensitive">True</property>
+                                        <property name="secondary_icon_sensitive">True</property>
                                         <signal name="activate" handler="search" swapped="no"/>
                                       </object>
                                       <packing>
@@ -1485,6 +1488,8 @@
                                             <property name="invisible_char_set">True</property>
                                             <property name="primary_icon_activatable">False</property>
                                             <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
                                             <signal name="activate" handler="search" swapped="no"/>
                                           </object>
                                           <packing>
@@ -1589,6 +1594,8 @@
                                             <property name="invisible_char_set">True</property>
                                             <property name="primary_icon_activatable">False</property>
                                             <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
                                             <property name="adjustment">converted_cost_adjustment</property>
                                             <signal name="activate" handler="search" swapped="no"/>
                                           </object>
@@ -1638,6 +1645,8 @@
                                             <property name="invisible_char_set">True</property>
                                             <property name="primary_icon_activatable">False</property>
                                             <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
                                             <property name="adjustment">power_adjustment</property>
                                             <signal name="activate" handler="search" swapped="no"/>
                                           </object>
@@ -1687,6 +1696,8 @@
                                             <property name="invisible_char_set">True</property>
                                             <property name="primary_icon_activatable">False</property>
                                             <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
                                             <property name="adjustment">toughness_adjustment</property>
                                             <signal name="activate" handler="search" swapped="no"/>
                                           </object>
@@ -1726,6 +1737,8 @@
                                         <property name="invisible_char_set">True</property>
                                         <property name="primary_icon_activatable">False</property>
                                         <property name="secondary_icon_activatable">False</property>
+                                        <property name="primary_icon_sensitive">True</property>
+                                        <property name="secondary_icon_sensitive">True</property>
                                         <signal name="activate" handler="search" swapped="no"/>
                                       </object>
                                       <packing>
@@ -1757,6 +1770,8 @@ e.g. "counter target spell"</property>
                                         <property name="invisible_char_set">True</property>
                                         <property name="primary_icon_activatable">False</property>
                                         <property name="secondary_icon_activatable">False</property>
+                                        <property name="primary_icon_sensitive">True</property>
+                                        <property name="secondary_icon_sensitive">True</property>
                                         <signal name="activate" handler="search" swapped="no"/>
                                       </object>
                                       <packing>
@@ -1774,6 +1789,8 @@ e.g. "counter target spell"</property>
                                         <property name="invisible_char_set">True</property>
                                         <property name="primary_icon_activatable">False</property>
                                         <property name="secondary_icon_activatable">False</property>
+                                        <property name="primary_icon_sensitive">True</property>
+                                        <property name="secondary_icon_sensitive">True</property>
                                         <signal name="activate" handler="search" swapped="no"/>
                                       </object>
                                       <packing>
@@ -1819,6 +1836,8 @@ e.g. "counter target spell"</property>
                                         <property name="invisible_char_set">True</property>
                                         <property name="primary_icon_activatable">False</property>
                                         <property name="secondary_icon_activatable">False</property>
+                                        <property name="primary_icon_sensitive">True</property>
+                                        <property name="secondary_icon_sensitive">True</property>
                                         <signal name="activate" handler="search" swapped="no"/>
                                       </object>
                                       <packing>
@@ -1885,6 +1904,8 @@ e.g. "counter target spell"</property>
                                             <property name="invisible_char_set">True</property>
                                             <property name="primary_icon_activatable">False</property>
                                             <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
                                             <property name="adjustment">value_adjustment</property>
                                             <property name="climb_rate">1</property>
                                             <property name="digits">2</property>
@@ -1995,6 +2016,8 @@ e.g. "counter target spell"</property>
                                             <property name="invisible_char_set">True</property>
                                             <property name="primary_icon_activatable">False</property>
                                             <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
                                             <signal name="activate" handler="search" swapped="no"/>
                                           </object>
                                           <packing>
@@ -2046,7 +2069,7 @@ e.g. "counter target spell"</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
                                         <property name="has_tooltip">True</property>
-                                        <property name="tooltip_markup" translatable="yes">Crtl + Shift + C</property>
+                                        <property name="tooltip_markup">Crtl + Shift + C</property>
                                         <property name="tooltip_text" translatable="yes">Crtl + Shift + C</property>
                                         <property name="use_action_appearance">False</property>
                                         <property name="use_stock">True</property>
@@ -2237,6 +2260,8 @@ e.g. "counter target spell"</property>
                                     <property name="invisible_char_set">True</property>
                                     <property name="primary_icon_activatable">False</property>
                                     <property name="secondary_icon_activatable">False</property>
+                                    <property name="primary_icon_sensitive">True</property>
+                                    <property name="secondary_icon_sensitive">True</property>
                                     <signal name="changed" handler="author_changed" swapped="no"/>
                                   </object>
                                   <packing>

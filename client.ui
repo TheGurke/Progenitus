@@ -20,6 +20,12 @@
     <property name="step_increment">0.10000000000000001</property>
     <property name="page_increment">1</property>
   </object>
+  <object class="GtkImage" id="image_logout">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixel_size">24</property>
+    <property name="icon_name">system-log-out</property>
+  </object>
   <object class="GtkListStore" id="liststore_browse">
     <columns>
       <!-- column-name index -->
@@ -95,7 +101,7 @@
                 <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">Leave game</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-disconnect</property>
+                <property name="icon_name">system-log-out</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -119,7 +125,7 @@
                 <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">Zoom in</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-zoom-in</property>
+                <property name="icon_name">zoom-in</property>
                 <signal name="clicked" handler="zoom_in" swapped="no"/>
               </object>
               <packing>
@@ -134,7 +140,7 @@
                 <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">Zoom out</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-zoom-out</property>
+                <property name="icon_name">zoom-out</property>
                 <signal name="clicked" handler="zoom_out" swapped="no"/>
               </object>
               <packing>
@@ -160,7 +166,7 @@
                 <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">Untap all</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-undo</property>
+                <property name="icon_name">edit-undo</property>
                 <signal name="clicked" handler="untap_all" swapped="no"/>
               </object>
               <packing>
@@ -176,7 +182,7 @@
                 <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">Random card</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-help</property>
+                <property name="icon_name">help-browser</property>
                 <signal name="clicked" handler="create_random_card" swapped="no"/>
               </object>
               <packing>
@@ -192,7 +198,7 @@
                 <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">Load a deck...</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-open</property>
+                <property name="icon_name">document-open</property>
                 <signal name="clicked" handler="load_deck" swapped="no"/>
               </object>
               <packing>
@@ -208,7 +214,7 @@
                 <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">About</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-about</property>
+                <property name="icon_name">help-about</property>
                 <signal name="clicked" handler="show_about" swapped="no"/>
               </object>
               <packing>
@@ -318,6 +324,8 @@
                       <object class="GtkEntry" id="entry_server">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
+                        <property name="tooltip_text" translatable="yes">Enter the address for the server you want to play on, e.g. "jabber.org".
+This server can be different from your account's server.</property>
                         <property name="invisible_char">•</property>
                         <property name="invisible_char_set">True</property>
                         <property name="primary_icon_activatable">False</property>
@@ -340,7 +348,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="xalign">1</property>
-                        <property name="label" translatable="yes">server name:</property>
+                        <property name="label" translatable="yes">server:</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -460,30 +468,57 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <child>
-                          <object class="GtkHBox" id="hbox7">
+                          <object class="GtkVBox" id="vbox4">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="spacing">5</property>
                             <child>
-                              <object class="GtkImage" id="image3">
+                              <object class="GtkHBox" id="hbox7">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="pixbuf">media/xmpp.svg</property>
+                                <property name="spacing">5</property>
+                                <child>
+                                  <object class="GtkImage" id="image3">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="pixbuf">media/xmpp.svg</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="label5">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="label" translatable="yes">Please use your XMPP/Jabber account to log in.</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
                               </object>
                               <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">False</property>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
                                 <property name="position">0</property>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkLabel" id="label5">
+                              <object class="GtkLinkButton" id="linkbutton1">
+                                <property name="label" translatable="yes">I don't have a jabber account.</property>
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">Please use your XMPP/Jabber account to log in.</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">True</property>
+                                <property name="use_action_appearance">False</property>
+                                <property name="relief">none</property>
+                                <property name="uri">http://www.google.com/search?q=how%20do%20i%20create%20a%20jabber%20account%3F</property>
                               </object>
                               <packing>
-                                <property name="expand">False</property>
+                                <property name="expand">True</property>
                                 <property name="fill">False</property>
                                 <property name="position">1</property>
                               </packing>
@@ -519,81 +554,6 @@
                       </packing>
                     </child>
                     <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child>
                       <object class="GtkLabel" id="label_version">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
@@ -608,6 +568,81 @@
                         <property name="bottom_attach">9</property>
                         <property name="y_options"></property>
                       </packing>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
                     </child>
                   </object>
                 </child>
@@ -635,15 +670,42 @@
                     <property name="can_focus">False</property>
                     <property name="spacing">3</property>
                     <child>
-                      <object class="GtkLabel" id="label_servername">
+                      <object class="GtkHBox" id="hbox2">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">server name</property>
+                        <child>
+                          <object class="GtkLabel" id="label_servername">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">server name</property>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
+                            <property name="padding">4</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="button1">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">True</property>
+                            <property name="tooltip_text" translatable="yes">logout</property>
+                            <property name="use_action_appearance">False</property>
+                            <property name="image">image_logout</property>
+                            <signal name="clicked" handler="logout" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">False</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
-                        <property name="padding">4</property>
                         <property name="position">0</property>
                       </packing>
                     </child>
