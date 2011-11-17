@@ -27,6 +27,7 @@ responsible for anything that you choose to do with it.
 
 Requirements
 ============
+
 - Python 2.6 or 2.7
 - GTK 2.20 or higher
 - PyGTK
@@ -88,8 +89,8 @@ The client has 5 (hidden) commands:
 
 Known issues
 
-- can only join rooms that have been configured
 - game list is missing
+- cannot log out
 - tray layout is kinda broken
 - mouse is not exactly on the card when dragging a card to play
 - Enlarged card flicker when the mouse is near the center of the screen

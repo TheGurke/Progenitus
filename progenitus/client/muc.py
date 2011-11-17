@@ -6,6 +6,8 @@ This is a library abstraction for sleekxmpp; but it could use any library that
 supports MUC (XEP 0045).
 """
 
+import logging
+
 import sleekxmpp
 from sleekxmpp.xmlstream.stanzabase import JID
 
@@ -30,6 +32,7 @@ class XMPPClient(sleekxmpp.ClientXMPP):
 		self.register_plugin('xep_0030') # Service Discovery
 		self.register_plugin('xep_0045') # Multi-User Chat
 		self.register_plugin('xep_0199') # XMPP Ping
+		self.register_plugin('old_0004') # ?
 		
 		# Add event handlers
 		self.add_event_handler("session_start", self._session_started)
@@ -95,8 +98,19 @@ class Room(object):
 			return
 		self.client.del_event_handler("muc::%s::presence" % self.jid,
 			self._joined)
+		self.configure()
 		if self.joined is not None:
 			self.joined()
+	
+	def configure(self):
+		"""Set the room config"""
+		try:
+			self.muc_plugin.configureRoom(self.jid)
+		except:
+			# assume the room has been configured
+			pass
+		else:
+			logging.info(_("Configured room '%s'."), self.jid)
 	
 	def leave(self, message=""):
 		"""Disconnect from the room"""
