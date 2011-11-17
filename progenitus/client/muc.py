@@ -7,6 +7,7 @@ supports MUC (XEP 0045).
 """
 
 import logging
+from gettext import gettext as _
 
 import sleekxmpp
 from sleekxmpp.xmlstream.stanzabase import JID

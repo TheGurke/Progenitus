@@ -137,6 +137,7 @@ class NetworkManager(object):
 		if self.client is not None:
 			self.client.disconnect()
 			self.client = None
+		logging.info(_("Disconnected from server."))
 	
 	def get_my_jid(self):
 		"""Get the JID object associated with this client"""

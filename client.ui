@@ -26,6 +26,13 @@
     <property name="pixel_size">24</property>
     <property name="icon_name">system-log-out</property>
   </object>
+  <object class="GtkImage" id="image_logout1">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="tooltip_text" translatable="yes">Leave this game</property>
+    <property name="pixel_size">24</property>
+    <property name="icon_name">system-log-out</property>
+  </object>
   <object class="GtkListStore" id="liststore_browse">
     <columns>
       <!-- column-name index -->
@@ -50,19 +57,8 @@
       <column type="gchararray"/>
     </columns>
   </object>
-  <object class="GtkListStore" id="liststore_tokens">
-    <columns>
-      <!-- column-name id -->
-      <column type="gchararray"/>
-      <!-- column-name description -->
-      <column type="gchararray"/>
-      <!-- column-name setname -->
-      <column type="gchararray"/>
-      <!-- column-name releasedate -->
-      <column type="guint"/>
-    </columns>
-  </object>
-  <object class="GtkListStore" id="liststore_users">
+  <object class="GtkListStore" id="liststore_games"/>
+  <object class="GtkListStore" id="liststore_players">
     <columns>
       <!-- column-name userid -->
       <column type="guint"/>
@@ -74,6 +70,18 @@
       <column type="gchararray"/>
       <!-- column-name spectating -->
       <column type="gboolean"/>
+    </columns>
+  </object>
+  <object class="GtkListStore" id="liststore_tokens">
+    <columns>
+      <!-- column-name id -->
+      <column type="gchararray"/>
+      <!-- column-name description -->
+      <column type="gchararray"/>
+      <!-- column-name setname -->
+      <column type="gchararray"/>
+      <!-- column-name releasedate -->
+      <column type="guint"/>
     </columns>
   </object>
   <object class="GtkWindow" id="main_win">
@@ -689,7 +697,7 @@ This server can be different from your account's server.</property>
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkButton" id="button1">
+                          <object class="GtkButton" id="button_logout">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
@@ -712,10 +720,11 @@ This server can be different from your account's server.</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkTreeView" id="treeview_lobbyusers">
+                      <object class="GtkTreeView" id="treeview_games">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="has_tooltip">True</property>
+                        <property name="model">liststore_games</property>
                         <property name="headers_visible">False</property>
                         <property name="headers_clickable">False</property>
                         <property name="search_column">1</property>
@@ -941,15 +950,41 @@ This server can be different from your account's server.</property>
                     <property name="can_focus">False</property>
                     <property name="spacing">3</property>
                     <child>
-                      <object class="GtkLabel" id="label_gamename">
+                      <object class="GtkHBox" id="hbox4">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">game name</property>
+                        <child>
+                          <object class="GtkLabel" id="label_gamename">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">game name</property>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
+                            <property name="padding">4</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="button_leave_game">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">True</property>
+                            <property name="use_action_appearance">False</property>
+                            <property name="image">image_logout1</property>
+                            <signal name="clicked" handler="leave_game" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">False</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="padding">4</property>
+                        <property name="fill">False</property>
                         <property name="position">0</property>
                       </packing>
                     </child>
@@ -964,7 +999,7 @@ This server can be different from your account's server.</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="has_tooltip">True</property>
-                            <property name="model">liststore_users</property>
+                            <property name="model">liststore_players</property>
                             <property name="headers_visible">False</property>
                             <property name="headers_clickable">False</property>
                             <property name="search_column">1</property>
@@ -1001,7 +1036,7 @@ This server can be different from your account's server.</property>
                             <property name="can_focus">True</property>
                             <property name="hscrollbar_policy">never</property>
                             <child>
-                              <object class="GtkTextView" id="logview">
+                              <object class="GtkTextView" id="logview_game">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="editable">False</property>

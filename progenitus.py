@@ -99,7 +99,7 @@ elif options.run == "client":
 		iface.main()
 	finally:
 		iface.main_win.hide()
-		iface.network_manager.disconnect()
+		iface.logout()
 elif options.run == "updater":
 	iface = updatergui.Interface()
 	iface.main()

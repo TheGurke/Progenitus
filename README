@@ -90,7 +90,6 @@ The client has 5 (hidden) commands:
 Known issues
 
 - game list is missing
-- cannot log out
 - tray layout is kinda broken
 - mouse is not exactly on the card when dragging a card to play
 - Enlarged card flicker when the mouse is near the center of the screen

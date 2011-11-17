@@ -27,11 +27,12 @@ class Interface(uiloader.Interface):
 	_deck_load_async_handle = None
 	_browser_cardlist = None
 	_last_untapped = []
-	_entrybar_task = "" # current task for the entry bar
-	my_player = None # this client's player
-	network_manager = None # the network manager instance
-	players = [] # all players
-	users = dict() # all users that joined the chat room
+	_entrybar_task = ""  # current task for the entry bar
+	my_player = None  # this client's player
+	network_manager = None  # the network manager instance
+	game = None  # the currently joined game
+	players = []  # all players
+	users = dict()  # all users that joined the chat room
 	
 	def __init__(self, solitaire):
 		super(self.__class__, self).__init__()
@@ -217,6 +218,44 @@ class Interface(uiloader.Interface):
 			(0.8, 0.8, 1.0)
 		)
 	
+	def leave_game(self, *args):
+		"""Leave the current game"""
+		if self.game is None:
+			return
+		
+		self.game.leave()
+		logging.info(_("Leaving game '%s'."), self.game.jid)
+		
+		# Clean up
+		self.game = None
+		self.my_player = None
+		self.players = []
+		self.entry_chat.set_text("")
+		self.logview_game.get_buffer().set_text("")
+		self.liststore_players.clear()
+		self.hbox_entrybar.hide()
+		
+		# Return to the lobby
+		self.notebook.set_page(1)
+		self.entry_chat_lobby.grab_focus()
+	
+	def logout(self, *args):
+		"""Log out from the current server"""
+		self.leave_game()
+		
+		self.notebook.set_page(0)
+		for widget in (self.entry_username, self.entry_pwd, self.entry_server,
+			self.checkbutton_save_pwd, self.button_login,
+			self.button_solitaire_mode
+		):
+			widget.set_sensitive(True)
+		self.logview_lobby.get_buffer().set_text("")
+		self.entry_chat_lobby.set_text("")
+		self.liststore_games.clear()
+		
+		glib.idle_add(self.network_manager.disconnect)
+		self.server = None
+	
 	def create_player(self, game, jid, version=""):
 		"""Create a player object for a user"""
 		jid = muc.JID(jid)
@@ -239,9 +278,9 @@ class Interface(uiloader.Interface):
 		
 		# Update a user's version information
 		userid = self.get_userid(jid)
-		for i in range(len(self.liststore_users)):
-			if self.liststore_users[i][0] == userid:
-				self.liststore_users[i][3] = version
+		for i in range(len(self.liststore_players)):
+			if self.liststore_players[i][0] == userid:
+				self.liststore_players[i][3] = version
 		
 		return player
 	
@@ -295,7 +334,7 @@ class Interface(uiloader.Interface):
 		while userid in self.users.keys():
 			userid += 1
 		self.users[userid] = user
-		self.liststore_users.append((userid, user.user, unicode(user.full),
+		self.liststore_players.append((userid, user.user, unicode(user.full),
 			None, True))
 	
 	def user_left(self, user):
@@ -303,9 +342,9 @@ class Interface(uiloader.Interface):
 		# Remove the user
 		userid = self.get_userid(user)
 		del self.users[userid]
-		for i in range(len(self.liststore_users)):
-			if self.liststore_users[i][0] == userid:
-				del self.liststore_users[i]
+		for i in range(len(self.liststore_players)):
+			if self.liststore_players[i][0] == userid:
+				del self.liststore_players[i]
 				break
 		
 		# Find the corresponding player
@@ -322,21 +361,21 @@ class Interface(uiloader.Interface):
 	
 	def user_nick_changed(self, user):
 		"""A user changed their nick name"""
-		# Update liststore_users
+		# Update liststore_players
 		userid = self.get_userid(user)
-		for i in range(len(self.liststore_users)):
-			if self.liststore_users[i][0] == userid:
-				self.liststore_users[i][1] = user.user
-				self.liststore_users[i][2] = unicode(user.full)
+		for i in range(len(self.liststore_players)):
+			if self.liststore_players[i][0] == userid:
+				self.liststore_players[i][1] = user.user
+				self.liststore_players[i][2] = unicode(user.full)
 	
 	def add_log_line(self, message):
 		"""Add a line to the game log"""
-		buf = self.logview.get_buffer()
+		buf = self.logview_game.get_buffer()
 		if message[0] != "\n" and buf.get_char_count() > 0:
 			message = "\n" + message
 		buf.insert(buf.get_end_iter(), message, -1)
 		mark = buf.get_mark("insert")
-		self.logview.scroll_to_mark(mark, 0)
+		self.logview_game.scroll_to_mark(mark, 0)
 	
 	def add_chat_line(self, game, sender, message):
 		"""Recieved a chat message"""

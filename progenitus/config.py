@@ -55,7 +55,7 @@ MAX_ITEMID = 2**16 - 1
 LOBBY_ROOM = "progenituslobby"
 
 # Default prefix for network games
-DEFAULT_GAME_PREFIX = "progenitus_"
+DEFAULT_GAME_PREFIX = "progenitus-"
 
 # Game specific constants
 DEFAULT_LIFE = 20
