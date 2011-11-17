@@ -126,8 +126,8 @@ class Interface(uiloader.Interface):
 	def solitaire_mode(self, *args):
 		"""Go into solitaire mode"""
 		self.label_gamename.set_text(_("Solitaire game"))
-		self.hpaned_desktop.set_position(0)
-		self.hpaned_desktop.set_property("position-set", True)
+		self.hpaned_game.set_position(0)
+		self.hpaned_game.set_property("position-set", True)
 		self.notebook.set_page(2)
 		
 		self.my_player = self.create_player(None, "", config.VERSION)
@@ -174,6 +174,7 @@ class Interface(uiloader.Interface):
 		self.hbox_login_status.hide()
 		self.spinner_login.stop()
 		self.notebook.set_page(1)
+		self.hpaned_lobby.set_sensitive(True)
 		logging.info(_("Connection established."))
 		self.entry_gamename.grab_focus()
 	
@@ -203,7 +204,7 @@ class Interface(uiloader.Interface):
 	def _game_joined(self):
 		"""A game room has sucessfully been joined"""
 		logging.info(_("Game '%s' joined successfully."), self.game.jid)
-		self.hpaned_desktop.set_sensitive(True)
+		self.hpaned_game.set_sensitive(True)
 		
 		# Create player
 		jid = self.game.get_my_jid()
@@ -234,6 +235,7 @@ class Interface(uiloader.Interface):
 		self.logview_game.get_buffer().set_text("")
 		self.liststore_players.clear()
 		self.hbox_entrybar.hide()
+		self.hpaned_game.set_sensitive(False)
 		
 		# Return to the lobby
 		self.notebook.set_page(1)
@@ -242,6 +244,7 @@ class Interface(uiloader.Interface):
 	def logout(self, *args):
 		"""Log out from the current server"""
 		self.leave_game()
+		glib.idle_add(self.network_manager.disconnect)
 		
 		self.notebook.set_page(0)
 		for widget in (self.entry_username, self.entry_pwd, self.entry_server,
@@ -249,11 +252,10 @@ class Interface(uiloader.Interface):
 			self.button_solitaire_mode
 		):
 			widget.set_sensitive(True)
+		self.hpaned_lobby.set_sensitive(False)
 		self.logview_lobby.get_buffer().set_text("")
 		self.entry_chat_lobby.set_text("")
 		self.liststore_games.clear()
-		
-		glib.idle_add(self.network_manager.disconnect)
 		self.server = None
 	
 	def create_player(self, game, jid, version=""):

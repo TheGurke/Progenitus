@@ -662,15 +662,16 @@ This server can be different from your account's server.</property>
               <object class="GtkLabel" id="label7">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Login Screen</property>
+                <property name="label" translatable="yes">login</property>
               </object>
               <packing>
                 <property name="tab_fill">False</property>
               </packing>
             </child>
             <child>
-              <object class="GtkHPaned" id="hpaned2">
+              <object class="GtkHPaned" id="hpaned_lobby">
                 <property name="visible">True</property>
+                <property name="sensitive">False</property>
                 <property name="can_focus">True</property>
                 <property name="position">190</property>
                 <property name="position_set">True</property>
@@ -932,7 +933,7 @@ This server can be different from your account's server.</property>
               <object class="GtkLabel" id="label8">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Lobby</property>
+                <property name="label" translatable="yes">lobby</property>
               </object>
               <packing>
                 <property name="position">1</property>
@@ -940,7 +941,7 @@ This server can be different from your account's server.</property>
               </packing>
             </child>
             <child>
-              <object class="GtkHPaned" id="hpaned_desktop">
+              <object class="GtkHPaned" id="hpaned_game">
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
                 <property name="can_focus">True</property>
@@ -1343,7 +1344,7 @@ This server can be different from your account's server.</property>
               <object class="GtkLabel" id="label9">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Desktop</property>
+                <property name="label" translatable="yes">game</property>
               </object>
               <packing>
                 <property name="position">2</property>
