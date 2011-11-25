@@ -301,7 +301,7 @@ class Player(object):
 	
 	# Battlefield
 	
-	def set_counter(self, item, num, counter):
+	def set_counters(self, item, num, counter):
 		"""Put counters on a card"""
 		if num != 0:
 			if counter in item.counters and num == item.counters[counter]:
