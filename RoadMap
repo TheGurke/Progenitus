@@ -1,5 +1,5 @@
 
-0.3.x releases
+0.4.x releases
 ==============
 
 Deckeditor
@@ -37,12 +37,12 @@ Updater
 - Fetch items on the fly
 
 
-0.4.x releases
+0.5.x releases
 ==============
 
 - Move to Python3 and GTK3
 - Use new style string formatting
-- support for client plugins: - draft, block constructed
+- support for client plugins e.g. draft, block constructed
 
 
 Future
