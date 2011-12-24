@@ -60,6 +60,7 @@ sideboard.
 
 Known issues
 
+- Every deck appears twice in the deck list
 - Closing the updater also closes the editor
 - When the updater finishes, it does not close
 - Renaming folders does not work recursively

@@ -38,7 +38,12 @@ GTKBUILDER_DECKEDITOR = "editor.ui"
 GTKBUILDER_UPDATER = "updater.ui"
 
 # Path structure in the picture directory
-CARD_PICS_PATH = lambda cid: ("cards/%s/%s.jpg" % (cid.split(".")[0], cid))
+def CARD_PICS_PATH(cid):
+	setname = cid.split(".")[0]
+	if os.name == 'nt' and setname is ("con", "prn", "aux", "nul"):
+		# On windows, there is a number of illegal file 
+		setname += "_"  # BEWARE: DIRTY HACK!
+	return("cards/%s/%s.jpg" % (setname, cid))
 TOKEN_PICS_PATH = lambda tid: ("tokens/%s.jpg" % tid)
 DB_FILE = "mtg.sqlite"
 DECKMASTER_PATH = "media/deckmaster.png"
