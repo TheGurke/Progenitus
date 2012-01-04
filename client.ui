@@ -243,6 +243,7 @@
           <object class="GtkNotebook" id="notebook">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="show_tabs">False</property>
             <child>
               <object class="GtkTable" id="table1">
                 <property name="visible">True</property>
@@ -525,6 +526,7 @@ This server can be different from your account's server.</property>
                                 <property name="receives_default">True</property>
                                 <property name="use_action_appearance">False</property>
                                 <property name="relief">none</property>
+                                <property name="focus_on_click">False</property>
                                 <property name="uri">http://www.google.com/search?q=how%20do%20i%20create%20a%20jabber%20account%3F</property>
                               </object>
                               <packing>
