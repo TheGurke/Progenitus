@@ -14,6 +14,7 @@ Deckeditor
 - deck list import/export for Magic Online, OCTGN2, OCTGN1, Apprentice formats
 - mana cost as symbols
 - card sets as symbols
+- sql query tutorial
 - more comprehensive error messages
 
 Client
@@ -30,7 +31,8 @@ Client
 - console commands
 - undo untap all
 - save games
-- more comprehensive error messages
+- more comprehensive (network) error messages
+- LAN version
 
 Updater
 - More backends: e.g. gatherer.wizards.com

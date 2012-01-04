@@ -83,7 +83,7 @@ The client has 5 (hidden) commands:
 /nick	change one's nick
 /draw	draw a number of cards
 /flip	flip a coin
-/roll	roll a die
+/roll	roll a six-sided die
 
 'f11' toggles fullscreen
 
