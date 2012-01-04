@@ -60,7 +60,7 @@ sideboard.
 
 Known issues
 
-- Every deck appears twice in the deck list
+- Sometimes the decks appear twice in the deck list
 - Closing the updater also closes the editor
 - When the updater finishes, it does not close
 - Renaming folders does not work recursively
@@ -90,7 +90,7 @@ The client has 5 (hidden) commands:
 
 Known issues
 
-- game list is missing
+- no game list implemented yet
 - windows version has graphic bugs
 - mouse is not exactly on the card when dragging a card to play
 - Enlarged card flicker when the mouse is near the center of the screen
