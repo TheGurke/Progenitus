@@ -164,13 +164,8 @@ class Interface(uiloader.Interface):
 		dialog.destroy()
 	
 	def run_updater(self, *args):
-		if not hasattr(self, "iface_updater"):
-			from progenitus.updater import gui as updatergui
-			self.iface_updater = updatergui.Interface()
-			self.iface_updater.quit = self.iface_updater.dont_delete
-			# FIXME: does not work very well!
-		else:
-			self.iface_updater.main_win.show()
+		pass
+		# TODO
 	
 	def select_all(self, widget, event):
 		"""Selects all text in an entry"""
@@ -1096,7 +1091,7 @@ class Interface(uiloader.Interface):
 				query += ' ('
 				for rarity in r:
 					query += ' "rarity" LIKE ? OR'
-					args.append("%" + rarity + "%")
+					args.append(rarity + "%")
 				query = query[:-2]
 				query += ') AND'
 		

@@ -15,6 +15,7 @@ Editor
 - Visual feedback for the quicksearch if nothing is found
 - FIXED: Moving the center bar to the right while in extended search caused
   graphic bugs
+- FIXED: search for rarities could not handle incomplete strings, e.g. "C"
 
 Client
 - Gui redesign
