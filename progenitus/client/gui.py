@@ -266,12 +266,9 @@ class Interface(uiloader.Interface):
 			assert(jid != player.jid)
 		player = players.Player(game, jid)
 		player.version = version
-		if self.network_manager is not None:
-			if jid == self.game.get_my_jid():
+		if self.game is not None and jid == self.game.get_my_jid():
 				player.send_network_cmds = game.send_commands
-				player.updated_hand = self.cd.repaint_hand
-		else:
-			player.updated_hand = self.cd.repaint_hand
+		player.updated_hand = self.cd.repaint_hand
 		player.new_item = self.new_item
 		player.new_tray = self.new_tray
 		player.delete_item = self.delete_item
