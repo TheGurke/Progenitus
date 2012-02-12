@@ -106,8 +106,10 @@ nph	2011-05-13	nph	New Phyrexia	New Phyrexia
 m12	2011-07-15	m12	Magic 2012	Magic 2012 (M12)
 
 isd	2011-09-30	isd	Innistrad	Innistrad
-#dka	2012-02-03	dka	Dark Ascension	Dark Ascension
+dka	2012-02-03	dka	Dark Ascension	Dark Ascension
+#avr	2012-05-04	avr	Avacyn Restored	Avacyn Restored
 
+#m13	2012-07-13	m13	Magic 2013	Magic 2012 (M13)
 
 # Fun sets
 ug	1998-08-17	ug	Unglued	Unglued
