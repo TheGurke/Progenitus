@@ -29,9 +29,19 @@
   <object class="GtkImage" id="image_logout1">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="tooltip_text" translatable="yes">Leave this game</property>
     <property name="pixel_size">24</property>
     <property name="icon_name">system-log-out</property>
+  </object>
+  <object class="GtkImage" id="image_logout2">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixel_size">24</property>
+    <property name="icon_name">system-log-out</property>
+  </object>
+  <object class="GtkImage" id="image_refresh_game_list">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-refresh</property>
   </object>
   <object class="GtkListStore" id="liststore_browse">
     <columns>
@@ -686,6 +696,7 @@ This server can be different from your account's server.</property>
                       <object class="GtkHBox" id="hbox2">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="spacing">3</property>
                         <child>
                           <object class="GtkLabel" id="label_servername">
                             <property name="visible">True</property>
@@ -700,19 +711,35 @@ This server can be different from your account's server.</property>
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkButton" id="button_logout">
+                          <object class="GtkButton" id="button_refresh_game_list">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="tooltip_text" translatable="yes">logout</property>
+                            <property name="tooltip_text" translatable="yes">refresh the game list</property>
                             <property name="use_action_appearance">False</property>
-                            <property name="image">image_logout</property>
-                            <signal name="clicked" handler="logout" swapped="no"/>
+                            <property name="image">image_refresh_game_list</property>
+                            <signal name="activate" handler="refresh_game_list" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">False</property>
                             <property name="position">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="button_logout">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">True</property>
+                            <property name="tooltip_text" translatable="yes">leave the server</property>
+                            <property name="use_action_appearance">False</property>
+                            <property name="image">image_logout2</property>
+                            <signal name="clicked" handler="logout" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">False</property>
+                            <property name="position">2</property>
                           </packing>
                         </child>
                       </object>
@@ -974,6 +1001,7 @@ This server can be different from your account's server.</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <property name="tooltip_text" translatable="yes">leave this game</property>
                             <property name="use_action_appearance">False</property>
                             <property name="image">image_logout1</property>
                             <signal name="clicked" handler="leave_game" swapped="no"/>

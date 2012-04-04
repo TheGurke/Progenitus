@@ -176,7 +176,8 @@ class Interface(uiloader.Interface):
 		self.notebook.set_page(1)
 		self.hpaned_lobby.set_sensitive(True)
 		logging.info(_("Connection established."))
-		self.entry_gamename.grab_focus()
+		self.entry_chat_lobby.grab_focus()
+		self.refresh_game_list()
 	
 	def join_game(self, widget):
 		"""Join a game room"""
@@ -231,6 +232,7 @@ class Interface(uiloader.Interface):
 		self.game = None
 		self.my_player = None
 		self.players = []
+		self.cd.reset()
 		self.entry_chat.set_text("")
 		self.logview_game.get_buffer().set_text("")
 		self.liststore_players.clear()
@@ -286,10 +288,15 @@ class Interface(uiloader.Interface):
 	def _incoming_lobby_chat(self, lobby, sender, message):
 		assert(lobby is self.lobby)
 		buf = self.logview_lobby.get_buffer()
-		text = _("\n%s: %s") % (sender.resource, message)
-		buf.insert(buf.get_end_iter(), text, -1)
+		text = _("%s: %s") % (sender.resource, message)
+		firstline = buf.get_end_iter().get_offset() == 0
+		buf.insert(buf.get_end_iter(), ("" if firstline else "\n") + text, -1)
 		mark = buf.get_mark("insert")
 		self.logview_lobby.scroll_to_mark(mark, 0)
+	
+	def refresh_game_list(self, widget=None):
+		"""Refresh the list of avaible games in the lobby"""
+		pass # TODO
 	
 	def send_lobby_chat(self, widget):
 		"""Send a chat message to the lobby"""

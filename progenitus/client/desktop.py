@@ -89,6 +89,15 @@ class CairoDesktop(gtk.DrawingArea):
 		self.show() # Visible by default
 		self.interface = interface
 	
+	def reset(self):
+		"""Reset all properties to their default values; clear the board"""
+		self.picfactory = pics.PicFactory()
+		self._items = []
+		self._dragndrop = None
+#		self.zoom = 12.
+		self.enlarged_card = None
+		self.y_offset = 0
+	
 	def setup_eventbox(self, eventbox):
 		"""Configure and eventbox so it sends events to this widget"""
 		assert(isinstance(eventbox, gtk.Widget))
