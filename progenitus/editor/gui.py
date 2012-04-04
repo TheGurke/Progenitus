@@ -533,6 +533,7 @@ class Interface(uiloader.Interface):
 			if isempty or result == gtk.RESPONSE_YES:
 				shutil.rmtree(path)
 				self.treestore_files.remove(it)
+				self.unload_deck()
 	
 	def new_folder(self, *args):
 		"""Create a new subfolder"""
@@ -799,8 +800,13 @@ class Interface(uiloader.Interface):
 	def select_deck(self, widget):
 		"""Click on a deck"""
 		filename = self.get_selected_deck()
-		if filename is not None and os.path.isfile(filename):
-			self.load_deck(filename)
+		if filename is not None:
+			if os.path.isfile(filename):
+				self.load_deck(filename)
+			else:
+				self.toolbutton_delete_deck.set_sensitive(True)
+		else:
+			self.toolbutton_delete_deck.set_sensitive(False)
 	
 	def select_card(self, widget):
 		"""Click on the deck card list"""

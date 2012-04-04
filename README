@@ -90,7 +90,7 @@ Known issues
 - no game list implemented yet
 - windows version has graphic bugs
 - mouse is not exactly on the card when dragging a card to play
-- Enlarged card flicker when the mouse is near the center of the screen
+- enlarged card flicker when the mouse is near the center of the screen
 - when just missing a card that is meant to be tapped, everything gets untapped.
   This should be prevented by checking if there is an owned card around.
 - the log does not always scroll down
@@ -100,8 +100,8 @@ Known issues
 Updater
 -------
 
-This is a small program for downloading and updating the magic set data and
-card pictures. Please read the disclaimer carefully before using it.
+This is a program for downloading and updating the magic set data and card
+pictures. Please read the disclaimer carefully before using it.
 
 
 Known issues

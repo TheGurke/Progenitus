@@ -419,7 +419,7 @@ This server can be different from your account's server.</property>
                     </child>
                     <child>
                       <object class="GtkCheckButton" id="checkbutton_save_pwd">
-                        <property name="label" translatable="yes">save</property>
+                        <property name="label" translatable="yes">remember</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
