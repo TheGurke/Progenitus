@@ -81,7 +81,7 @@ class Interface(uiloader.Interface):
 		"""Interface callback to start the download"""
 		self.vbox_settings.set_sensitive(False)
 		self.hbox_progress.show()
-		self.expander_details.show()
+#		self.expander_details.show() # currently broken in the ui
 		self.button_start.hide()
 		self.button_stop.show()
 		async.run_threaded(self._run_download(), self.show_exception)

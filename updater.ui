@@ -1,23 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <interface>
   <requires lib="gtk+" version="2.20"/>
   <!-- interface-naming-policy toplevel-contextual -->
   <object class="GtkWindow" id="disclaimer_win">
-    <property name="can_focus">False</property>
     <property name="title" translatable="yes">Progenitus database update</property>
     <property name="window_position">center</property>
     <property name="icon">media/icons/update.svg</property>
     <property name="type_hint">dialog</property>
-    <signal name="destroy" handler="quit" swapped="no"/>
+    <signal name="destroy" handler="quit"/>
     <child>
       <object class="GtkVBox" id="vbox2">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
         <property name="spacing">5</property>
         <child>
           <object class="GtkLabel" id="label5">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
             <property name="xpad">10</property>
             <property name="ypad">10</property>
             <property name="label" translatable="yes">&lt;b&gt;Disclaimer&lt;/b&gt;
@@ -34,8 +31,6 @@ Neither the author of this program, nor the supplier can be held responsible, sh
             <property name="selectable">True</property>
           </object>
           <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
             <property name="position">0</property>
           </packing>
         </child>
@@ -45,9 +40,8 @@ Neither the author of this program, nor the supplier can be held responsible, sh
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">False</property>
-            <property name="use_action_appearance">False</property>
             <property name="draw_indicator">True</property>
-            <signal name="toggled" handler="toggle_confirm" swapped="no"/>
+            <signal name="toggled" handler="toggle_confirm"/>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -58,7 +52,6 @@ Neither the author of this program, nor the supplier can be held responsible, sh
         <child>
           <object class="GtkHButtonBox" id="hbuttonbox2">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
             <child>
               <object class="GtkButton" id="button_agree">
                 <property name="label" translatable="yes">Agree</property>
@@ -66,8 +59,7 @@ Neither the author of this program, nor the supplier can be held responsible, sh
                 <property name="sensitive">False</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
-                <signal name="clicked" handler="agree" swapped="no"/>
+                <signal name="clicked" handler="agree"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -87,17 +79,14 @@ Neither the author of this program, nor the supplier can be held responsible, sh
   </object>
   <object class="GtkImage" id="image1">
     <property name="visible">True</property>
-    <property name="can_focus">False</property>
     <property name="stock">gtk-apply</property>
   </object>
   <object class="GtkImage" id="image2">
     <property name="visible">True</property>
-    <property name="can_focus">False</property>
     <property name="stock">gtk-apply</property>
   </object>
   <object class="GtkImage" id="image3">
     <property name="visible">True</property>
-    <property name="can_focus">False</property>
     <property name="stock">gtk-apply</property>
   </object>
   <object class="GtkListStore" id="liststore_data_servers">
@@ -119,22 +108,20 @@ Neither the author of this program, nor the supplier can be held responsible, sh
     </columns>
   </object>
   <object class="GtkWindow" id="main_win">
-    <property name="can_focus">False</property>
     <property name="title" translatable="yes">Progenitus database update</property>
     <property name="window_position">center</property>
     <property name="default_width">500</property>
     <property name="icon">media/icons/update.svg</property>
     <property name="type_hint">dialog</property>
-    <signal name="destroy" handler="quit" swapped="no"/>
+    <signal name="destroy" handler="quit"/>
     <child>
       <object class="GtkVBox" id="vbox1">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
         <property name="spacing">8</property>
         <child>
           <object class="GtkLabel" id="label7">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
             <property name="ypad">5</property>
             <property name="label" translatable="yes">This download may take several hours to complete.
 Once started, you can stop the download at any time.
@@ -151,15 +138,13 @@ It will be resumed next time this program starts.</property>
         <child>
           <object class="GtkVBox" id="vbox_settings">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
             <child>
               <object class="GtkHBox" id="hbox1">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <child>
                   <object class="GtkLabel" id="label2">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Server:</property>
                   </object>
                   <packing>
@@ -172,7 +157,6 @@ It will be resumed next time this program starts.</property>
                 <child>
                   <object class="GtkComboBox" id="combobox_data_servers">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="model">liststore_data_servers</property>
                     <child>
                       <object class="GtkCellRendererText" id="cellrenderertext1"/>
@@ -197,7 +181,6 @@ It will be resumed next time this program starts.</property>
             <child>
               <object class="GtkHBox" id="hbox2">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <property name="spacing">10</property>
                 <child>
                   <object class="GtkCheckButton" id="checkbutton_download_pics">
@@ -205,10 +188,9 @@ It will be resumed next time this program starts.</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="active">True</property>
                     <property name="draw_indicator">True</property>
-                    <signal name="toggled" handler="toggle_download_pics" swapped="no"/>
+                    <signal name="toggled" handler="toggle_download_pics"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -219,7 +201,6 @@ It will be resumed next time this program starts.</property>
                 <child>
                   <object class="GtkComboBox" id="combobox_pic_servers">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="model">liststore_pic_servers</property>
                     <child>
                       <object class="GtkCellRendererText" id="cellrenderertext2"/>
@@ -244,7 +225,6 @@ It will be resumed next time this program starts.</property>
             <child>
               <object class="GtkHBox" id="hbox3">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <property name="spacing">10</property>
                 <child>
                   <object class="GtkCheckButton" id="checkbutton_download_prices">
@@ -252,10 +232,9 @@ It will be resumed next time this program starts.</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="active">True</property>
                     <property name="draw_indicator">True</property>
-                    <signal name="toggled" handler="toggle_download_prices" swapped="no"/>
+                    <signal name="toggled" handler="toggle_download_prices"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -266,7 +245,6 @@ It will be resumed next time this program starts.</property>
                 <child>
                   <object class="GtkComboBox" id="combobox_price_servers">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="model">liststore_price_servers</property>
                     <child>
                       <object class="GtkCellRendererText" id="cellrenderertext3"/>
@@ -294,7 +272,6 @@ It will be resumed next time this program starts.</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
-                <property name="use_action_appearance">False</property>
                 <property name="active">True</property>
                 <property name="draw_indicator">True</property>
               </object>
@@ -310,7 +287,6 @@ It will be resumed next time this program starts.</property>
                 <property name="sensitive">False</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
-                <property name="use_action_appearance">False</property>
                 <property name="draw_indicator">True</property>
               </object>
               <packing>
@@ -321,48 +297,37 @@ It will be resumed next time this program starts.</property>
             </child>
           </object>
           <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
             <property name="position">1</property>
           </packing>
         </child>
         <child>
           <object class="GtkHBox" id="hbox_progress">
-            <property name="can_focus">False</property>
             <child>
               <object class="GtkVBox" id="vbox3">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="orientation">vertical</property>
                 <property name="spacing">5</property>
                 <child>
                   <object class="GtkProgressBar" id="progressbar1">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="show_text">True</property>
                     <property name="text" translatable="yes">Connecting...</property>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
                     <property name="position">0</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkProgressBar" id="progressbar2">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="show_text">True</property>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
               </object>
               <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
                 <property name="padding">10</property>
                 <property name="position">0</property>
               </packing>
@@ -372,23 +337,19 @@ It will be resumed next time this program starts.</property>
             </child>
           </object>
           <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
             <property name="position">2</property>
           </packing>
         </child>
         <child>
           <object class="GtkHButtonBox" id="hbuttonbox1">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
             <child>
               <object class="GtkButton" id="button_stop">
                 <property name="label">gtk-stop</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
-                <signal name="clicked" handler="quit" swapped="no"/>
+                <signal name="clicked" handler="quit"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -402,9 +363,8 @@ It will be resumed next time this program starts.</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
                 <property name="image">image3</property>
-                <signal name="clicked" handler="start_download" swapped="no"/>
+                <signal name="clicked" handler="start_download"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -443,14 +403,11 @@ It will be resumed next time this program starts.</property>
             <child type="label">
               <object class="GtkLabel" id="label6">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <property name="label" translatable="yes">details</property>
               </object>
             </child>
           </object>
           <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
             <property name="position">4</property>
           </packing>
         </child>
