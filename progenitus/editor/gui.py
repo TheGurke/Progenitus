@@ -488,8 +488,17 @@ class Interface(uiloader.Interface):
 		try:
 			os.rename(old_path, new_path)
 			self.treestore_files.set(it, 1, new_path, 2, new_name)
-			del self._it_by_path[old_path]
-			self._it_by_path[new_path] = it
+			if isdir:
+				del self._it_by_path[old_path]
+				self._it_by_path[new_path] = it
+				# remove old filemonitors
+				to_remove = []
+				for path, monitor in self._filemonitors.items():
+					if path.startswith(old_path):
+						to_remove.append(path)
+				for path in to_remove:
+					del self._filemonitors[path]
+				self._create_monitor(new_path)
 			it = self.treestore_files.iter_children(it)
 			while it is not None:
 				if not self.treestore_files.remove(it):
@@ -564,6 +573,19 @@ class Interface(uiloader.Interface):
 		self.treeview_files.expand_to_path(self.treestore_files.get_path(it))
 		self.treeview_files.get_selection().select_iter(it)
 	
+	def select_file(self, widget):
+		model, it = self.treeview_files.get_selection().get_selected()
+		if it is None:
+			self.unload_deck()
+			self.toolbutton_delete_deck.set_sensitive(False)
+			return
+		isdir, path = model.get(it, 0, 1)
+		if isdir:
+			self.unload_deck()
+		else:
+			assert(os.path.isfile(path))
+			self.load_deck(path)
+		self.toolbutton_delete_deck.set_sensitive(True)
 	
 	#
 	# Deck save/load and display
@@ -803,17 +825,6 @@ class Interface(uiloader.Interface):
 	#
 	# Select a card / deck
 	#
-	
-	def select_deck(self, widget):
-		"""Click on a deck"""
-		filename = self.get_selected_deck()
-		if filename is not None:
-			if os.path.isfile(filename):
-				self.load_deck(filename)
-			else:
-				self.toolbutton_delete_deck.set_sensitive(True)
-		else:
-			self.toolbutton_delete_deck.set_sensitive(False)
 	
 	def select_card(self, widget):
 		"""Click on the deck card list"""
