@@ -488,6 +488,13 @@ class Interface(uiloader.Interface):
 		try:
 			os.rename(old_path, new_path)
 			self.treestore_files.set(it, 1, new_path, 2, new_name)
+			del self._it_by_path[old_path]
+			self._it_by_path[new_path] = it
+			it = self.treestore_files.iter_children(it)
+			while it is not None:
+				if not self.treestore_files.remove(it):
+					it = None
+			async.start(self._update_dir(new_path))
 		except OSError as e:
 			logging.warning(_("Could not rename '%s' to '%s': %s"), old_path,
 				new_path, str(e))
