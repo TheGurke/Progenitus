@@ -1,7 +1,7 @@
 Copyright notice
 ================
 
-Copyright (C) 2011 by TheGurke
+Copyright (C) 2011-2012 by TheGurke
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -76,12 +76,12 @@ for example http://www.jabber.org/.
 Unlike most other programs of this kind there is no limit how many player can
 join in one game.
 
-The client has 5 (hidden) commands:
-/life	set the life points
-/nick	change one's nick
-/draw	draw a number of cards
-/flip	flip a coin
-/roll	roll a six-sided die
+The client has 5 commands:
+/life #			set the life points
+/nick newnick	change one's nick
+/draw #			draw a number of cards
+/flip			flip a coin
+/roll			roll a six-sided die
 
 'f11' toggles fullscreen
 
@@ -108,8 +108,3 @@ card pictures. Please read the disclaimer carefully before using it.
 Known issues
 
 - The loyalty of plainswalkers is missing sometimes
-- Multiple instances of the program should not be possible to run
-
-
-
-

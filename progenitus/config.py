@@ -49,6 +49,9 @@ DB_FILE = "mtg.sqlite"
 DECKMASTER_PATH = "media/deckmaster.png"
 DEFAULT_DECKS_PATH = "default decks"
 
+# DB lock file for the updater
+LOCKFILE = ".updater-lock"
+
 # Suffix for the deck files
 DECKFILE_SUFFIX = ".deck"
 

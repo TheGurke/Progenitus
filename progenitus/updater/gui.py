@@ -24,6 +24,14 @@ class Interface(uiloader.Interface):
 		super(self.__class__, self).__init__()
 		self.load(config.GTKBUILDER_UPDATER)
 		
+		# Check if another updater instance is running
+		if not singleton.check(os.path.join(settings.cache_dir,
+				config.LOCKFILE)):
+			dialog = self.show_dialog(None,
+				_("Another instance of the updater is running."), "error")
+			dialog.connect("destroy", self.quit)
+			return
+		
 		# Insert download servers
 		self.liststore_data_servers.append(("magiccards.info",))
 		self.combobox_data_servers.set_active(0)
