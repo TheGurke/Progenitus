@@ -149,7 +149,7 @@ class Interface(uiloader.Interface):
 		"""Display a warning that there are no cards in the database"""
 		dialog = self.show_dialog(self.main_win,
 			_("The card database is empty. Starting the updater."), "warning")
-		dialog.connect("destroy", lambda w: self.main_win.hide())
+		dialog.connect("destroy", self.quit)
 		dialog.connect("destroy", self.run_updater)
 	
 	def show_about(self, widget):
@@ -164,8 +164,9 @@ class Interface(uiloader.Interface):
 		dialog.destroy()
 	
 	def run_updater(self, *args):
-		pass
-		# TODO
+		"""Start the updater program"""
+		os.spawnlp(os.P_NOWAIT, "python", "python",
+			"progenitus.py", "--updater")
 	
 	def select_all(self, widget, event):
 		"""Selects all text in an entry"""
@@ -472,11 +473,13 @@ class Interface(uiloader.Interface):
 		"""Renamed a file or folder in treeview_files"""
 		it = self.treestore_files.get_iter(modelpath)
 		isdir, old_path, old_name = self.treestore_files.get(it, 0, 1, 2)
+		if old_name == new_name:
+			return
 		new_path = os.path.join(os.path.dirname(old_path), new_name)
 		if not isdir:
 			new_path += config.DECKFILE_SUFFIX
 		if os.path.exists(new_path):
-			self.show_dialog(self, self.main_win,
+			self.show_dialog(self.main_win,
 				(_("Cannot rename '%s' to '%s': a file with that name exists.")
 					if os.path.isfile(new_path) else
 					_("Cannot rename '%s' to '%s': a folder with that name "
@@ -660,7 +663,7 @@ class Interface(uiloader.Interface):
 				return # no deck selected
 			parent = self.treestore_files.iter_parent(it)
 			it = self.treestore_files.insert_after(parent, it,
-				(self.deck.filename, self.deck.name, False, icon))
+				(False, self.deck.filename, self.deck.name, icon))
 			self.treeview_files.set_cursor(self.treestore_files.get_path(it))
 			self._waiting_for_decksave = True
 			self.save_deck() # save deck instantly

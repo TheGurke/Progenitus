@@ -61,8 +61,6 @@ sideboard.
 Known issues
 
 - Sometimes the decks appear twice in the deck list
-- Closing the updater also closes the editor
-- When the updater finishes, it does not close
 - Renaming folders does not work recursively
 - Deleting decks or folders is broken
 
@@ -110,7 +108,7 @@ card pictures. Please read the disclaimer carefully before using it.
 Known issues
 
 - The loyalty of plainswalkers is missing sometimes
-- Multiple instances of the program can be run
+- Multiple instances of the program should not be possible to run
 
 
 
