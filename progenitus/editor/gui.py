@@ -4,6 +4,7 @@
 import os
 import sqlite3
 import re
+import shutil
 from gettext import gettext as _
 import logging
 
@@ -495,7 +496,11 @@ class Interface(uiloader.Interface):
 	
 	def remove_file(self, *args):
 		"""Delete the currently selected file or directory"""
-		if self.deck is not None:
+		model, it = self.treeview_files.get_selection().get_selected()
+		if it is None:
+			return
+		isdir, path = model.get(it, 0, 1)
+		if not isdir and self.deck is not None:
 			modified = (len(self.deck.decklist) > 0 or
 				len(self.deck.sideboard) > 0 or self.deck.description != "")
 			if modified:
@@ -510,10 +515,24 @@ class Interface(uiloader.Interface):
 				md.destroy()
 			if not modified or result == gtk.RESPONSE_YES:
 				filename = self.deck.filename
-				it = self.treeview_files.get_selection().get_selected()[1]
 				self.treestore_files.remove(it)
 				self.unload_deck()
 				os.remove(filename)
+		if isdir:
+			isempty = len(os.listdir(path)) == 0
+			if not isempty:
+				text = ((_("Are you sure you want to delete the folder '%s'" +
+					" and all of its content?\n(This cannot be undone.)"))
+					% path)
+				md = gtk.MessageDialog(self.main_win,
+					gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_WARNING,
+					gtk.BUTTONS_YES_NO, text)
+				md.set_default_response(gtk.RESPONSE_NO)
+				result = md.run()
+				md.destroy()
+			if isempty or result == gtk.RESPONSE_YES:
+				shutil.rmtree(path)
+				self.treestore_files.remove(it)
 	
 	def new_folder(self, *args):
 		"""Create a new subfolder"""
@@ -523,7 +542,7 @@ class Interface(uiloader.Interface):
 			path = settings.deck_dir
 		else:
 			isdir, path = model.get(it, 0, 1)
-		root = path if isdir else os.path.basename(path)
+		root = path if isdir else os.path.dirname(path)
 		
 		name = _("new folder")
 		i = 1
@@ -621,11 +640,11 @@ class Interface(uiloader.Interface):
 			parent_dir = self.treestore_files.get_value(it, 1)
 		
 		# Find the new file name
-		name = _("new")
+		name = _("new deck")
 		path = os.path.join(parent_dir, name + config.DECKFILE_SUFFIX)
 		i = 2
 		while os.path.exists(path):
-			name = _("new (%d)") % i
+			name = _("new deck (%d)") % i
 			path = os.path.join(parent_dir, name + config.DECKFILE_SUFFIX)
 			i += 1
 		

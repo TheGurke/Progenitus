@@ -256,6 +256,7 @@
     <child>
       <object class="GtkVBox" id="vbox1">
         <property name="visible">True</property>
+        <property name="orientation">vertical</property>
         <child>
           <object class="GtkToolbar" id="toolbar1">
             <property name="visible">True</property>
@@ -529,6 +530,7 @@
                     <child>
                       <object class="GtkVBox" id="vbox2">
                         <property name="visible">True</property>
+                        <property name="orientation">vertical</property>
                         <child>
                           <object class="GtkScrolledWindow" id="scrolledwindow3">
                             <property name="visible">True</property>
@@ -584,6 +586,7 @@
                         <child>
                           <object class="GtkVBox" id="vbox7">
                             <property name="visible">True</property>
+                            <property name="orientation">vertical</property>
                             <child>
                               <object class="GtkHBox" id="hbox11">
                                 <property name="visible">True</property>
@@ -832,6 +835,7 @@
                         <child>
                           <object class="GtkVBox" id="vbox8">
                             <property name="visible">True</property>
+                            <property name="orientation">vertical</property>
                             <child>
                               <object class="GtkHBox" id="hbox10">
                                 <property name="visible">True</property>
@@ -2347,6 +2351,7 @@ The following setting reduces the memory usage to about 35MB. However, it disabl
             <child>
               <object class="GtkVBox" id="vbox3">
                 <property name="visible">True</property>
+                <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkImage" id="cardpic">
                     <property name="width_request">312</property>
