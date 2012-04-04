@@ -5,6 +5,7 @@ import os
 import sqlite3
 import re
 import shutil
+import subprocess
 from gettext import gettext as _
 import logging
 
@@ -166,8 +167,9 @@ class Interface(uiloader.Interface):
 	
 	def run_updater(self, *args):
 		"""Start the updater program"""
-		os.spawnlp(os.P_NOWAIT, "python", "python",
-			"progenitus.py", "--updater")
+		subprocess.Popen(["python", "progenitus.py", "--updater"])
+#		os.spawnlp(os.P_NOWAIT, "python", "python",
+#			"progenitus.py", "--updater")
 	
 	def select_all(self, widget, event):
 		"""Selects all text in an entry"""
