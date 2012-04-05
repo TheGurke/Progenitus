@@ -313,18 +313,18 @@ class Player(object):
 					num_other = item.counters[other]
 					if num_other >= num:
 						item.counters[other] -= num
-						self.send_network_cmd("counter", item.counters[other],
+						self.send_network_cmd("counters", item.counters[other],
 							other, item.itemid)
 						return
 					num -= num_other
 					del item.counters[other]
-					self.send_network_cmd("counter", 0, other, item.itemid)
+					self.send_network_cmd("counters", 0, other, item.itemid)
 			item.counters[counter] = num
 		elif counter in item.counters:
 			if counter not in item.counters:
 				return # nothing to be done
 			del item.counters[counter]
-		self.send_network_cmd("counter", num, counter, item.itemid)
+		self.send_network_cmd("counters", num, counter, item.itemid)
 	
 	def create_carditem(self, cardid, cardname, itemid=None, x=0, y=0):
 		# Check for card id
@@ -460,7 +460,7 @@ class Player(object):
 		elif cmd == "face":
 			item = self._get_item_by_id(args[0])
 			item.turn_over()
-		elif cmd == "counter":
+		elif cmd == "counters":
 			item = self._get_item_by_id(args[2])
 			num, counter = args[0], args[1]
 			if num != 0:

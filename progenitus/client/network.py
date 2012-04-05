@@ -44,7 +44,7 @@ commands = {
 	"tap":      "[Tap] %x", # tap a card
 	"flip":     "[Flip] %x", # flip a card
 	"face":     "[Face] %x", # face a card up or down
-	"counter":  "[Counter] %d \"%s\" counter on %x" # put counters on a card
+	"counters":  "[Counter] %d \"%s\" counter on %x" # put counters on a card
 		# FIXME: counters
 }
 
@@ -62,7 +62,7 @@ logger_msgs = {
 #	"tap":      _("{0} taps {1}."),
 	"flip":     _("{0} flips a card."),
 	"face":     _("{0} turns a card over."),
-	"counter":  _("{0} puts {1} {2} counter on a card.")
+	"counters":  _("{0} puts {1} {2} counter on a card.")
 }
 
 
