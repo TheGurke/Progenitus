@@ -57,11 +57,11 @@ logger_msgs = {
 	"shuffle":  _("{0} shuffles their deck."),
 	"setlife":  _("{0} has {1} life points."),
 	"mulligan": _("{0} takes a mulligan."),
-#	"reset": _("{0} resets their deck.")
+	"reset":    _("{0} resets their deck."),
 #	"tap":      _("{0} taps {1}."),
 	"flip":     _("{0} flips a card."),
 	"face":     _("{0} turns a card over."),
-	"counter":	_("{0} puts {1} {2} counter on a card.")
+	"counter":  _("{0} puts {1} {2} counter on a card.")
 }
 
 
@@ -115,6 +115,7 @@ class NetworkManager(object):
 		"""Join a network game"""
 		logging.info(_("Joining game '%s'..."), gamename)
 		game = Game(self.client, gamename, pwd, nick)
+		game.logger = self.logger
 		self.games.append(game)
 		game.join()
 		return game
@@ -149,6 +150,8 @@ class NetworkManager(object):
 
 class Game(muc.Room):
 	"""A network game"""
+	
+	logger = None
 	
 	# Callback methods
 	incoming_commands = None
@@ -201,7 +204,8 @@ class Game(muc.Room):
 					args[i] = float(args[i])
 			cmdlist_.append((cmd, tuple(args)))
 		
-#		self.client.logger.log_commands(sender, cmdlist_)
+		if self.logger is not None:
+			self.logger.log_commands(sender, cmdlist_)
 		if self.incoming_commands is not None:
 			self.incoming_commands(self, sender, cmdlist_)
 	
@@ -224,8 +228,8 @@ class Game(muc.Room):
 			for cmd, args in cmdlist:
 				cmd_str = commands[cmd]
 				text += (cmd_str % args) + "\n"
-#			if logged:
-#				self.client.logger.log_commands(self.get_my_jid(), cmdlist)
+			if logged and self.logger is not None:
+				self.logger.log_commands(self.get_my_jid(), cmdlist)
 			glib.idle_add(self.send_message, text[:-1])
 	
 	def send_chat(self, text):
