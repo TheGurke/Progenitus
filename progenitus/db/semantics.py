@@ -42,10 +42,10 @@ def init_carditem(item):
 	if "Planeswalker" in card.cardtype:
 		item.default_counters.append("loyalty")
 		if card.toughness != "":
-			item.controller.set_counter(item, int(card.toughness), "loyalty")
+			item.controller.set_counters(item, int(card.toughness), "loyalty")
 	if "LEVEL" in card.text:
 		item.default_counters.append("level")
-		item.controller.set_counter(item, 0, "level")
+		item.controller.set_counters(item, 0, "level")
 	if re.search(_counter2 % card.name, card.text) is not None:
 		match = re.search(_counter2 % card.name, card.text)
 		item.default_counters.append(match.groups()[0])
@@ -63,14 +63,14 @@ def init_carditem(item):
 			num = int(num)
 		else:
 			num = 0
-		item.controller.set_counter(item, num, counter)
+		item.controller.set_counters(item, num, counter)
 		if counter not in item.default_counters:
 			item.default_counters.append(counter)
 	match = _counter3.search(card.text)
 	if match is not None:
 		num = int(match.groups()[0])
 		counter = "fade" if "Fading" in card.text else "time"
-		item.controller.set_counter(item, num, counter)
+		item.controller.set_counters(item, num, counter)
 		if counter not in item.default_counters:
 			item.default_counters.append(counter)
 	

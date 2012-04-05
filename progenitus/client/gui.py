@@ -795,7 +795,7 @@ class Interface(uiloader.Interface):
 			self.status_label.set_text(_("%s's library: %d cards") %
 				(item.parent.player.nick, len(item.parent.player.library)))
 		if isinstance(item, desktop.Tray):
-			self.status_label.set_text(item.player.name)
+			self.status_label.set_text(item.player.nick)
 	
 	def call_properties(self, item, event):
 		"""Display the popup menu for an item or handcard"""
