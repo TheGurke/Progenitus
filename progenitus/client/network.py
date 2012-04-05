@@ -9,6 +9,7 @@ Incoming messages are unpackaged and returned as instruction tuples.
 import datetime
 import logging
 import re
+import gzip
 from gettext import gettext as _
 
 import glib
@@ -267,7 +268,7 @@ class Recorder(object):
 		return text[:-1]
 	
 	def dump_to_file(self, filename):
-		with open(filename, 'w') as f:
+		with gzip.GzipFile(filename, 'w') as f:
 			f.write(self.to_text())
 	
 	def clear_log(self):
