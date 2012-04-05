@@ -788,12 +788,12 @@ class Interface(uiloader.Interface):
 		if isinstance(item, desktop.Graveyard):
 			graveyard = item.parent.player.graveyard
 			self.status_label.set_text(_("%s's graveyard: %d cards") %
-				(item.parent.player.name, len(graveyard)))
+				(item.parent.player.nick, len(graveyard)))
 			if len(graveyard) > 0:
 				self.cd.show_enlarged_card(graveyard[-1].id)
 		if isinstance(item, desktop.Library):
 			self.status_label.set_text(_("%s's library: %d cards") %
-				(item.parent.player.name, len(item.parent.player.library)))
+				(item.parent.player.nick, len(item.parent.player.library)))
 		if isinstance(item, desktop.Tray):
 			self.status_label.set_text(item.player.name)
 	

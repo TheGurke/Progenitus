@@ -25,7 +25,7 @@ class Player(object):
 	"""A player is the virtual representation of the game from one player's
 	point of view"""
 	
-	name = "" # the player's name
+	nick = "" # the player's nick
 	deck = None
 	tray = None # Tray item
 	life = config.DEFAULT_LIFE # life points

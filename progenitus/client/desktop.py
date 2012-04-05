@@ -752,7 +752,7 @@ class CardItem(Item):
 			text = _("%s token") % str(self.token)
 		if not self.mine:
 			if self.controller is not None:
-				text = _("{0}'s {1}").format(self.controller.name, text)
+				text = _("{0}'s {1}").format(self.controller.nick, text)
 		
 		# Add counter information
 		for counter, num in self.counters.items():
