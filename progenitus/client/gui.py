@@ -74,12 +74,10 @@ class Interface(uiloader.Interface):
 			self.entry_server.set_text(settings.server)
 			self.entry_gamename.set_text(settings.gamename)
 			self.entry_gamepwd.set_text(settings.gamepwd)
-			if settings.userpwd != "":
-				glib.idle_add(self.button_login.grab_focus)
-			elif settings.username != "":
-				glib.idle_add(self.entry_pwd.grab_focus)
-			else:
+			if settings.username == "":
 				glib.idle_add(self.entry_username.grab_focus)
+			elif settings.userpwd == "":
+				glib.idle_add(self.entry_pwd.grab_focus)
 		
 		# Initialize tokens
 		self.init_counters_autocomplete()
@@ -408,23 +406,23 @@ class Interface(uiloader.Interface):
 				self.my_player.draw_x_cards(int(match.groups()[0]))
 			match = re.match(r'/nick\s+(.+)', text)
 			if match is not None and self.network_manager is not None:
-				self.network_manager.change_nick(match.groups()[0])
+				self.game.change_nick(match.groups()[0])
 			if text[:5] == "/flip":
 				# Flip a coin
 				result = (_("heads"), _("tails"))[random.randint(0, 1)]
 				msg = _("The coin came up %s.") % result
-				self.network_manager.send_chat(msg, self.game)
+				self.game.send_chat(msg)
 				self.add_log_line(msg)
 			if text[:5] == "/roll":
 				# Roll a die
 				result = random.randint(1, 6)
 				msg = _("Rolled a %d.") % result
-				self.network_manager.send_chat(msg, self.game)
+				self.game.send_chat(msg)
 				self.add_log_line(msg)
 		
 		else:
-			if self.network_manager is not None:
-				self.network_manager.send_chat(text, self.game)
+			if self.game is not None:
+				self.game.send_chat(text)
 			self.add_log_line(_("You: %s") % text)
 		self.entry_chat.set_text("")
 	
