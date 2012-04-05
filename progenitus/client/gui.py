@@ -236,6 +236,7 @@ class Interface(uiloader.Interface):
 		try:
 			replayfile = os.path.join(settings.replay_dir, config.LATEST_REPLAY)
 			self.game.recorder.dump_to_file(replayfile)
+			logging.info("Saved replay to '%s'." % replayfile)
 		except Exception as e:
 			logging.error("Error while dumping replay file: " + str(e))
 		
