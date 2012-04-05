@@ -232,6 +232,13 @@ class Interface(uiloader.Interface):
 		self.game.leave()
 		logging.info(_("Leaving game '%s'."), self.game.jid)
 		
+		# Dump replay
+		try:
+			replayfile = os.path.join(settings.replay_dir, config.LATEST_REPLAY)
+			self.game.recorder.dump_to_file(replayfile)
+		except Exception as e:
+			logging.error("Error while dumping replay file: " + str(e))
+		
 		# Clean up
 		self.game = None
 		self.my_player = None

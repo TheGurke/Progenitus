@@ -152,6 +152,7 @@ class Game(muc.Room):
 	"""A network game"""
 	
 	logger = None
+	recorder = None
 	
 	# Callback methods
 	incoming_commands = None
@@ -260,8 +261,14 @@ class Recorder(object):
 		"""Return a string representation of this recorder's log."""
 		text = ""
 		for time, jid, content in self._log:
-			text += "%s %s %s\n" % (str(time), jid.full, str(content))
+			text += "%s %s %s\n" % (str(time),
+				"\"%s\"" % jid.resource.replace("\"", "\\\""),
+				"%r" % content)
 		return text[:-1]
+	
+	def dump_to_file(self, filename):
+		with open(filename, 'w') as f:
+			f.write(self.to_text())
 	
 	def clear_log(self):
 		"""Clear the log"""

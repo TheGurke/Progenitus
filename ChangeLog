@@ -20,6 +20,8 @@ Client
 - Gui redesign
 - Introduced multiplayer lobby
 - Now joining a new game is possible without restarting the client
+- Game replays are dumped automatically into a file "latest.replay" into the
+  decks folder. Viewing replays is not yet possible, though.
 
 Updater
 - Can now be started from the editor

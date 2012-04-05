@@ -28,6 +28,9 @@ _settings = [
 	("DEFAULT", "deck_dir", "dir",
 		"$HOME/Progenitus decks" if os.name == 'posix' else "decks",
 		"Path to deck folder"),
+	("DEFAULT", "replay_dir", "dir",
+		"$HOME/Progenitus decks" if os.name == 'posix' else "decks",
+		"Path to replay folder"),
 	("DEFAULT", "save_ram", "bool", False,
 		"The program should reduce memory footprint even at the cost of speed "
 		"or features"),

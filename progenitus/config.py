@@ -55,6 +55,9 @@ LOCKFILE = ".updater-lock"
 # Suffix for the deck files
 DECKFILE_SUFFIX = ".deck"
 
+# Filename for the last replay
+LATEST_REPLAY = "latest.replay"
+
 # Network options
 JOIN_DELAY = 1000 # time to wait for tray creation
 MAX_ITEMID = 2**16 - 1
