@@ -47,12 +47,6 @@ class Interface(uiloader.Interface):
 		self.eventbox.add(self.cd)
 		self.hscale_zoom.set_value(2) # sync initial zoom level
 		self.zoom_change()
-		if os.name == 'nt':
-			# Dirty hack: in windows, refresh a lot to avoid the redrawing bugs
-			def refresh():
-				self.cd.queue_draw()
-				return True
-			glib.timeout_add(100, refresh)
 		
 		# Set CairoDesktop callbacks
 		self.cd.prop_callback = self.call_properties
