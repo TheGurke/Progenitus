@@ -52,6 +52,14 @@ class Interface(uiloader.Interface):
 		self.cd.prop_callback = self.call_properties
 		self.cd.hover_callback = self.hover
 		
+		# Change entrybar color
+#		style.bg[gtk.STATE_NORMAL] = gtk.gdk.Color(1, 0, 0)
+#		for st in (gtk.STATE_NORMAL, gtk.STATE_INSENSITIVE,
+#                       gtk.STATE_PRELIGHT, gtk.STATE_SELECTED,
+#                       gtk.STATE_ACTIVE):
+#			color = gtk.gdk.Color(0, 34251, 0)
+#			self.hbox_entrybar.modify_bg(st, color)
+		
 		# Check if running in solitaire mode
 		self.solitaire = solitaire
 		if solitaire:
