@@ -16,6 +16,7 @@ import sleekxmpp
 from sleekxmpp import ClientXMPP, ComponentXMPP
 from sleekxmpp.stanza import Message, Iq, Presence
 from sleekxmpp.test import TestSocket, TestLiveSocket
+from sleekxmpp.exceptions import XMPPError, IqTimeout, IqError
 from sleekxmpp.xmlstream import ET, register_stanza_plugin
 from sleekxmpp.xmlstream import ElementBase, StanzaBase
 from sleekxmpp.xmlstream.tostring import tostring
@@ -56,9 +57,6 @@ class SleekTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         unittest.TestCase.__init__(self, *args, **kwargs)
         self.xmpp = None
-
-    def runTest(self):
-        pass
 
     def parse_xml(self, xml_string):
         try:
@@ -149,6 +147,32 @@ class SleekTest(unittest.TestCase):
         if string is not None:
             self.assertEqual(str(jid), string,
                     "String does not match: %s" % str(jid))
+
+    def check_roster(self, owner, jid, name=None, subscription=None,
+                     afrom=None, ato=None, pending_out=None, pending_in=None,
+                     groups=None):
+        roster = self.xmpp.roster[owner][jid]
+        if name is not None:
+            self.assertEqual(roster['name'], name,
+                    "Incorrect name value: %s" % roster['name'])
+        if subscription is not None:
+            self.assertEqual(roster['subscription'], subscription,
+                    "Incorrect subscription: %s" % roster['subscription'])
+        if afrom is not None:
+            self.assertEqual(roster['from'], afrom,
+                    "Incorrect from state: %s" % roster['from'])
+        if ato is not None:
+            self.assertEqual(roster['to'], ato,
+                    "Incorrect to state: %s" % roster['to'])
+        if pending_out is not None:
+            self.assertEqual(roster['pending_out'], pending_out,
+                    "Incorrect pending_out state: %s" % roster['pending_out'])
+        if pending_in is not None:
+            self.assertEqual(roster['pending_in'], pending_out,
+                    "Incorrect pending_in state: %s" % roster['pending_in'])
+        if groups is not None:
+            self.assertEqual(roster['groups'], groups,
+                    "Incorrect groups: %s" % roster['groups'])
 
     # ------------------------------------------------------------------
     # Methods for comparing stanza objects to XML strings
@@ -269,7 +293,8 @@ class SleekTest(unittest.TestCase):
     def stream_start(self, mode='client', skip=True, header=None,
                            socket='mock', jid='tester@localhost',
                            password='test', server='localhost',
-                           port=5222, plugins=None):
+                           port=5222, sasl_mech=None,
+                           plugins=None, plugin_config={}):
         """
         Initialize an XMPP client or component using a dummy XML stream.
 
@@ -293,10 +318,13 @@ class SleekTest(unittest.TestCase):
                         are loaded.
         """
         if mode == 'client':
-            self.xmpp = ClientXMPP(jid, password)
+            self.xmpp = ClientXMPP(jid, password,
+                                   sasl_mech=sasl_mech,
+                                   plugin_config=plugin_config)
         elif mode == 'component':
             self.xmpp = ComponentXMPP(jid, password,
-                                      server, port)
+                                      server, port,
+                                      plugin_config=plugin_config)
         else:
             raise ValueError("Unknown XMPP connection mode.")
 
@@ -309,7 +337,6 @@ class SleekTest(unittest.TestCase):
 
             # Simulate connecting for mock sockets.
             self.xmpp.auto_reconnect = False
-            self.xmpp.is_client = True
             self.xmpp.state._set_state('connected')
 
             # Must have the stream header ready for xmpp.process() to work.
@@ -324,7 +351,10 @@ class SleekTest(unittest.TestCase):
                 skip_queue.put('started')
 
             self.xmpp.add_event_handler('session_start', wait_for_session)
-            self.xmpp.connect()
+            if server is not None:
+                self.xmpp.connect((server, port))
+            else:
+                self.xmpp.connect()
         else:
             raise ValueError("Unknown socket type.")
 

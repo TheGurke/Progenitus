@@ -29,6 +29,8 @@ class feature_mechanisms(base_plugin):
         self.description = "SASL Stream Feature"
         self.stanza = stanza
 
+        self.use_mech = self.config.get('use_mech', None)
+
         def tls_active():
             return 'starttls' in self.xmpp.features
 
@@ -48,7 +50,8 @@ class feature_mechanisms(base_plugin):
                                 username=self.xmpp.boundjid.user,
                                 sec_query=suelta.sec_query_allow,
                                 request_values=sasl_callback,
-                                tls_active=tls_active)
+                                tls_active=tls_active,
+                                mech=self.use_mech)
 
         register_stanza_plugin(StreamFeatures, stanza.Mechanisms)
 
@@ -120,7 +123,7 @@ class feature_mechanisms(base_plugin):
 
     def _handle_fail(self, stanza):
         """SASL authentication failed. Disconnect and shutdown."""
-        log.info("Authentication failed: %s" % stanza['condition'])
+        log.info("Authentication failed: %s", stanza['condition'])
         self.xmpp.event("failed_auth", stanza, direct=True)
         self.xmpp.disconnect()
         return True

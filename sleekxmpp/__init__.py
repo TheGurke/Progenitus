@@ -15,5 +15,4 @@ from sleekxmpp.xmlstream import XMLStream, RestartStream
 from sleekxmpp.xmlstream.matcher import *
 from sleekxmpp.xmlstream.stanzabase import StanzaBase, ET
 
-__version__ = '1.0beta6.1'
-__version_info__ = (1, 0, 0, 'beta6', 1)
+from sleekxmpp.version import __version__, __version_info__

@@ -14,6 +14,7 @@ from .. stanza.presence import Presence
 from .. xmlstream.handler.callback import Callback
 from .. xmlstream.matcher.xpath import MatchXPath
 from .. xmlstream.matcher.xmlmask import MatchXMLMask
+from sleekxmpp.exceptions import IqError, IqTimeout
 
 
 log = logging.getLogger(__name__)
@@ -126,7 +127,7 @@ class xep_0045(base.base_plugin):
     def handle_groupchat_invite(self, inv):
         """ Handle an invite into a muc.
         """
-        logging.debug("MUC invite to %s from %s: %s" % (inv['from'], inv["from"], inv))
+        logging.debug("MUC invite to %s from %s: %s", inv['from'], inv["from"], inv)
         if inv['from'] not in self.rooms.keys():
             self.xmpp.event("groupchat_invite", inv)
 
@@ -148,7 +149,7 @@ class xep_0045(base.base_plugin):
             if entry['nick'] not in self.rooms[entry['room']]:
                 got_online = True
             self.rooms[entry['room']][entry['nick']] = entry
-        log.debug("MUC presence from %s/%s : %s" % (entry['room'],entry['nick'], entry))
+        log.debug("MUC presence from %s/%s : %s", entry['room'],entry['nick'], entry)
         self.xmpp.event("groupchat_presence", pr)
         self.xmpp.event("muc::%s::presence" % entry['room'], pr)
         if got_offline:
@@ -188,8 +189,12 @@ class xep_0045(base.base_plugin):
             iq['from'] = ifrom
         query = ET.Element('{http://jabber.org/protocol/muc#owner}query')
         iq.append(query)
-        result = iq.send()
-        if result['type'] == 'error':
+        # For now, swallow errors to preserve existing API
+        try:
+            result = iq.send()
+        except IqError:
+            return False
+        except IqTimeout:
             return False
         xform = result.xml.find('{http://jabber.org/protocol/muc#owner}query/{jabber:x:data}x')
         if xform is None: return False
@@ -209,15 +214,19 @@ class xep_0045(base.base_plugin):
         form = form.getXML('submit')
         query.append(form)
         iq.append(query)
-        result = iq.send()
-        if result['type'] == 'error':
+        # For now, swallow errors to preserve existing API
+        try:
+            result = iq.send()
+        except IqError:
+            return False
+        except IqTimeout:
             return False
         return True
 
-    def joinMUC(self, room, nick, maxhistory="0", password='', wait=False, pstatus=None, pshow=None):
+    def joinMUC(self, room, nick, maxhistory="0", password='', wait=False, pstatus=None, pshow=None, pfrom=None):
         """ Join the specified room, requesting 'maxhistory' lines of history.
         """
-        stanza = self.xmpp.makePresence(pto="%s/%s" % (room, nick), pstatus=pstatus, pshow=pshow)
+        stanza = self.xmpp.makePresence(pto="%s/%s" % (room, nick), pstatus=pstatus, pshow=pshow, pfrom=pfrom)
         x = ET.Element('{http://jabber.org/protocol/muc}x')
         if password:
             passelement = ET.Element('password')
@@ -254,12 +263,16 @@ class xep_0045(base.base_plugin):
         destroy.append(xreason)
         query.append(destroy)
         iq.append(query)
-        r = iq.send()
-        if r is False or r['type'] == 'error':
+        # For now, swallow errors to preserve existing API
+        try:
+            r = iq.send()
+        except IqError:
+            return False
+        except IqTimeout:
             return False
         return True
 
-    def setAffiliation(self, room, jid=None, nick=None, affiliation='member'):
+    def setAffiliation(self, room, jid=None, nick=None, affiliation='member', ifrom=None):
         """ Change room affiliation."""
         if affiliation not in ('outcast', 'member', 'admin', 'owner', 'none'):
             raise TypeError
@@ -271,9 +284,14 @@ class xep_0045(base.base_plugin):
         query.append(item)
         iq = self.xmpp.makeIqSet(query)
         iq['to'] = room
-        result = iq.send()
-        if result is False or result['type'] != 'result':
-            raise ValueError
+        iq['from'] = ifrom
+        # For now, swallow errors to preserve existing API
+        try:
+            result = iq.send()
+        except IqError:
+            return False
+        except IqTimeout:
+            return False
         return True
 
     def invite(self, room, jid, reason='', mfrom=''):
@@ -290,33 +308,38 @@ class xep_0045(base.base_plugin):
         msg.append(x)
         self.xmpp.send(msg)
 
-    def leaveMUC(self, room, nick, msg=''):
+    def leaveMUC(self, room, nick, msg='', pfrom=None):
         """ Leave the specified room.
         """
         if msg:
-            self.xmpp.sendPresence(pshow='unavailable', pto="%s/%s" % (room, nick), pstatus=msg)
+            self.xmpp.sendPresence(pshow='unavailable', pto="%s/%s" % (room, nick), pstatus=msg, pfrom=pfrom)
         else:
-            self.xmpp.sendPresence(pshow='unavailable', pto="%s/%s" % (room, nick))
+            self.xmpp.sendPresence(pshow='unavailable', pto="%s/%s" % (room, nick), pfrom=pfrom)
         del self.rooms[room]
 
     def getRoomConfig(self, room, ifrom=''):
         iq = self.xmpp.makeIqGet('http://jabber.org/protocol/muc#owner')
         iq['to'] = room
         iq['from'] = ifrom
-        result = iq.send()
-        if result is None or result['type'] != 'result':
+        # For now, swallow errors to preserve existing API
+        try:
+            result = iq.send()
+        except IqError:
+            raise ValueError
+        except IqTimeout:
             raise ValueError
         form = result.xml.find('{http://jabber.org/protocol/muc#owner}query/{jabber:x:data}x')
         if form is None:
             raise ValueError
         return self.xmpp.plugin['xep_0004'].buildForm(form)
 
-    def cancelConfig(self, room):
+    def cancelConfig(self, room, ifrom=None):
         query = ET.Element('{http://jabber.org/protocol/muc#owner}query')
         x = ET.Element('{jabber:x:data}x', type='cancel')
         query.append(x)
         iq = self.xmpp.makeIqSet(query)
         iq['to'] = room
+        iq['from'] = ifrom
         iq.send()
 
     def setRoomConfig(self, room, config, ifrom=''):
