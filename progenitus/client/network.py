@@ -147,6 +147,10 @@ class NetworkManager(object):
 			return self.client.boundjid
 		else:
 			raise RuntimeError(_("Not yet connected"))
+	
+	def get_room_list(self):
+		"""Get a list of available chat rooms"""
+		pass # TODO
 
 
 class Game(muc.Room):

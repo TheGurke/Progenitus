@@ -346,6 +346,8 @@ class Interface(uiloader.Interface):
 	
 	def user_joined(self, jid, role):
 		"""A user joined the game room"""
+		if jid in self.users.values():
+			return # Don't add a user twice
 		# Create new user id
 		userid = 0
 		while userid in self.users.keys():
