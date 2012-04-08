@@ -33,7 +33,6 @@ class XMPPClient(sleekxmpp.ClientXMPP):
 		self.register_plugin('xep_0030') # Service Discovery
 		self.register_plugin('xep_0045') # Multi-User Chat
 		self.register_plugin('xep_0199') # XMPP Ping
-		self.register_plugin('old_0004') # ?
 		
 		# Add event handlers
 		self.add_event_handler("session_start", self._session_started)
@@ -67,9 +66,10 @@ class Room(object):
 	An connection object to the XMPP chat room (MUC)
 	"""
 	
-	joined = None # Handler for successful room joining
+	joined      = None # Handler for successful room joining
 	muc_message = None # Handler for incoming messages from the room
-	muc_presence = None # Handler for incoming presence from the room
+	user_joined = None # Handler for a joining user
+	user_left   = None # Handler for a leaving user
 	
 	def __init__(self, client, jid, password, nick):
 		assert(isinstance(client, XMPPClient))
@@ -90,12 +90,14 @@ class Room(object):
 		self.client.add_event_handler("muc::%s::presence" % self.jid,
 			self._joined)
 		self.client.add_event_handler("muc::%s::got_online" % self.jid,
-			self._muc_presence)
+			self._user_joined)
+		self.client.add_event_handler("muc::%s::got_offline" % self.jid,
+			self._user_left)
 	
 	def _joined(self, presence):
 		"""The room has been joined successfully"""
 		# Look for my own presence information
-		if presence["from"].full != self.get_my_jid().full:
+		if presence['from'] != self.get_my_jid():
 			return
 		self.client.del_event_handler("muc::%s::presence" % self.jid,
 			self._joined)
@@ -125,10 +127,15 @@ class Room(object):
 		if self.muc_message is not None:
 			self.muc_message(self, message["from"], message["body"])
 	
-	def _muc_presence(self, presence):
+	def _user_joined(self, presence):
 		"""The presence handler passes on incoming room presence information"""
-		if self.muc_presence is not None:
-			self.muc_presence(self, presence["from"], presence["role"]) # TODO
+		if self.user_joined is not None:
+			self.user_joined(presence["from"], presence["role"])
+	
+	def _user_left(self, presence):
+		"""The presence handler passes on incoming room presence information"""
+		if self.user_left is not None:
+			self.user_left(presence["from"])
 	
 	def list_participants(self):
 		"""Fetch a list of all users in the room"""

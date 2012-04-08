@@ -158,8 +158,6 @@ class Game(muc.Room):
 	# Callback methods
 	incoming_commands = None
 	incoming_chat = None
-	user_joined = None
-	user_left = None
 	user_nick_changed = None
 	
 	def __init__(self, client, jid, password, nick):

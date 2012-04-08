@@ -93,7 +93,7 @@ class Interface(object):
 		assert dialog_type in dialogs.keys()
 		md = gtk.MessageDialog(parent_window, gtk.DIALOG_DESTROY_WITH_PARENT,
 			dialogs[dialog_type], gtk.BUTTONS_CLOSE, text)
-		md.connect("response", lambda w, e: md.destroy())
+		md.connect("response", lambda w, e, md=md: md.destroy())
 		md.show()
 		return md
 	

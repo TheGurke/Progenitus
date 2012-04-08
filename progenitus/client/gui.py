@@ -223,8 +223,8 @@ class Interface(uiloader.Interface):
 		if self.game is None:
 			return
 		
-		self.game.leave()
 		logging.info(_("Leaving game '%s'."), self.game.jid)
+		self.game.leave()
 		
 		# Dump replay
 		try:
@@ -238,6 +238,7 @@ class Interface(uiloader.Interface):
 		self.game = None
 		self.my_player = None
 		self.players = []
+		self.users = dict()
 		self.cd.reset()
 		self.entry_chat.set_text("")
 		self.logview_game.get_buffer().set_text("")
@@ -269,9 +270,13 @@ class Interface(uiloader.Interface):
 	def create_player(self, game, jid, version=""):
 		"""Create a player object for a user"""
 		jid = muc.JID(jid)
+		# Remove the player if it has been created before
 		for player in self.players:
-			# Check that the player has not yet been created
-			assert(jid != player.jid)
+			if jid == player.jid:
+				self.players.remove(player)
+				if player.tray is not None:
+					player.remove_tray()
+				break
 		player = players.Player(game, jid)
 		player.version = version
 		if self.game is not None and jid == self.game.get_my_jid():
@@ -339,20 +344,20 @@ class Interface(uiloader.Interface):
 				break
 		return userid
 	
-	def user_joined(self, user):
-		"""A user joined the game"""
+	def user_joined(self, jid, role):
+		"""A user joined the game room"""
 		# Create new user id
 		userid = 0
 		while userid in self.users.keys():
 			userid += 1
-		self.users[userid] = user
-		self.liststore_players.append((userid, user.user, unicode(user.full),
-			None, True))
+		self.users[userid] = jid
+		self.liststore_players.append(
+			(userid, jid.resource, jid.full, None, True))
 	
-	def user_left(self, user):
+	def user_left(self, jid):
 		"""A user left the game"""
 		# Remove the user
-		userid = self.get_userid(user)
+		userid = self.get_userid(jid)
 		del self.users[userid]
 		for i in range(len(self.liststore_players)):
 			if self.liststore_players[i][0] == userid:
@@ -362,7 +367,7 @@ class Interface(uiloader.Interface):
 		# Find the corresponding player
 		player = None
 		for pl in self.players:
-			if pl.user == user:
+			if pl.jid == jid:
 				player = pl
 				break
 		if player is None:
