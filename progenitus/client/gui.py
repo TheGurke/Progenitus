@@ -313,7 +313,13 @@ class Interface(uiloader.Interface):
 	def _incoming_lobby_chat(self, lobby, sender, message):
 		assert(lobby is self.lobby)
 		buf = self.logview_lobby.get_buffer()
-		text = _("%s: %s") % (sender.resource, message)
+		print "-------"
+		print sender
+		print self.lobby.get_my_jid()
+		if sender == self.lobby.get_my_jid():
+			text = _("You: %s") % message
+		else:
+			text = _("%s: %s") % (sender.resource, message)
 		firstline = buf.get_end_iter().get_offset() == 0
 		buf.insert(buf.get_end_iter(), ("" if firstline else "\n") + text, -1)
 		mark = buf.get_mark("insert")
@@ -426,7 +432,7 @@ class Interface(uiloader.Interface):
 	
 	def add_chat_line(self, game, sender, message):
 		"""Recieved a chat message"""
-		self.add_log_line(_("%s: %s") % (sender.user, message))
+		self.add_log_line(_("%s: %s") % (sender.resource, message))
 	
 	def send_chat_message(self, widget):
 		"""Send a chat message"""

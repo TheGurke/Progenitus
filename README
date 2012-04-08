@@ -86,6 +86,8 @@ The client has 5 commands:
 
 Known issues
 
+- client does not close properly
+- rejoining a game makes messages display multiple times
 - cannot join again using the same account
 - solitaire mode broken
 - /nick and /draw does not work
