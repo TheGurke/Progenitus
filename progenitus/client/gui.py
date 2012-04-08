@@ -327,6 +327,7 @@ class Interface(uiloader.Interface):
 	
 	def refresh_game_list(self, widget=None):
 		"""Refresh the list of avaible games in the lobby"""
+		logging.info("Refreshing game list")
 		rooms = self.network_manager.get_room_list(self.server)
 		prefix_len = len(config.DEFAULT_GAME_PREFIX)
 		games = [(jid, name) for (jid, bla, name) in rooms if

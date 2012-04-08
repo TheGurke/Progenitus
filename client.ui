@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk+" version="2.24"/>
+  <requires lib="gtk+" version="2.20"/>
   <!-- interface-naming-policy toplevel-contextual -->
   <object class="GtkAdjustment" id="adjustment_life">
     <property name="lower">-1000000</property>
@@ -726,7 +726,7 @@ This server can be different from your account's server.</property>
                             <property name="tooltip_text" translatable="yes">refresh the game list</property>
                             <property name="use_action_appearance">False</property>
                             <property name="image">image_refresh_game_list</property>
-                            <signal name="activate" handler="refresh_game_list" swapped="no"/>
+                            <signal name="clicked" handler="refresh_game_list" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
