@@ -134,7 +134,7 @@ class Interface(uiloader.Interface):
 		self.label_gamename.set_text(_("Solitaire game"))
 		self.hpaned_game.set_position(0)
 		self.hpaned_game.set_property("position-set", True)
-		self.notebook.set_page(2)
+		self.notebook.set_current_page(2)
 		
 		self.my_player = self.create_player(None, "", config.VERSION)
 		glib.idle_add(self.my_player.create_tray, None, (0.8, 0.8, 1.0))
@@ -180,7 +180,7 @@ class Interface(uiloader.Interface):
 	def _show_lobby(self):
 		self.hbox_login_status.hide()
 		self.spinner_login.stop()
-		self.notebook.set_page(1)
+		self.notebook.set_current_page(1)
 		self.hpaned_lobby.set_sensitive(True)
 		logging.info(_("Connection established."))
 		self.entry_chat_lobby.grab_focus()
@@ -200,7 +200,7 @@ class Interface(uiloader.Interface):
 		settings.gamepwd = gamepwd
 		settings.save()
 		
-		self.notebook.set_page(2)
+		self.notebook.set_current_page(2)
 		
 		nick = self.network_manager.get_my_jid().user
 		self.game = self.network_manager.join_game(gamename, gamepwd, nick)
@@ -260,7 +260,7 @@ class Interface(uiloader.Interface):
 		self.hpaned_game.set_sensitive(False)
 		
 		# Return to the lobby
-		self.notebook.set_page(1)
+		self.notebook.set_current_page(1)
 		self.entry_chat_lobby.grab_focus()
 		glib.idle_add(self.refresh_game_list)
 	
@@ -269,7 +269,7 @@ class Interface(uiloader.Interface):
 		self.leave_game()
 		glib.idle_add(self.network_manager.disconnect)
 		
-		self.notebook.set_page(0)
+		self.notebook.set_current_page(0)
 		for widget in (self.entry_username, self.entry_pwd, self.entry_server,
 			self.checkbutton_save_pwd, self.button_login,
 			self.button_solitaire_mode
