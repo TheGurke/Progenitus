@@ -89,7 +89,6 @@ Known issues
 - cannot join again using the same account
 - solitaire mode broken
 - /nick and /draw does not work
-- no game list implemented yet
 - no feedback in case of wrong password
 - tray card number is not updated correctly
 - mouse is not exactly on the card when dragging a card to play

@@ -151,8 +151,6 @@ class NetworkManager(object):
 	def get_room_list(self, server):
 		"""Get a list of available chat rooms"""
 		iq = self.client.plugin['xep_0030'].get_items("conference." + server)
-		for item in iq.values['disco_items']['items']:
-			print item
 		return iq.values['disco_items']['items']
 
 

@@ -767,6 +767,7 @@ This server can be different from your account's server.</property>
                         <property name="headers_clickable">False</property>
                         <property name="search_column">1</property>
                         <property name="tooltip_column">3</property>
+                        <signal name="row-activated" handler="select_game" swapped="no"/>
                         <child>
                           <object class="GtkTreeViewColumn" id="treeviewcolumn22">
                             <property name="title" translatable="yes">game</property>

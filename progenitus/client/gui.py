@@ -186,13 +186,16 @@ class Interface(uiloader.Interface):
 		self.entry_chat_lobby.grab_focus()
 	
 	def join_game(self, widget):
-		"""Join a game room"""
+		"""Clicked on join game"""
 		gamename = (config.DEFAULT_GAME_PREFIX + self.entry_gamename.get_text()
 			+ "@conference." + self.server)
 		self.label_gamename.set_text("%s@%s" %
 			(self.entry_gamename.get_text(), self.entry_server.get_text()))
 		gamepwd = self.entry_gamepwd.get_text()
-		
+		self._join_game(gamename, gamepwd)
+	
+	def _join_game(self, gamename, gamepwd=""):
+		"""Join a game room"""
 		settings.gamename = self.entry_gamename.get_text()
 		settings.gamepwd = gamepwd
 		settings.save()
@@ -322,15 +325,23 @@ class Interface(uiloader.Interface):
 		prefix_len = len(config.DEFAULT_GAME_PREFIX)
 		games = [(jid, name) for (jid, bla, name) in rooms if
 			jid[:prefix_len] == config.DEFAULT_GAME_PREFIX]
+		self.liststore_games.clear()
 		for (jid, name) in games:
 			self.liststore_games.append((jid.split('@')[0][prefix_len:], jid))
-		return False
 	
 	def send_lobby_chat(self, widget):
 		"""Send a chat message to the lobby"""
 		if self.lobby is not None:
 			self.lobby.send_message(self.entry_chat_lobby.get_text())
 			self.entry_chat_lobby.set_text("")
+	
+	def select_game(self, *args):
+		"""Select a game in the game list"""
+		model, it = self.treeview_games.get_selection().get_selected()
+		if it is None:
+			return # Nothing selected
+		jid = model.get_value(it, 1)
+		self._join_game(jid)
 	
 	def _incoming_cmds(self, game, sender, cmdlist):
 		"""Pass incoming network commands on to the player instances"""
