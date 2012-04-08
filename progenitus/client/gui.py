@@ -236,6 +236,8 @@ class Interface(uiloader.Interface):
 		
 		# Dump replay
 		try:
+			if not os.path.exists(settings.replay_dir):
+				os.path.mkdir(settings.replay_dir)
 			replayfile = os.path.join(settings.replay_dir, config.LATEST_REPLAY)
 			self.game.recorder.dump_to_file(replayfile)
 			logging.info("Saved replay to '%s'." % replayfile)
