@@ -148,9 +148,12 @@ class NetworkManager(object):
 		else:
 			raise RuntimeError(_("Not yet connected"))
 	
-	def get_room_list(self):
+	def get_room_list(self, server):
 		"""Get a list of available chat rooms"""
-		pass # TODO
+		iq = self.client.plugin['xep_0030'].get_items("conference." + server)
+		for item in iq.values['disco_items']['items']:
+			print item
+		return iq.values['disco_items']['items']
 
 
 class Game(muc.Room):

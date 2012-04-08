@@ -67,7 +67,14 @@
       <column type="gchararray"/>
     </columns>
   </object>
-  <object class="GtkListStore" id="liststore_games"/>
+  <object class="GtkListStore" id="liststore_games">
+    <columns>
+      <!-- column-name name -->
+      <column type="gchararray"/>
+      <!-- column-name jid -->
+      <column type="gchararray"/>
+    </columns>
+  </object>
   <object class="GtkListStore" id="liststore_players">
     <columns>
       <!-- column-name userid -->
@@ -761,21 +768,12 @@ This server can be different from your account's server.</property>
                         <property name="search_column">1</property>
                         <property name="tooltip_column">3</property>
                         <child>
-                          <object class="GtkTreeViewColumn" id="treeviewcolumn10">
+                          <object class="GtkTreeViewColumn" id="treeviewcolumn22">
+                            <property name="title" translatable="yes">game</property>
                             <child>
-                              <object class="GtkCellRendererPixbuf" id="cellrendererpixbuf2"/>
-                            </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkTreeViewColumn" id="treeviewcolumn11">
-                            <property name="title">nick</property>
-                            <property name="clickable">True</property>
-                            <property name="sort_column_id">0</property>
-                            <child>
-                              <object class="GtkCellRendererText" id="cellrenderertext5"/>
+                              <object class="GtkCellRendererText" id="cellrenderertext22"/>
                               <attributes>
-                                <attribute name="text">1</attribute>
+                                <attribute name="text">0</attribute>
                               </attributes>
                             </child>
                           </object>

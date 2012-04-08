@@ -175,6 +175,7 @@ class Interface(uiloader.Interface):
 		self.lobby.joined = self._show_lobby
 		self.lobby.muc_message = self._incoming_lobby_chat
 		glib.idle_add(self.lobby.join)
+		glib.idle_add(self.refresh_game_list)
 	
 	def _show_lobby(self):
 		self.hbox_login_status.hide()
@@ -183,7 +184,6 @@ class Interface(uiloader.Interface):
 		self.hpaned_lobby.set_sensitive(True)
 		logging.info(_("Connection established."))
 		self.entry_chat_lobby.grab_focus()
-		self.refresh_game_list()
 	
 	def join_game(self, widget):
 		"""Join a game room"""
@@ -259,6 +259,7 @@ class Interface(uiloader.Interface):
 		# Return to the lobby
 		self.notebook.set_page(1)
 		self.entry_chat_lobby.grab_focus()
+		glib.idle_add(self.refresh_game_list)
 	
 	def logout(self, *args):
 		"""Log out from the current server"""
@@ -317,7 +318,13 @@ class Interface(uiloader.Interface):
 	
 	def refresh_game_list(self, widget=None):
 		"""Refresh the list of avaible games in the lobby"""
-		pass # TODO
+		rooms = self.network_manager.get_room_list(self.server)
+		prefix_len = len(config.DEFAULT_GAME_PREFIX)
+		games = [(jid, name) for (jid, bla, name) in rooms if
+			jid[:prefix_len] == config.DEFAULT_GAME_PREFIX]
+		for (jid, name) in games:
+			self.liststore_games.append((jid.split('@')[0][prefix_len:], jid))
+		return False
 	
 	def send_lobby_chat(self, widget):
 		"""Send a chat message to the lobby"""

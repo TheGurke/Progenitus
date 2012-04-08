@@ -37,7 +37,6 @@ class XMPPClient(sleekxmpp.ClientXMPP):
 		# Add event handlers
 		self.add_event_handler("session_start", self._session_started)
 #		self.add_event_handler("chat_message", self._incoming_message)
-
 	
 	def _session_started(self, event):
 		"""
