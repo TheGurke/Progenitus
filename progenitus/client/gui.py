@@ -313,9 +313,6 @@ class Interface(uiloader.Interface):
 	def _incoming_lobby_chat(self, lobby, sender, message):
 		assert(lobby is self.lobby)
 		buf = self.logview_lobby.get_buffer()
-		print "-------"
-		print sender
-		print self.lobby.get_my_jid()
 		if sender == self.lobby.get_my_jid():
 			text = _("You: %s") % message
 		else:
