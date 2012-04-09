@@ -32,6 +32,8 @@ class Interface(uiloader.Interface):
 	my_player = None  # this client's player
 	network_manager = None  # the network manager instance
 	game = None  # the currently joined game
+	solitaire = False # playing in solitaire mode?
+	replay = None # Replay currently watching
 	players = []  # all players
 	users = dict()  # all users that joined the chat room
 	
@@ -132,6 +134,7 @@ class Interface(uiloader.Interface):
 	
 	def solitaire_mode(self, *args):
 		"""Go into solitaire mode"""
+		self.solitaire = True
 		self.label_gamename.set_text(_("Solitaire game"))
 		self.hpaned_game.set_position(0)
 		self.hpaned_game.set_property("position-set", True)
@@ -172,7 +175,8 @@ class Interface(uiloader.Interface):
 			logging.error((_("Error while loading %s: ") % filename) + str(e))
 			self.show_exception(e)
 			return
-		self.label_gamename.set_text(self.replay.room)
+		self.label_gamename.set_text(
+			self.replay.room[len(config.DEFAULT_GAME_PREFIX):])
 		self.hbox_replay.show()
 		self.notebook.set_current_page(2)
 		self.hpaned_game.set_sensitive(True)
@@ -270,6 +274,28 @@ class Interface(uiloader.Interface):
 	
 	def leave_game(self, *args):
 		"""Leave the current game"""
+		# Clean up
+		self.my_player = None
+		self.players = []
+		self.users = dict()
+		self.cd.reset()
+		self.entry_chat.set_text("")
+		self.logview_game.get_buffer().set_text("")
+		self.liststore_players.clear()
+		self.hbox_entrybar.hide()
+		self.hpaned_game.set_sensitive(False)
+		
+		if self.solitaire:
+			self.solitaire = False
+			self.hpaned_game.set_property("position-set", False)
+			self.notebook.set_current_page(0)
+			return
+		if self.replay is not None:
+			self.replay = None
+			self.notebook.set_current_page(0)
+			self.hbox_replay.hide()
+			self.entry_chat.show()
+			return
 		if self.game is None:
 			return
 		
@@ -286,17 +312,7 @@ class Interface(uiloader.Interface):
 		except Exception as e:
 			logging.error("Error while dumping replay file: " + str(e))
 		
-		# Clean up
 		self.game = None
-		self.my_player = None
-		self.players = []
-		self.users = dict()
-		self.cd.reset()
-		self.entry_chat.set_text("")
-		self.logview_game.get_buffer().set_text("")
-		self.liststore_players.clear()
-		self.hbox_entrybar.hide()
-		self.hpaned_game.set_sensitive(False)
 		
 		# Return to the lobby
 		self.notebook.set_current_page(1)
