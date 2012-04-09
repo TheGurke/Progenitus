@@ -17,6 +17,7 @@
   <object class="GtkAdjustment" id="adjustment_replay">
     <property name="upper">1</property>
     <property name="step_increment">0.01</property>
+    <signal name="value-changed" handler="seek_replay" swapped="no"/>
   </object>
   <object class="GtkAdjustment" id="adjustment_zoom">
     <property name="upper">10</property>
@@ -1416,6 +1417,7 @@ This server can be different from your account's server.</property>
                             <property name="receives_default">True</property>
                             <property name="use_action_appearance">False</property>
                             <property name="image">image_play</property>
+                            <signal name="clicked" handler="play_replay" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -1430,6 +1432,7 @@ This server can be different from your account's server.</property>
                             <property name="receives_default">True</property>
                             <property name="use_action_appearance">False</property>
                             <property name="image">image_pause</property>
+                            <signal name="clicked" handler="pause_replay" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>

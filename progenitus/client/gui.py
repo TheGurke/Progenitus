@@ -5,6 +5,7 @@ import random
 import math
 import os
 import re
+import datetime
 from gettext import gettext as _
 import logging
 
@@ -15,11 +16,12 @@ from progenitus import *
 from progenitus.db import cards
 from progenitus.db import semantics
 from progenitus.editor import decks
+import muc
 import network
+import game
+import replay
 import players
 import desktop
-import muc
-import replay
 
 
 class Interface(uiloader.Interface):
@@ -129,6 +131,45 @@ class Interface(uiloader.Interface):
 		completion.connect("match-selected", self.update_counter_num)
 		self.entry_counters.set_completion(completion)
 	
+	# Replay
+	
+	def _show_replay(self, filename):
+		"""Go into show replay mode"""
+		try:
+			self.replay = replay.read_from_file(filename)
+		except Exception as e:
+			logging.error((_("Error while loading %s: ") % filename) + str(e))
+			self.show_exception(e)
+			return
+		self.label_gamename.set_text(
+			self.replay.room[len(config.DEFAULT_GAME_PREFIX):])
+		self.hbox_replay.show()
+		self.notebook.set_current_page(2)
+		self.hpaned_game.set_sensitive(True)
+		self.entry_chat.hide()
+		self.hscale_replay.get_adjustment().set_upper(
+			self.replay.get_length().total_seconds())
+		self.replay.replay_cmds = self._incoming_cmds
+		self.replay.replay_msg = self.add_chat_line
+	
+	def play_replay(self, *args):
+		"""Start playing the replay"""
+		pass # TODO
+	
+	def pause_replay(self, *args):
+		"""Pause playing the replay"""
+		pass # TODO
+	
+	def seek_replay(self, *args):
+		"""Seek the replay"""
+		t = int(self.hscale_replay.get_adjustment().get_value())
+		if t <= 3600:
+			self.label_replay.set_text(_("%d:%02d") % (t / 60, t % 60))
+		else:
+			self.label_replay.set_text(_("%d:%02d:%02d")
+				% (t / 3600, (t % 3600) / 60, t % 60))
+		self.replay.replay_to(self.replay.get_start_time()
+			+ datetime.timedelta(seconds=t))
 	
 	# Network methods
 	
@@ -166,21 +207,6 @@ class Interface(uiloader.Interface):
 		if response == gtk.RESPONSE_OK:
 			self._show_replay(dialog.get_filename())
 		dialog.destroy()
-	
-	def _show_replay(self, filename):
-		"""Go into show replay mode"""
-		try:
-			self.replay = replay.read_from_file(filename)
-		except Exception as e:
-			logging.error((_("Error while loading %s: ") % filename) + str(e))
-			self.show_exception(e)
-			return
-		self.label_gamename.set_text(
-			self.replay.room[len(config.DEFAULT_GAME_PREFIX):])
-		self.hbox_replay.show()
-		self.notebook.set_current_page(2)
-		self.hpaned_game.set_sensitive(True)
-		self.entry_chat.hide()
 	
 	def start_connecting(self, widget):
 		"""Login to the jabber account"""

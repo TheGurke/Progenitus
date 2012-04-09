@@ -14,7 +14,6 @@ import glib
 
 from progenitus import config
 import muc
-import replay
 
 
 # 5 Zones where cards can be: library, graveyard, hand, battlefield, exile,
@@ -153,50 +152,24 @@ class NetworkManager(object):
 		return iq.values['disco_items']['items']
 
 
-class Game(muc.Room):
-	"""A network game"""
-	
-	logger = None
-	recorder = None
-	
-	# Callback methods
-	incoming_commands = None
-	incoming_chat = None
-	user_nick_changed = None
-	
-	def __init__(self, client, jid, password, nick):
-		super(self.__class__, self).__init__(client, jid, password, nick)
-		self.recorder = replay.Recorder() # record every game by default
-	
-	def muc_message(self, room, sender, text):
-		"""Recieved a muc message"""
-		self.recorder.record(sender, text)
-		if text is not None and sender != self.get_my_jid():
-			matched = False
-			cmdlist = []
-			lines = text.split('\n')
-			for i in range(len(lines)):
-				line = lines[i]
-				for k in range(len(res)):
-					match = res[k].match(line)
-					if match is not None:
-						if i == 0:
-							matched = True
-						cmdlist.append((k, match.groups()))
-						break
-			if matched:
-				self._incoming_commands(sender, cmdlist)
-			else:
-				self._incoming_chat(sender, text)
-	
-	def _incoming_commands(self, sender, cmdlist):
-		"""Handle an incoming command"""
-		cmdlist_ = []
-		for k, groups in cmdlist:
-			cmd, cmd_str = commands.items()[k]
-			
+def parse_msg(msgtext):
+	"""Extract a command list from a message"""
+	if msgtext is None:
+		return None
+	matched = False
+	cmdlist = []
+	lines = msgtext.split('\n')
+	for i in range(len(lines)):
+		line = lines[i]
+		for k in range(len(res)):
+			match = res[k].match(line)
+			if match is None:
+				continue
+			if i == 0:
+				matched = True
 			# Convert arguments
-			args = list(groups)
+			cmd, cmd_str = commands.items()[k]
+			args = list(match.groups())
 			l = cmd_str.split('%')[1:]
 			assert(len(args) == len(l))
 			for i in range(len(l)):
@@ -206,52 +179,13 @@ class Game(muc.Room):
 					args[i] = int(args[i])
 				elif l[i][:3] == ".2f":
 					args[i] = float(args[i])
-			cmdlist_.append((cmd, tuple(args)))
-		
-		if self.logger is not None:
-			self.logger.log_commands(sender, cmdlist_)
-		if self.incoming_commands is not None:
-			self.incoming_commands(self, sender, cmdlist_)
-	
-	def _incoming_chat(self, sender, text):
-		"""Recieve an incoming chat messsage"""
-		if len(text) == 0:
-			return # Ignore message
-		if text[0] == '\\':
-			text = text[1:]
-		if self.incoming_chat is not None:
-			self.incoming_chat(self, sender, text)
-	
-	def send_commands(self, cmdlist, logged=True):
-		"""Send a list of commands over the network"""
-		for cmd, args in cmdlist:
-			assert(cmd in commands.keys())
-			assert(len(args) == commands[cmd].count('%'))
-		text = ""
-		if self.client is not None:
-			for cmd, args in cmdlist:
-				cmd_str = commands[cmd]
-				text += (cmd_str % args) + "\n"
-			if logged and self.logger is not None:
-				self.logger.log_commands(self.get_my_jid(), cmdlist)
-			glib.idle_add(self.send_message, text[:-1])
-	
-	def send_chat(self, text):
-		"""Send a chat message over the network"""
-		if text == "":
-			return # don't send an empty message
-		if text[0] == '[' or text[0] == '\\':
-			text = '\\' + text
-		glib.idle_add(self.send_message, text)
-	
-	def _nick_changed(self, user, old_nick, stanza):
-		"""A user changed their nick"""
-		if self.user_nick_changed is not None:
-			self.user_nick_changed(user)
+			cmdlist.append((cmd, tuple(args)))
+			break
+	return cmdlist if matched else None
 
 
 class Logger(object):
-	"""Record network commands"""
+	"""Game log"""
 	
 	_log = []
 	log_callback = None
