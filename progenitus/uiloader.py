@@ -110,7 +110,7 @@ class Interface(object):
 	def except_safe(self, function, *args, **kwargs):
 		"""Run a function, check for exceptions and display them"""
 		try:
-			function(*args, **kwargs)
+			return function(*args, **kwargs)
 		except Exception as e:
 			self.show_exception(e)
 	

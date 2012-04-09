@@ -19,6 +19,7 @@ import network
 import players
 import desktop
 import muc
+import replay
 
 
 class Interface(uiloader.Interface):
@@ -135,9 +136,47 @@ class Interface(uiloader.Interface):
 		self.hpaned_game.set_position(0)
 		self.hpaned_game.set_property("position-set", True)
 		self.notebook.set_current_page(2)
+		self.hpaned_game.set_sensitive(True)
 		
 		self.my_player = self.create_player(None, "", config.VERSION)
 		glib.idle_add(self.my_player.create_tray, None, (0.8, 0.8, 1.0))
+	
+	def show_replay(self, *args):
+		"""Open a replay file"""
+		dialog = gtk.FileChooserDialog(_("Load a replay..."),
+			self.main_win, gtk.FILE_CHOOSER_ACTION_OPEN, (gtk.STOCK_CANCEL,
+			gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK))
+		dialog.set_default_response(gtk.RESPONSE_OK)
+		dialog.set_current_folder(settings.replay_dir)
+		
+		# Set filename filters
+		f = gtk.FileFilter()
+		f.set_name(_("Replays"))
+		f.add_pattern("*.replay")
+		dialog.add_filter(f)
+		f = gtk.FileFilter()
+		f.set_name(_("All files"))
+		f.add_pattern("*")
+		dialog.add_filter(f)
+		
+		response = dialog.run()
+		if response == gtk.RESPONSE_OK:
+			self._show_replay(dialog.get_filename())
+		dialog.destroy()
+	
+	def _show_replay(self, filename):
+		"""Go into show replay mode"""
+		try:
+			self.replay = replay.read_from_file(filename)
+		except Exception as e:
+			logging.error((_("Error while loading %s: ") % filename) + str(e))
+			self.show_exception(e)
+			return
+		self.label_gamename.set_text(self.replay.room)
+		self.hbox_replay.show()
+		self.notebook.set_current_page(2)
+		self.hpaned_game.set_sensitive(True)
+		self.entry_chat.hide()
 	
 	def start_connecting(self, widget):
 		"""Login to the jabber account"""

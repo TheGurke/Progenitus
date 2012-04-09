@@ -6,16 +6,15 @@ This module recieves network instructions and packages them into xmpp messages.
 Incoming messages are unpackaged and returned as instruction tuples.
 """
 
-import datetime
 import logging
 import re
-import gzip
 from gettext import gettext as _
 
 import glib
 
 from progenitus import config
 import muc
+import replay
 
 
 # 5 Zones where cards can be: library, graveyard, hand, battlefield, exile,
@@ -167,7 +166,7 @@ class Game(muc.Room):
 	
 	def __init__(self, client, jid, password, nick):
 		super(self.__class__, self).__init__(client, jid, password, nick)
-		self.recorder = Recorder() # record every game by default
+		self.recorder = replay.Recorder() # record every game by default
 	
 	def muc_message(self, room, sender, text):
 		"""Recieved a muc message"""
@@ -249,34 +248,6 @@ class Game(muc.Room):
 		"""A user changed their nick"""
 		if self.user_nick_changed is not None:
 			self.user_nick_changed(user)
-
-
-class Recorder(object):
-	"""Record network commands for later replay"""
-	
-	_log = []
-	
-	def record(self, jid, message):
-		"""Record a text message"""
-		record = (datetime.datetime.now(), jid, message)
-		self._log.append(record)
-	
-	def to_text(self):
-		"""Return a string representation of this recorder's log."""
-		text = ""
-		for time, jid, content in self._log:
-			text += "%s %s %s\n" % (str(time),
-				"\"%s\"" % jid.resource.replace("\"", "\\\""),
-				"%r" % content)
-		return text[:-1]
-	
-	def dump_to_file(self, filename):
-		with gzip.GzipFile(filename, 'w') as f:
-			f.write(self.to_text())
-	
-	def clear_log(self):
-		"""Clear the log"""
-		self._log = []
 
 
 class Logger(object):
