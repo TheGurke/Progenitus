@@ -60,8 +60,7 @@ class Interface(uiloader.Interface):
 		# Change entrybar color
 #		style.bg[gtk.STATE_NORMAL] = gtk.gdk.Color(1, 0, 0)
 #		for st in (gtk.STATE_NORMAL, gtk.STATE_INSENSITIVE,
-#                       gtk.STATE_PRELIGHT, gtk.STATE_SELECTED,
-#                       gtk.STATE_ACTIVE):
+#				gtk.STATE_PRELIGHT, gtk.STATE_SELECTED, gtk.STATE_ACTIVE):
 #			color = gtk.gdk.Color(0, 34251, 0)
 #			self.hbox_entrybar.modify_bg(st, color)
 		
@@ -151,8 +150,18 @@ class Interface(uiloader.Interface):
 		self.entry_chat.hide()
 		self.hscale_replay.get_adjustment().set_upper(
 			self.replay.get_length().total_seconds())
+		self.hscale_replay.set_value(0)
 		self.replay.replay_cmds = self._incoming_cmds
 		self.replay.replay_chat = self.add_chat_line
+	
+	def _update_clock(self):
+		"""Update the elapsed time display"""
+		t = int(self.hscale_replay.get_adjustment().get_value())
+		if t <= 3600:
+			self.label_replay.set_text(_("%d:%02d") % (t / 60, t % 60))
+		else:
+			self.label_replay.set_text(_("%d:%02d:%02d")
+				% (t / 3600, (t % 3600) / 60, t % 60))
 	
 	def play_replay(self, *args):
 		"""Start playing the replay"""
@@ -165,13 +174,14 @@ class Interface(uiloader.Interface):
 	def seek_replay(self, *args):
 		"""Seek the replay"""
 		t = int(self.hscale_replay.get_adjustment().get_value())
-		if t <= 3600:
-			self.label_replay.set_text(_("%d:%02d") % (t / 60, t % 60))
+		seek_to = self.replay.get_start_time() + datetime.timedelta(seconds=t)
+		if seek_to < self.replay.get_current_time():
+			# Can't seek backwards yet
+			dt = self.replay.get_current_time() - self.replay.get_start_time()
+			self.hscale_replay.get_adjustment().set_value(dt.total_seconds())
 		else:
-			self.label_replay.set_text(_("%d:%02d:%02d")
-				% (t / 3600, (t % 3600) / 60, t % 60))
-		self.replay.replay_to(self.replay.get_start_time()
-			+ datetime.timedelta(seconds=t))
+			self.replay.replay_to(seek_to)
+			self._update_clock()
 	
 	# Network methods
 	
