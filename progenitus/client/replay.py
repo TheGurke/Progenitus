@@ -9,23 +9,27 @@ import datetime
 import re
 import gzip
 
+from sleekxmpp.xmlstream.stanzabase import JID
+
 import network
 
 
 class Recorder(object):
 	"""Record network commands for later replay"""
 	
-	_log = []
-	_reverse_log = [] # For replaying this contains the inverse commands
+	_log = None
+	_reverse_log = None # For replaying this contains the inverse commands
 	_current_pos = 0 # Current point in the replay (list index)
 	
 	replay_cmds = None # Callback for replaying cmds
-	replay_msg = None # Callback for replay messages
+	replay_chat = None # Callback for replay messages
 	
 	def __init__(self, room, my_jid):
 		self.room = room
 		self.my_jid = my_jid
 		self.start_time = datetime.datetime.now()
+		self._log = []
+		self._reverse_log = []
 	
 	def record(self, jid, message):
 		"""Record a text message"""
@@ -103,8 +107,9 @@ def parse_text(text):
 		if line == "":
 			continue
 		match = re_line.match(line)
-		timestr, jid, content = match.groups()
+		timestr, sender, content = match.groups()
 		time = datetime.datetime.strptime(timestr, "%Y-%m-%d %H:%M:%S.%f")
+		jid = JID(sender)
 		recorder._log.append((time, jid, content[1:-1].decode('string-escape')))
 	
 	# Assert that the list is sort with respect to the time

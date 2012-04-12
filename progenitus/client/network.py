@@ -90,13 +90,14 @@ create_res()
 class NetworkManager(object):
 	
 	client = None # MUCClient
-	games = [] # Joined chat rooms
+	games = None # Joined chat rooms
 	logger = None # Logger
 	
 	# Callback methods (please attach!)
 	exception_handler = None
 	
 	def __init__(self):
+		self.games = []
 		self.logger = Logger()
 	
 	def connect(self, jid, pwd):
@@ -109,15 +110,6 @@ class NetworkManager(object):
 		else:
 			# Process incoming messages in a seperate thread
 			self.client.process(threaded=True)
-	
-	def join_game(self, gamename, pwd, nick):
-		"""Join a network game"""
-		logging.info(_("Joining game '%s'..."), gamename)
-		game = Game(self.client, gamename, pwd, nick)
-		game.logger = self.logger
-		self.games.append(game)
-		game.join()
-		return game
 	
 	def leave_game(self, game):
 		"""Leave a network game"""

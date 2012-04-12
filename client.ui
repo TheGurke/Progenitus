@@ -61,7 +61,7 @@
   <object class="GtkImage" id="image_show_replay">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="stock">gtk-missing-image</property>
+    <property name="pixbuf">media/icons/replay.svg</property>
   </object>
   <object class="GtkListStore" id="liststore_browse">
     <columns>
@@ -408,7 +408,7 @@ This server can be different from your account's server.</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkHButtonBox" id="hbuttonbox1">
+                      <object class="GtkHButtonBox" id="hbuttonbox_login">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="spacing">10</property>

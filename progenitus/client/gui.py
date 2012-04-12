@@ -85,6 +85,8 @@ class Interface(uiloader.Interface):
 				glib.idle_add(self.entry_username.grab_focus)
 			elif settings.userpwd == "":
 				glib.idle_add(self.entry_pwd.grab_focus)
+			else:
+				glib.idle_add(self.button_login.grab_focus)
 		
 		# Initialize tokens
 		self.init_counters_autocomplete()
@@ -150,7 +152,7 @@ class Interface(uiloader.Interface):
 		self.hscale_replay.get_adjustment().set_upper(
 			self.replay.get_length().total_seconds())
 		self.replay.replay_cmds = self._incoming_cmds
-		self.replay.replay_msg = self.add_chat_line
+		self.replay.replay_chat = self.add_chat_line
 	
 	def play_replay(self, *args):
 		"""Start playing the replay"""
@@ -224,8 +226,7 @@ class Interface(uiloader.Interface):
 		self.hbox_login_status.show()
 		self.spinner_login.start()
 		for widget in (self.entry_username, self.entry_pwd, self.entry_server,
-			self.checkbutton_save_pwd, self.button_login,
-			self.button_solitaire_mode
+			self.checkbutton_save_pwd, self.hbuttonbox_login
 		):
 			widget.set_sensitive(False)
 		self.label_servername.set_text(self.server)
@@ -272,7 +273,7 @@ class Interface(uiloader.Interface):
 		self.notebook.set_current_page(2)
 		
 		nick = self.network_manager.get_my_jid().user
-		self.game = self.network_manager.join_game(gamename, gamepwd, nick)
+		self.game = game.join(self.network_manager, gamename, gamepwd, nick)
 		self.game.joined = self._game_joined
 		self.game.incoming_commands = self._incoming_cmds
 		self.game.incoming_chat = self.add_chat_line
@@ -352,8 +353,7 @@ class Interface(uiloader.Interface):
 		
 		self.notebook.set_current_page(0)
 		for widget in (self.entry_username, self.entry_pwd, self.entry_server,
-			self.checkbutton_save_pwd, self.button_login,
-			self.button_solitaire_mode
+			self.checkbutton_save_pwd, self.hbuttonbox_login
 		):
 			widget.set_sensitive(True)
 		self.hpaned_lobby.set_sensitive(False)
