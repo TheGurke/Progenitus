@@ -10,6 +10,7 @@ interfaces.
 
 
 import os
+import sys
 import optparse
 from gettext import gettext as _
 import logging
@@ -109,6 +110,3 @@ else:
 
 # Disable the logger
 logging.shutdown()
-
-
-
