@@ -68,6 +68,7 @@ class Interface(uiloader.Interface):
 		self.solitaire = solitaire
 		if solitaire:
 			self.solitaire_mode()
+			self.button_leave_game.set_sensitive(False)
 		else:
 			self.network_manager = network.NetworkManager()
 			self.network_manager.logger.log_callback = self.add_log_line
@@ -358,8 +359,10 @@ class Interface(uiloader.Interface):
 	
 	def logout(self, *args):
 		"""Log out from the current server"""
+		if not self.solitaire:
+			glib.idle_add(self.network_manager.disconnect)
+		
 		self.leave_game()
-		glib.idle_add(self.network_manager.disconnect)
 		
 		self.notebook.set_current_page(0)
 		for widget in (self.entry_username, self.entry_pwd, self.entry_server,
