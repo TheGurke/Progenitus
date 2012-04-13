@@ -319,6 +319,7 @@ class Interface(uiloader.Interface):
 		"""Show the program's preferences"""
 		self.filechooserbutton_cache.set_filename(settings.cache_dir)
 		self.filechooserbutton_decks.set_filename(settings.deck_dir)
+		self.filechooserbutton_replays.set_filename(settings.replay_dir)
 		self.checkbutton_save_ram.set_active(settings.save_ram)
 		#self.spinbutton_decksave_interval.set_value(settings.decksave_timeout
 		#	/ 1000)
@@ -332,6 +333,9 @@ class Interface(uiloader.Interface):
 		new_cache_dir = unicode(self.filechooserbutton_cache.get_filename())
 		if new_cache_dir != "None":
 			settings.cache_dir = new_cache_dir
+		new_replay_dir = unicode(self.filechooserbutton_replays.get_filename())
+		if new_replay_dir != "None":
+			settings.replay_dir = new_replay_dir
 		old_deck_dir = settings.deck_dir
 		new_deck_dir = unicode(self.filechooserbutton_decks.get_filename())
 		if new_deck_dir != "None" and new_deck_dir != old_deck_dir:
