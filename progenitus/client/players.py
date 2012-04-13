@@ -476,7 +476,6 @@ class Player(object):
 			self.send_network_cmds(cmdlist, logged=False)
 		
 		# Other than hello only handle commands that concern this player's user
-#		print "Incoming:", sender, self.jid, sender == self.jid
 		if sender != self.jid:
 			return
 		

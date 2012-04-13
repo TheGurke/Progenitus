@@ -117,6 +117,13 @@ class Room(object):
 	def leave(self, message=""):
 		"""Disconnect from the room"""
 		self.muc_plugin.leaveMUC(self.jid, self.nick, message)
+		
+		# Remove event handlers
+		self.client.del_event_handler("groupchat_message", self._muc_message)
+		self.client.del_event_handler("muc::%s::got_online" % self.jid,
+			self._user_joined)
+		self.client.del_event_handler("muc::%s::got_offline" % self.jid,
+			self._user_left)
 	
 	def _muc_message(self, message):
 		"""The message handler passes on incoming room chat messages"""

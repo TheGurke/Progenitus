@@ -87,14 +87,13 @@ The client has 5 commands:
 Known issues
 
 - lobby join/leave is not displayed
-- rejoining a game makes messages display multiple times
 - cannot join again using the same account
 - /nick and /draw does not work
 - when watching a replay, playing, pausing and seeking backwards do not work
 - no feedback in case of wrong password
 - tray card number is not updated correctly
 - mouse is not exactly on the card when dragging a card to play
-- enlarged card flicker when the mouse is near the center of the screen
+- enlarged card flickers when the mouse is near the center of the screen
 - when just missing a card that is meant to be tapped, everything gets untapped.
   This should be prevented by checking if there is an owned card around.
 - the log does not always scroll down

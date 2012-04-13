@@ -389,7 +389,7 @@ class Interface(uiloader.Interface):
 		player = players.Player(game, jid)
 		player.version = version
 		if self.game is not None and jid == self.game.get_my_jid():
-				player.send_network_cmds = game.send_commands
+			player.send_network_cmds = game.send_commands
 		player.updated_hand = self.cd.repaint_hand
 		player.new_item = self.new_item
 		player.new_tray = self.new_tray
@@ -448,8 +448,8 @@ class Interface(uiloader.Interface):
 		cmd1, args1 = cmdlist[0]
 		if cmd1 == "hello":
 			player = self.create_player(game, sender, args1[0])
-			player.has_been_welcomed = True
 			self.my_player.handle_network_cmds(sender, cmdlist)
+			player.has_been_welcomed = True
 		if cmd1 == "welcome":
 			for player in self.players:
 				if player.jid == sender:
