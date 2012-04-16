@@ -1802,7 +1802,7 @@
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <child>
-      <object class="GtkMenuItem" id="menuitem40">
+      <object class="GtkMenuItem" id="menuitem_load_deck">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="use_action_appearance">False</property>
@@ -1812,7 +1812,7 @@
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="menuitem41">
+      <object class="GtkMenuItem" id="menuitem_reset_game">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="use_action_appearance">False</property>
@@ -1822,7 +1822,7 @@
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="menuitem42">
+      <object class="GtkMenuItem" id="menuitem_set_life">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="use_action_appearance">False</property>
@@ -1832,7 +1832,7 @@
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="menuitem43">
+      <object class="GtkMenuItem" id="menuitem_spectate">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="use_action_appearance">False</property>

@@ -71,7 +71,8 @@ class Interface(uiloader.Interface):
 			self.button_leave_game.set_sensitive(False)
 		else:
 			self.network_manager = network.NetworkManager()
-			self.network_manager.logger.log_callback = self.add_log_line
+			self.network_manager.logger.log_callback = (lambda text:
+				self._add_to_log(self.logview_game, text))
 			self.network_manager.exception_handler = self.handle_exception
 			
 			# Set default login entries
@@ -255,6 +256,10 @@ class Interface(uiloader.Interface):
 		self.lobby = muc.Room(self.network_manager.client, room, None, nick)
 		self.lobby.joined = self._show_lobby
 		self.lobby.muc_message = self._incoming_lobby_chat
+		self.lobby.user_joined = (lambda jid, role: self._add_to_log(
+			self.logview_lobby, _("%s joined the lobby.") % jid.resource))
+		self.lobby.user_left = (lambda jid: self._add_to_log(
+			self.logview_lobby, _("%s left the lobby.") % jid.resource))
 		glib.idle_add(self.lobby.join)
 		glib.idle_add(self.refresh_game_list)
 	
@@ -407,15 +412,11 @@ class Interface(uiloader.Interface):
 	
 	def _incoming_lobby_chat(self, lobby, sender, message):
 		assert(lobby is self.lobby)
-		buf = self.logview_lobby.get_buffer()
 		if sender == self.lobby.get_my_jid():
 			text = _("You: %s") % message
 		else:
 			text = _("%s: %s") % (sender.resource, message)
-		firstline = buf.get_end_iter().get_offset() == 0
-		buf.insert(buf.get_end_iter(), ("" if firstline else "\n") + text)
-		mark = buf.get_mark("insert")
-		self.logview_lobby.scroll_to_mark(mark, 0)
+		self._add_to_log(self.logview_lobby, text)
 	
 	def refresh_game_list(self, widget=None):
 		"""Refresh the list of avaible games in the lobby"""
@@ -514,18 +515,19 @@ class Interface(uiloader.Interface):
 				self.liststore_players[i][1] = user.user
 				self.liststore_players[i][2] = unicode(user.full)
 	
-	def add_log_line(self, message):
-		"""Add a line to the game log"""
-		buf = self.logview_game.get_buffer()
-		if message[0] != "\n" and buf.get_char_count() > 0:
-			message = "\n" + message
-		buf.insert(buf.get_end_iter(), message)
+	def _add_to_log(self, logview, text):
+		"""Add a line of text to a logview and scroll to it"""
+		assert(isinstance(logview, gtk.TextView))
+		buf = logview.get_buffer()
+		firstline = buf.get_end_iter().get_offset() == 0
+		buf.insert(buf.get_end_iter(), ("" if firstline else "\n") + text)
 		mark = buf.get_mark("insert")
-		self.logview_game.scroll_to_mark(mark, 0)
+		logview.scroll_to_mark(mark, 0)
 	
 	def add_chat_line(self, game, sender, message):
 		"""Recieved a chat message"""
-		self.add_log_line(_("%s: %s") % (sender.resource, message))
+		self._add_to_log(self.logview_game,
+			_("%s: %s") % (sender.resource, message))
 	
 	def send_chat_message(self, widget):
 		"""Send a chat message"""
@@ -1141,6 +1143,3 @@ class Interface(uiloader.Interface):
 		y = random.random() * (h - 3.5) / 2
 		self.my_player.move_card(cards.get(cardid), None,
 			self.my_player.battlefield, x, y)
-
-
-
