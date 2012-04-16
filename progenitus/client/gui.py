@@ -338,7 +338,7 @@ class Interface(uiloader.Interface):
 			return
 		
 		logging.info(_("Leaving game '%s'."), self.game.jid)
-		self.game.leave()
+		self.network_manager.leave_game(self.game)
 		
 		# Dump replay
 		try:
@@ -413,7 +413,7 @@ class Interface(uiloader.Interface):
 		else:
 			text = _("%s: %s") % (sender.resource, message)
 		firstline = buf.get_end_iter().get_offset() == 0
-		buf.insert(buf.get_end_iter(), ("" if firstline else "\n") + text, -1)
+		buf.insert(buf.get_end_iter(), ("" if firstline else "\n") + text)
 		mark = buf.get_mark("insert")
 		self.logview_lobby.scroll_to_mark(mark, 0)
 	
@@ -519,7 +519,7 @@ class Interface(uiloader.Interface):
 		buf = self.logview_game.get_buffer()
 		if message[0] != "\n" and buf.get_char_count() > 0:
 			message = "\n" + message
-		buf.insert(buf.get_end_iter(), message, -1)
+		buf.insert(buf.get_end_iter(), message)
 		mark = buf.get_mark("insert")
 		self.logview_game.scroll_to_mark(mark, 0)
 	
@@ -537,12 +537,9 @@ class Interface(uiloader.Interface):
 			match = re.match(r'/life\s+([-0-9]*)', text)
 			if match is not None:
 				self.my_player.set_life(int(match.groups()[0]))
-			match = re.match(r'/draw\s+([0-9]*)', text)
+			match = re.match(r'/draw\s+([0-9]+)', text)
 			if match is not None:
-				self.my_player.draw_x_cards(int(match.groups()[0]))
-			match = re.match(r'/nick\s+(.+)', text)
-			if match is not None and self.network_manager is not None:
-				self.game.change_nick(match.groups()[0])
+				self.my_player.draw_x_cards(int(match.group(1)))
 			if text[:5] == "/flip":
 				# Flip a coin
 				result = (_("heads"), _("tails"))[random.randint(0, 1)]

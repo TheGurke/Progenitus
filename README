@@ -61,6 +61,7 @@ sideboard.
 Known issues
 
 - File/folder view tends to be buggy, needs rewrite
+- Searching for "mana cost >= 2" yields the same results as searching for "converted mana cost >= 2"
 
 
 Client
@@ -76,7 +77,6 @@ join in one game.
 
 The client has 5 commands:
 /life #			set the life points
-/nick newnick	change one's nick
 /draw #			draw a number of cards
 /flip			flip a coin
 /roll			roll a six-sided die
@@ -88,7 +88,6 @@ Known issues
 
 - lobby join/leave is not displayed
 - cannot join again using the same account
-- /nick and /draw does not work
 - when watching a replay, playing, pausing and seeking backwards do not work
 - no feedback in case of wrong password
 - tray card number is not updated correctly

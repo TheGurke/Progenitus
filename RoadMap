@@ -18,7 +18,6 @@ Deckeditor
 - more comprehensive error messages
 
 Client
-- record and replay games
 - graphics for counters
 - set game nick
 - display comprehensive card details (+ download card rulings)
@@ -31,7 +30,6 @@ Client
 - comprehensive logger with colored output
 - console commands
 - undo untap all
-- save games
 - more comprehensive (network) error messages
 - LAN version
 
