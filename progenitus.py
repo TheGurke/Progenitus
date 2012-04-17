@@ -56,8 +56,7 @@ optparser.add_option("--editor", action="store_const", const="editor",
 optparser.add_option("--client", action="store_const", const="client",
 	dest="run", help=_("run the network client"))
 optparser.add_option("--solitaire", action="store_true", dest="solitaire",
-	default=False, help=_("run the network client in single user mode "
-		"(requires --client)"))
+	default=False, help=_("run the network client in single user mode"))
 optparser.add_option("--updater", action="store_const", const="updater",
 	dest="run", help=_("run the database updater"))
 optparser.add_option("--log", action="store", dest="log_level",
@@ -72,6 +71,8 @@ optparser.set_defaults(run="editor") # by default run the editor
 
 # Parse arguments
 options, args = optparser.parse_args()
+if options.solitaire:
+	options.run = "client"
 
 # Load the settings file
 config.SETTINGS_FILE = options.settings_file
