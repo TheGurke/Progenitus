@@ -14,6 +14,7 @@ import sys
 import optparse
 from gettext import gettext as _
 import logging
+import xml.etree.ElementTree # py2exe fix
 
 # Import everything explicitly
 from progenitus import async, config, settings, lang, uiloader
