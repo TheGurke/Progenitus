@@ -31,9 +31,10 @@ Requirements
 - Python 2.6 or 2.7
 - GTK 2.20 or higher
 - PyGTK
-- sleekxmpp (included)
+- sleekxmpp 1.0 (included)
 
-There is a file where the user's settings are stored: $HOME/.progenitus.cfg.
+There is a file where the user's settings are stored:
+$HOME/.progenitus.cfg on unix systems and settings.ini on windows systems.
 You can override the location of this file using the --settings parameter.
 
 
