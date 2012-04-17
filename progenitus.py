@@ -34,6 +34,11 @@ import gtk
 if os.name == 'posix':
 	os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
+# Initialize gtk properly on windows
+if os.name == 'nt':
+	gtk.parse_rc("gtkrc")
+	gtk.rc_find_module_in_path(".")
+
 async.method_queuer = glib.idle_add
 gtk.gdk.threads_init()
 
@@ -89,6 +94,7 @@ if hasattr(logging, "captureWarnings"):
 	logging.captureWarnings(True)
 if warn_about_invalid_level:
 	logging.warning("'%s' is not a valid logging level.", options.log_level)
+
 
 # Run the program
 if options.run == "editor":

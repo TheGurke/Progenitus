@@ -24,7 +24,10 @@ else:
 	SETTINGS_FILE = "settings.ini"
 
 # Path to the log file
-LOG_FILE = None
+if os.name == 'nt':
+	LOG_FILE = "progenitus.log"
+else:
+	LOG_FILE = None # log to console
 
 # Path to the translation directory
 TRANSLATIONS_PATH = "po"
@@ -72,6 +75,3 @@ DEFAULT_GAME_PREFIX = "progenitus-"
 DEFAULT_LIFE = 20
 DEFAULT_HANDCARDS = 7
 MIN_LIBRARY = 60
-
-
-

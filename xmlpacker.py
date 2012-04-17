@@ -5,6 +5,7 @@ import sys
 import os
 import re
 
+
 assert len(sys.argv) > 1
 filename = sys.argv[1]
 assert os.path.exists(filename)
@@ -16,4 +17,3 @@ with open(filename, 'r+') as f:
 	f.seek(0)
 	f.truncate()
 	f.write(data2)
-

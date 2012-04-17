@@ -1,8 +1,11 @@
+This a list of planned features.
 
 0.4.x releases
 ==============
 
+
 Deckeditor
+
 - move files and folders via drag and drop
 - remove folders
 - copy and paste for card lists
@@ -17,9 +20,10 @@ Deckeditor
 - sql query tutorial
 - more comprehensive error messages
 
+
 Client
+
 - graphics for counters
-- set game nick
 - display comprehensive card details (+ download card rulings)
 - easy way to focus on the chat entry
 - turn symbol (showing who's turn it is)
@@ -31,9 +35,13 @@ Client
 - console commands
 - undo untap all
 - more comprehensive (network) error messages
+- colored entry bar
 - LAN version
+- display rss news feed on startup
+
 
 Updater
+
 - More backends: e.g. gatherer.wizards.com
 - Fetch items on the fly
 
@@ -49,6 +57,3 @@ Updater
 Future
 ======
 - Secure network protocol
-
-
-
