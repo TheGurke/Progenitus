@@ -37,7 +37,7 @@ if os.name == 'posix':
 
 # Initialize gtk properly on windows
 if os.name == 'nt':
-	gtk.parse_rc("gtkrc")
+	gtk.rc_parse("gtkrc")
 	gtk.rc_find_module_in_path(".")
 
 async.method_queuer = glib.idle_add
