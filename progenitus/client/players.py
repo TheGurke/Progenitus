@@ -79,6 +79,7 @@ class Player(object):
 		"""Create a tray item"""
 		if self.tray is not None:
 			# delete old tray
+			self._remove_item(self.tray.itemid)
 			self.delete_item(self.tray)
 		self.tray = self.new_tray(self)
 		if itemid is None:
@@ -94,9 +95,11 @@ class Player(object):
 	def remove_tray(self):
 		"""Remove the tray and all items in play"""
 		for item in self.battlefield:
+			self._remove_item(item.itemid)
 			self.delete_item(item)
 		if self.tray is not None:
 			self.send_network_cmd("exit", self.tray.itemid)
+			self._remove_item(self.tray.itemid)
 			self.delete_item(self.tray)
 			self.tray = None
 	
@@ -113,6 +116,7 @@ class Player(object):
 		self.hand = []
 		self.exile = []
 		for item in self.battlefield[:]:
+			self._remove_item(item.itemid)
 			self.delete_item(item)
 		self.battlefield = []
 		self.life = config.DEFAULT_LIFE
@@ -349,6 +353,7 @@ class Player(object):
 	
 	def remove_carditem(self, item):
 		self.battlefield.remove(item)
+		self._remove_item(item.itemid)
 		self.delete_item(item)
 		self.send_network_cmd("exit", item.itemid)
 	
@@ -511,9 +516,12 @@ class Player(object):
 	def _set_itemid(self, itemid, item):
 		if itemid in self._items:
 			raise RuntimeError("%s has already registered a card %x." %
-				(self.name, itemid))
+				(self.nick, itemid))
 		self._items[itemid] = item
 		item.itemid = itemid
-
-
-
+	
+	def _remove_item(self, itemid):
+		"""Unregister an item"""
+		if itemid not in self._items:
+			return
+		del self._items[itemid]

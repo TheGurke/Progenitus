@@ -153,6 +153,7 @@ class Interface(uiloader.Interface):
 		self.hscale_replay.get_adjustment().set_upper(
 			self.replay.get_length().total_seconds())
 		self.hscale_replay.set_value(0)
+		self._update_clock()
 		self.replay.replay_cmds = self._incoming_cmds
 		self.replay.replay_chat = self.add_chat_line
 	
@@ -177,13 +178,13 @@ class Interface(uiloader.Interface):
 		"""Seek the replay"""
 		t = int(self.hscale_replay.get_adjustment().get_value())
 		seek_to = self.replay.get_start_time() + datetime.timedelta(seconds=t)
-		if seek_to < self.replay.get_current_time():
+#		if seek_to < self.replay.get_current_time():
 			# Can't seek backwards yet
-			dt = self.replay.get_current_time() - self.replay.get_start_time()
-			self.hscale_replay.get_adjustment().set_value(dt.total_seconds())
-		else:
-			self.replay.replay_to(seek_to)
-			self._update_clock()
+#			dt = self.replay.get_current_time() - self.replay.get_start_time()
+#			self.hscale_replay.get_adjustment().set_value(dt.total_seconds())
+#		else:
+		self.replay.replay_to(seek_to, self.players, self.create_player)
+		self._update_clock()
 	
 	# Network methods
 	
@@ -445,6 +446,9 @@ class Interface(uiloader.Interface):
 	
 	def _incoming_cmds(self, game, sender, cmdlist):
 		"""Pass incoming network commands on to the player instances"""
+		if len(cmdlist) == 0:
+			return
+		
 		# Check if a new player entered
 		cmd1, args1 = cmdlist[0]
 		if cmd1 == "hello":
@@ -936,9 +940,10 @@ class Interface(uiloader.Interface):
 	def call_properties(self, item, event):
 		"""Display the popup menu for an item or handcard"""
 		self._popup = item
+		iplay = self.my_player is not None and self.my_player.tray is not None
 		if item is None:
 			self._popup = event.x, event.y
-			if self.my_player.tray is not None:
+			if iplay:
 				self.menuitem_browse_exile.set_sensitive(
 					len(self.my_player.exile) > 0)
 				self.menuitem_browse_exile.set_label(
@@ -949,6 +954,7 @@ class Interface(uiloader.Interface):
 			self.menuitem_flipped.set_active(item.flipped)
 			self.menuitem_faceup.set_active(not item.faceup)
 			self.menuitem_does_not_untap.set_active(item.does_not_untap)
+			self.menuitem_clone.set_visible(iplay)
 			for widgetname in ("to_hand", "to_lib", "to_graveyard", "exile",
 				"attack", "block", "use_effect", "cardsep2", "does_not_untap",
 				"set_counters", "give_to"):
@@ -971,6 +977,7 @@ class Interface(uiloader.Interface):
 					event.time)
 		if isinstance(item, desktop.Graveyard):
 			self.menuitem_graveyard_to_hand.set_visible(item.mine)
+			self.menuitem_graveyard_exile.set_visible(item.mine)
 			self.menuitem_graveyard_shuffle_lib.set_visible(item.mine)
 			self.menu_graveyard.popup(None, None, None, event.button,
 				event.time)
@@ -1000,6 +1007,7 @@ class Interface(uiloader.Interface):
 		"""Create a new tray item"""
 		mine = player is self.my_player
 		tray = desktop.Tray(player, mine)
+		tray.widget = self.cd
 		if len(self.players) == 1:
 			tray.x = -22
 			tray.y = 8

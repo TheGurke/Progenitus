@@ -11,6 +11,7 @@ import gzip
 
 from sleekxmpp.xmlstream.stanzabase import JID
 
+import desktop
 import network
 
 
@@ -69,24 +70,109 @@ class Recorder(object):
 			return datetime.datetime(datetime.MAXYEAR, 12, 31)
 		return self._log[self._current_pos][0]
 	
-	def replay_to(self, time):
+	def replay_to(self, time, players, create_player):
 		"""Replay all commands up to a certain point in time"""
 		if self.get_current_time() > time:
-			pass # TODO: seek backwards
+			while self.get_current_time() > time:
+				sender, inv_cmds = self._reverse_log[self._current_pos]
+				self.replay_cmds(self, sender, inv_cmds)
+				self._current_pos -= 1
 		else:
+			self._current_pos += 1
 			while self.get_current_time() < time:
-				self._current_pos += 1
 				sender, msg = self._log[self._current_pos][1:3]
-				if len(msg) == 0:
-					continue # Ignore message
-				
 				cmds = network.parse_msg(msg)
+				
+				# Check if the message need to be inverted
+				if len(self._reverse_log) < self._current_pos + 1:
+					if cmds is None:
+						self._reverse_log.append((sender, ()))
+					else:
+						pl = [pl for pl in players if pl.jid == sender]
+						# Dirty hack: create player if it hasn't been yet
+						if len(pl) == 0:
+							player = create_player(self, sender, "")
+						else:
+							player = pl[0]
+					
+						inv_cmds = []
+						for (cmd, args) in cmds[::-1]:
+							inv_cmds.extend(
+								self._invert_cmd(player, cmd, *args))
+						self._reverse_log.append((sender, inv_cmds))
+				
 				if cmds is not None:
 					self.replay_cmds(self, sender, cmds)
+					self._current_pos += 1
 					continue
+				if len(msg) == 0:
+					self._current_pos += 1
+					continue # Ignore message
 				if msg[0] == '\\':
 					msg = msg[1:]
 				self.replay_chat(self, sender, msg)
+				self._current_pos += 1
+			self._current_pos -= 1
+	
+	def _invert_cmd(self, player, cmd, *args):
+		"""Invert a command; returns a list of commands"""
+		if cmd == "hello" or cmd == "welcome":
+			return [] # No need for invertation
+		elif cmd == "tray":
+			return [("exit", (args[0],))]
+		elif cmd == "enter":
+			return [("exit", (args[2],))]
+		elif cmd == "update":
+			return [("update", (len(player.library), len(player.hand)))]
+		elif cmd == "setlife":
+			return [("setlife", (player.life,))]
+		elif cmd == "bury":
+			return [("unbury", (len(player.graveyard),))]
+		elif cmd == "exile":
+			return [("unexile", (len(player.graveyard),))]
+		elif cmd == "unbury" or cmd == "unexile":
+			inv_cmd = "bury" if cmd == "unbury" else "exile"
+			cmdlist = []
+			for i in range(args[0], len(player.graveyard) - 1):
+				cmdlist.append((cmd, (i,)))
+			for card in player.graveyard[args[0]:]:
+				cmdlist.append((inv_cmd, (card.id,)))
+			return cmdlist
+		elif cmd == "mulligan":
+			return [("update", (len(player.library), len(player.hand)))]
+		elif cmd == "shuffle":
+			return [] # No need for invertation
+		elif cmd == "move":
+			item = player._get_item_by_id(args[0])
+			return [("move", (item.itemid, item.x, item.y))]
+		elif cmd == "tap" or cmd == "flip" or cmd == "face":
+			return [(cmd, (args[0],))]
+		elif cmd == "counters":
+			item = player._get_item_by_id(args[2])
+			num = item.counters[args[1]] if args[1] in item.counters else 0
+			return [("counters", (num, args[1], args[2]))]
+		elif cmd == "exit":
+			item = player._get_item_by_id(args[0])
+			if isinstance(item, desktop.Tray):
+				return [("tray", (item.itemid, item.x, item.y))]
+			if isinstance(item, desktop.CardItem):
+				name = item.token.name if item.istoken else item.card.name
+				return [("enter", (item.cardid, name, item.itemid, item.x,
+					item.y))]
+		elif cmd == "reset":
+			cmdlist = [("update", (len(player.library), len(player.hand)))]
+			cmdlist.append(("setlife", (player.life,)))
+			for card in player.graveyard:
+				cmdlist.append(("bury", (card.id,)))
+			for card in player.exile:
+				cmdlist.append(("exile", (card.id,)))
+			for item in player.battlefield:
+				name = item.token.name if item.istoken else item.card.name
+				cmdlist.append(("enter",
+					(item.cardid, name, item.itemid, item.x, item.y)))
+			return cmdlist
+		else:
+			assert(False)
 	
 	def get_length(self):
 		"""Get the length of this replay as a timedelta object"""

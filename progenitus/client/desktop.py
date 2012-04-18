@@ -3,8 +3,9 @@
 
 import math
 import random
-
+import logging
 from gettext import gettext as _
+
 import cairo
 import glib
 import gtk
@@ -551,7 +552,11 @@ class Item(object):
 	
 	def repaint(self):
 		"""Queue a repaint of this item"""
-		self.widget.queue_draw_area(*self.get_screen_coords())
+		if self.widget is None:
+			logging.debug("orphan item:")
+			logging.debug(self)
+		else:
+			self.widget.queue_draw_area(*self.get_screen_coords())
 
 
 class Container(Item):
@@ -704,6 +709,7 @@ class CardItem(Item):
 			self.card = cardortoken
 		elif isinstance(cardortoken, cards.Token):
 			self.token = cardortoken
+			self.istoken = True
 		else:
 			assert(False)
 		self.cardid = cardortoken.id
