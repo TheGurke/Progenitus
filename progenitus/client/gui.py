@@ -449,7 +449,8 @@ class Interface(uiloader.Interface):
 		cmd1, args1 = cmdlist[0]
 		if cmd1 == "hello":
 			player = self.create_player(game, sender, args1[0])
-			self.my_player.handle_network_cmds(sender, cmdlist)
+			if self.my_player is not None:
+				self.my_player.handle_network_cmds(sender, cmdlist)
 			player.has_been_welcomed = True
 		if cmd1 == "welcome":
 			for player in self.players:

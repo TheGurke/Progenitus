@@ -19,7 +19,7 @@ class Recorder(object):
 	
 	_log = None
 	_reverse_log = None # For replaying this contains the inverse commands
-	_current_pos = 0 # Current point in the replay (list index)
+	_current_pos = -1 # Current point in the replay (list index)
 	
 	replay_cmds = None # Callback for replaying cmds
 	replay_chat = None # Callback for replay messages
@@ -63,6 +63,10 @@ class Recorder(object):
 	
 	def get_current_time(self):
 		"""Return the time for the current position in the replay"""
+		if self._current_pos < 0:
+			return datetime.datetime(datetime.MINYEAR, 1, 1)
+		if self._current_pos >= len(self._log):
+			return datetime.datetime(datetime.MAXYEAR, 12, 31)
 		return self._log[self._current_pos][0]
 	
 	def replay_to(self, time):
@@ -109,7 +113,7 @@ def parse_text(text):
 		match = re_line.match(line)
 		timestr, sender, content = match.groups()
 		time = datetime.datetime.strptime(timestr, "%Y-%m-%d %H:%M:%S.%f")
-		jid = JID(sender)
+		jid = JID(room + "/" + sender)
 		recorder._log.append((time, jid, content[1:-1].decode('string-escape')))
 	
 	# Assert that the list is sort with respect to the time
