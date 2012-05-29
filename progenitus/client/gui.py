@@ -36,6 +36,7 @@ class Interface(uiloader.Interface):
 	game = None  # the currently joined game
 	solitaire = False # playing in solitaire mode?
 	replay = None # Replay currently watching
+	replay_speed = 0 # current replay speed
 	players = []  # all players
 	users = dict()  # all users that joined the chat room
 	
@@ -154,8 +155,27 @@ class Interface(uiloader.Interface):
 			self.replay.get_length().total_seconds())
 		self.hscale_replay.set_value(0)
 		self._update_clock()
+		self.replay_speed = 0
+		glib.timeout_add(30, self._replay_tick)
 		self.replay.replay_cmds = self._incoming_cmds
 		self.replay.replay_chat = self.add_chat_line
+	
+	def _replay_tick(self):
+		"""Regular update function for emulating movie-like replays"""
+		if not hasattr(self, "_replay_seek_to"):
+			self._replay_seek_to = self.replay.get_start_time()
+			self._replay_last_tick = datetime.datetime.now()
+			return True
+		now = datetime.datetime.now()
+		dt = now - self._replay_last_tick
+		self._replay_last_tick = now
+		self._replay_seek_to += self.replay_speed * dt
+		self.replay.replay_to(self._replay_seek_to, self.players,
+			self.create_player)
+		self.hscale_replay.get_adjustment().set_value(
+			self.replay.get_elapsed_time().total_seconds())
+		self._update_clock()
+		return True
 	
 	def _update_clock(self):
 		"""Update the elapsed time display"""
@@ -168,21 +188,23 @@ class Interface(uiloader.Interface):
 	
 	def play_replay(self, *args):
 		"""Start playing the replay"""
-		pass # TODO
+		if self.replay_speed == 0:
+			self.replay_speed = 1
+		else:
+			self.replay_speed *= 2
+		if self.replay_speed >= 16:
+			self.replay_speed = 1
+		logging.info(_("Set replay speed to %dx.") % self.replay_speed)
 	
 	def pause_replay(self, *args):
 		"""Pause playing the replay"""
-		pass # TODO
+		self.replay_speed = 0
+		logging.info(_("Replay paused."))
 	
 	def seek_replay(self, *args):
 		"""Seek the replay"""
 		t = int(self.hscale_replay.get_adjustment().get_value())
 		seek_to = self.replay.get_start_time() + datetime.timedelta(seconds=t)
-#		if seek_to < self.replay.get_current_time():
-			# Can't seek backwards yet
-#			dt = self.replay.get_current_time() - self.replay.get_start_time()
-#			self.hscale_replay.get_adjustment().set_value(dt.total_seconds())
-#		else:
 		self.replay.replay_to(seek_to, self.players, self.create_player)
 		self._update_clock()
 	

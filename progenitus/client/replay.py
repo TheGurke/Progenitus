@@ -70,6 +70,10 @@ class Recorder(object):
 			return datetime.datetime(datetime.MAXYEAR, 12, 31)
 		return self._log[self._current_pos][0]
 	
+	def get_elapsed_time(self):
+		"""Return the time that elapsed since the beginning of the replay"""
+		return self.get_current_time() - self.get_start_time()
+	
 	def replay_to(self, time, players, create_player):
 		"""Replay all commands up to a certain point in time"""
 		if self.get_current_time() > time:
@@ -86,7 +90,7 @@ class Recorder(object):
 				# Check if the message need to be inverted
 				if len(self._reverse_log) < self._current_pos + 1:
 					if cmds is None:
-						self._reverse_log.append((sender, ()))
+						self._reverse_log.append((sender, []))
 					else:
 						pl = [pl for pl in players if pl.jid == sender]
 						# Dirty hack: create player if it hasn't been yet
@@ -94,7 +98,7 @@ class Recorder(object):
 							player = create_player(self, sender, "")
 						else:
 							player = pl[0]
-					
+						
 						inv_cmds = []
 						for (cmd, args) in cmds[::-1]:
 							inv_cmds.extend(

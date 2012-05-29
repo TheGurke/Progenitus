@@ -1171,6 +1171,7 @@
                         <property name="can_focus">True</property>
                         <property name="adjustment">adjustment_replay</property>
                         <property name="draw_value">False</property>
+                        <signal name="change-value" handler="seek_replay" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
