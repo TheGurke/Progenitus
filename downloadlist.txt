@@ -121,6 +121,7 @@ hop	2009-09-04	pch	Planechase	Planechase
 dpa	2010-06-04	dpa	Duels of the Planeswalkers	-
 arc	2010-06-18	arc	Archenemy	Archenemy
 cmd	2011-06-17	cmd	Commander	Commander
+pc2	2012-06-01	pc2	Planechase 2012 Edition	Planechase 2012
 
 
 # Introductory sets
