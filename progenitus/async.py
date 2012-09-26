@@ -3,6 +3,7 @@
 cancelation and arbitrary backends"""
 
 import threading
+import inspect
 
 
 # Because python defines no type names for functions and generators
@@ -86,6 +87,7 @@ class TaskHandle(object):
 			return
 		except Exception as exc:
 			self.generator.close() # run finally statements
+			print inspect.trace() # debug code
 			method_queuer(lambda: self.except_handler(exc))
 				# Queue this because the handler should not be called out
 				# of a thread

@@ -32,6 +32,7 @@ class Interface(uiloader.Interface):
 	
 	isfullscreen = False
 	_enlarged_card = None
+	_select_active = True
 	
 	def __init__(self):
 		super(self.__class__, self).__init__()
@@ -492,6 +493,7 @@ class Interface(uiloader.Interface):
 					_("Cannot rename '%s' to '%s': a folder with that name "
 					"exists.")) % (old_name, new_name), 'error')
 		try:
+			self._select_active = False
 			os.rename(old_path, new_path)
 			self.treestore_files.set(it, 1, new_path, 2, new_name)
 			if isdir:
@@ -505,16 +507,21 @@ class Interface(uiloader.Interface):
 				for path in to_remove:
 					del self._filemonitors[path]
 				self._create_monitor(new_path)
-			it = self.treestore_files.iter_children(it)
-			while it is not None:
-				if not self.treestore_files.remove(it):
-					it = None
-			async.start(self._update_dir(new_path))
+				it = self.treestore_files.iter_children(it)
+				while it is not None:
+					if not self.treestore_files.remove(it):
+						it = None
+				async.start(self._update_dir(new_path))
+			elif self.deck.filename == old_path:
+				self.deck.filename = new_path
+				self.deck.name = self.deck.derive_name()
 		except OSError as e:
 			logging.warning(_("Could not rename '%s' to '%s': %s"), old_path,
 				new_path, str(e))
 			self.show_dialog(self.main_win, _("Cannot rename '%s' to '%s': %s.")
 					% (old_name, new_name, str(e)), 'error')
+		finally:
+			self._select_active = True
 	
 	def remove_file(self, *args):
 		"""Delete the currently selected file or directory"""
@@ -580,6 +587,8 @@ class Interface(uiloader.Interface):
 		self.treeview_files.get_selection().select_iter(it)
 	
 	def select_file(self, widget):
+		if not self._select_active:
+			return
 		model, it = self.treeview_files.get_selection().get_selected()
 		if it is None:
 			self.unload_deck()
@@ -683,19 +692,25 @@ class Interface(uiloader.Interface):
 			name = _("new deck (%d)") % i
 			path = os.path.join(parent_dir, name + config.DECKFILE_SUFFIX)
 			i += 1
+		logging.info(_("New deck: %s"), name)
 		
 		# Enter the deck to the decks treestore
 		icon = self.main_win.render_icon(gtk.STOCK_FILE, gtk.ICON_SIZE_MENU,
 			None)
 		it = self.treestore_files.append(it, (False, path, name, icon))
-		self.treeview_files.expand_to_path(model.get_path(it))
-		self.treeview_files.set_cursor(model.get_path(it))
 		
 		# Initialize deck
 		self.deck = decks.Deck(path)
+		self.deck.save()
 		self.enable_deck()
-		with open(path, 'w') as f:
-			pass # touch file
+		
+		# Set focus back to the treeview_files
+		self._select_active = False
+		self.treeview_files.grab_focus()
+		self.treeview_files.expand_to_path(model.get_path(it))
+		self.treeview_files.set_cursor(model.get_path(it),
+			focus_column=self.treeviewcolumn9, start_editing=True)
+		self._select_active = True
 	
 	def copy_deck(self, *args):
 		"""Copy the currently selected deck"""

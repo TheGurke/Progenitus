@@ -61,7 +61,6 @@ sideboard.
 
 Known issues
 
-- File/folder view tends to be buggy, needs rewrite
 - Searching for "mana cost >= 2" yields the same results as searching for "converted mana cost >= 2"
 
 
