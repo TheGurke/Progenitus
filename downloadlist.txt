@@ -141,7 +141,7 @@ dde	2010-03-19	pvc	Duel Decks: Phyrexia vs. The Coalition	Duel Decks: Phyrexia v
 ddf	2010-09-03	ddf	Duel Decks: Elspeth vs. Tezzeret	Duel Decks: Elspeth vs. Tezzeret
 ddg	2011-04-01	ddg	Duel Decks: Knights vs. Dragons	-
 ddh	2011-09-02	ddh	Duel Decks: Ajani vs. Nicol Bolas	Duel Decks: Ajani vs. Nicol Bolas
-#ddi	2012-03-30	ddi	Duel Decks: Venser vs. Koth	Duel Decks: Venser vs. Koth
-
-
+ddi	2012-03-30	ddi	Duel Decks: Venser vs. Koth	Duel Decks: Venser vs. Koth
+ddj	2012-09-07	ddj	Duel Decks: Izzet vs. Golgari	Duel Decks: Izzet vs. Golgari
+#ddk	2013-03-15	ddk	Duel Decks: Sorin vs. Tibalt	Duel Decks: Sorin vs. Tibalt
 

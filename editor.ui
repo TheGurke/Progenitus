@@ -700,7 +700,7 @@
                                 <child>
                                   <object class="GtkImage" id="mana_white">
                                     <property name="can_focus">False</property>
-                                    <property name="pixbuf">media/mana_white.svg</property>
+                                    <property name="pixbuf">media/mana_white.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -711,7 +711,7 @@
                                 <child>
                                   <object class="GtkImage" id="mana_blue">
                                     <property name="can_focus">False</property>
-                                    <property name="pixbuf">media/mana_blue.svg</property>
+                                    <property name="pixbuf">media/mana_blue.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -722,7 +722,7 @@
                                 <child>
                                   <object class="GtkImage" id="mana_black">
                                     <property name="can_focus">False</property>
-                                    <property name="pixbuf">media/mana_black.svg</property>
+                                    <property name="pixbuf">media/mana_black.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -733,7 +733,7 @@
                                 <child>
                                   <object class="GtkImage" id="mana_red">
                                     <property name="can_focus">False</property>
-                                    <property name="pixbuf">media/mana_red.svg</property>
+                                    <property name="pixbuf">media/mana_red.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -744,7 +744,7 @@
                                 <child>
                                   <object class="GtkImage" id="mana_green">
                                     <property name="can_focus">False</property>
-                                    <property name="pixbuf">media/mana_green.svg</property>
+                                    <property name="pixbuf">media/mana_green.png</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
