@@ -111,6 +111,9 @@ avr	2012-05-04	avr	Avacyn Restored	Avacyn Restored
 
 m13	2012-07-13	m13	Magic 2013	Magic 2012 (M13)
 
+rtr	2012-10-05	rtr	Return to Ravnica	Return to Ravnica
+#gtc	2012-02-01	gtc	Gatecrash	Gatecrash
+
 # Fun sets
 ug	1998-08-17	ug	Unglued	Unglued
 uh	2004-11-19	uh	Unhinged	Unhinged
