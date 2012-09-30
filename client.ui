@@ -301,7 +301,7 @@
                     <child>
                       <object class="GtkButton" id="button_show_replay">
                         <property name="label" translatable="yes">show replay</property>
-                        <property name="visible">True</property>
+                        <property name="visible">False</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
                         <property name="use_action_appearance">False</property>
@@ -471,7 +471,7 @@
                             <property name="use_action_appearance">False</property>
                             <property name="relief">none</property>
                             <property name="focus_on_click">False</property>
-                            <property name="uri">http://www.google.com/search?q=how%20do%20i%20create%20a%20jabber%20account%3F</property>
+                            <property name="uri">https://github.com/TheGurke/Progenitus/wiki/Creating-a-Jabber-account</property>
                           </object>
                           <packing>
                             <property name="expand">True</property>

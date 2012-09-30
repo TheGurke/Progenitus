@@ -585,7 +585,7 @@ class Interface(uiloader.Interface):
 		else:
 			if self.game is not None:
 				self.game.send_chat(text)
-			self.add_log_line(_("You: %s") % text)
+			self._add_to_log(self.logview_game, _("You: %s") % text)
 		self.entry_chat.set_text("")
 	
 	
