@@ -112,7 +112,10 @@ avr	2012-05-04	avr	Avacyn Restored	Avacyn Restored
 m13	2012-07-13	m13	Magic 2013	Magic 2012 (M13)
 
 rtr	2012-10-05	rtr	Return to Ravnica	Return to Ravnica
-#gtc	2012-02-01	gtc	Gatecrash	Gatecrash
+#gtc	2013-02-01	gtc	Gatecrash	Gatecrash
+#dgm 2013-05-03  dgm Dragon's Maze Dragon's Maze
+
+#m14 2013-07-19 m14 Magic 2014 Magic 2014
 
 # Fun sets
 ug	1998-08-17	ug	Unglued	Unglued
@@ -125,6 +128,7 @@ dpa	2010-06-04	dpa	Duels of the Planeswalkers	-
 arc	2010-06-18	arc	Archenemy	Archenemy
 cmd	2011-06-17	cmd	Commander	Commander
 pc2	2012-06-01	pc2	Planechase 2012 Edition	Planechase 2012
+#mma  2013-06-07  mma Modern Masters Modern Masters
 
 
 # Introductory sets
