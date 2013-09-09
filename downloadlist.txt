@@ -121,7 +121,6 @@ m14	2013-07-19	m14	Magic 2014	Magic 2014
 #bgn	2014-02-07	bgn	Born of the Gods	Born of the Gods
 #?	2014-05-?	?	Journey into Nyx	Journey into Nyx
 
-
 # Fun sets
 ug	1998-08-17	ug	Unglued	Unglued
 uh	2004-11-19	uh	Unhinged	Unhinged
