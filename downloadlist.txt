@@ -112,7 +112,15 @@ avr	2012-05-04	avr	Avacyn Restored	Avacyn Restored
 m13	2012-07-13	m13	Magic 2013	Magic 2012 (M13)
 
 rtr	2012-10-05	rtr	Return to Ravnica	Return to Ravnica
-#gtc	2012-02-01	gtc	Gatecrash	Gatecrash
+gtc	2013-02-01	gtc	Gatecrash	Gatecrash
+dgm	2013-05-03	dgm	Dragon's Maze	Dragon's Maze
+
+m14	2013-07-19	m14	Magic 2014	Magic 2014
+
+#ths	2013-09-27	ths	Theros	Theros
+#bgn	2014-02-07	bgn	Born of the Gods	Born of the Gods
+#?	2014-05-?	?	Journey into Nyx	Journey into Nyx
+
 
 # Fun sets
 ug	1998-08-17	ug	Unglued	Unglued
@@ -125,6 +133,7 @@ dpa	2010-06-04	dpa	Duels of the Planeswalkers	-
 arc	2010-06-18	arc	Archenemy	Archenemy
 cmd	2011-06-17	cmd	Commander	Commander
 pc2	2012-06-01	pc2	Planechase 2012 Edition	Planechase 2012
+mma	2013-06-07	mma	Modern Masters	Modern Masters
 
 
 # Introductory sets
@@ -146,5 +155,6 @@ ddg	2011-04-01	ddg	Duel Decks: Knights vs. Dragons	-
 ddh	2011-09-02	ddh	Duel Decks: Ajani vs. Nicol Bolas	Duel Decks: Ajani vs. Nicol Bolas
 ddi	2012-03-30	ddi	Duel Decks: Venser vs. Koth	Duel Decks: Venser vs. Koth
 ddj	2012-09-07	ddj	Duel Decks: Izzet vs. Golgari	Duel Decks: Izzet vs. Golgari
-#ddk	2013-03-15	ddk	Duel Decks: Sorin vs. Tibalt	Duel Decks: Sorin vs. Tibalt
+ddk	2013-03-15	ddk	Duel Decks: Sorin vs. Tibalt	Duel Decks: Sorin vs. Tibalt
+#ddl	2013-09-06	ddl	Duel Decks: Heroes vs. Monsters	Duel Decks: Heroes vs. Monsters
 
