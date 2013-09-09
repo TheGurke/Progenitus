@@ -22,8 +22,7 @@ import config
 
 _settings = [
 	# section, variable name, type, default value, description
-	("DEFAULT", "cache_dir", "dir", "/var/cache/progenitus" if
-		os.path.exists("/var/cache/progenitus") else "cache/",
+	("DEFAULT", "cache_dir", "dir", "$HOME/.cache/progenitus",
 		"Path to picture cache folder"),
 	("DEFAULT", "deck_dir", "dir",
 		"$HOME/Progenitus decks" if os.name == 'posix' else "decks",
@@ -101,5 +100,3 @@ def save():
 
 # Initially load the settings
 load()
-
-

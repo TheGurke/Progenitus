@@ -12,14 +12,14 @@ APP_NAME_EDITOR = APP_NAME + " Editor"
 APP_NAME_CLIENT = APP_NAME + " Client"
 
 # Program version
-VERSION = "0.40-beta5"
+VERSION = "0.40-beta6"
 
 # Program website
 APP_WEBSITE = "http://progenitus.org/"
 
 # Path to the settings file
 if os.name == 'posix':
-	SETTINGS_FILE = "$HOME/.progenitus.cfg"
+	SETTINGS_FILE = "$HOME/.config/progenitus.cfg"
 else:
 	SETTINGS_FILE = "settings.ini"
 
