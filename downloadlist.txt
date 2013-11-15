@@ -117,7 +117,7 @@ dgm	2013-05-03	dgm	Dragon's Maze	Dragon's Maze
 
 m14	2013-07-19	m14	Magic 2014	Magic 2014
 
-#ths	2013-09-27	ths	Theros	Theros
+ths	2013-09-27	ths	Theros	Theros
 #bgn	2014-02-07	bgn	Born of the Gods	Born of the Gods
 #?	2014-05-?	?	Journey into Nyx	Journey into Nyx
 
@@ -155,5 +155,5 @@ ddh	2011-09-02	ddh	Duel Decks: Ajani vs. Nicol Bolas	Duel Decks: Ajani vs. Nicol
 ddi	2012-03-30	ddi	Duel Decks: Venser vs. Koth	Duel Decks: Venser vs. Koth
 ddj	2012-09-07	ddj	Duel Decks: Izzet vs. Golgari	Duel Decks: Izzet vs. Golgari
 ddk	2013-03-15	ddk	Duel Decks: Sorin vs. Tibalt	Duel Decks: Sorin vs. Tibalt
-#ddl	2013-09-06	ddl	Duel Decks: Heroes vs. Monsters	Duel Decks: Heroes vs. Monsters
+ddl	2013-09-06	ddl	Duel Decks: Heroes vs. Monsters	Duel Decks: Heroes vs. Monsters
 
